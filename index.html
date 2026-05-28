@@ -33,7 +33,6 @@
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
 
-        // CORE ENGINE API SAKTI: AMBIL KURS MATA UANG REAL-TIME GLOBAL (BASE IDR)
         let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 }; 
 
         async function fetchLiveGlobalRates() {
@@ -61,7 +60,6 @@
             return showPrefix ? `${clientCurrency} ${formattedNumber}` : formattedNumber;
         }
 
-        // Kamus Ekosistem Translasi Bahasa Universal (Seluruh Teks App & Hasil File Download Sinkron)
         const dictionary = {
             ID: {
                 monitor: "Monitor Pelanggan", finance: "Keuangan & Analytics", input: "Input Member Baru",
@@ -108,7 +106,6 @@
                 phSearchVendor: "Cari nama vendor / mitra...",
                 btnEditVendor: "✏️ Edit",
 
-                // TRANSLASI BARU KHUSUS UNTUK DOKUMEN EXPORT / INVOICE / EXCEL
                 docInvoiceTitle: "Kwitansi Resmi Pembelian Layanan Cloud Premium",
                 docCustomerInfo: "DATA PELANGGAN / CUSTOMER INFO:",
                 docCustName: "Nama Pelanggan",
@@ -181,7 +178,6 @@
                 phSearchVendor: "Search vendor name...",
                 btnEditVendor: "✏️ Edit",
 
-                // TRANSLASI BARU KHUSUS UNTUK DOKUMEN EXPORT / INVOICE / EXCEL (VERSI ENGLISH)
                 docInvoiceTitle: "Official Premium Cloud Service Subscription Receipt",
                 docCustomerInfo: "CUSTOMER INFORMATION DATABASE:",
                 docCustName: "Customer Name",
@@ -845,6 +841,7 @@
             });
         }
 
+        // PERBAIKAN TIMEOUT LOGIC EDIT VENDOR AGAR HARUS MENUNGGU KONDISI DATABASE SINKRON
         async function editCompanyName(oldName) {
             if(!validatePasswordSecurity()) {
                 alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
@@ -855,11 +852,38 @@
             if(newName === null || newName.trim() === "" || newName.trim() === oldName) return;
 
             try {
-                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim() }) });
-                await loadInitData(); await refreshMembersList();
-                alert(clientLanguage === "ID" ? "🚀 Sukses Update Nama Vendor!" : "🚀 Vendor Name Updated Successfully!");
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim() }) });
+                const res = await response.json();
+                if(res && res.status === "success") {
+                    await loadInitData(); await refreshMembersList();
+                    alert(clientLanguage === "ID" ? "🚀 Sukses Update Nama Vendor Berantai!" : "🚀 Vendor Name Updated Everywhere Successfully!");
+                } else {
+                    alert("Failed: " + res.message);
+                }
             } catch (e) {
                 alert("Error Update Vendor!");
+            }
+        }
+
+        // PERBAIKAN TIMEOUT LOGIC HAPUS VENDOR BERANTAI BESERTA SELURUH DATA TERKAITNYA
+        async function deleteCompany(name) { 
+            if(!validatePasswordSecurity()) return; 
+            const msgConfirm = clientLanguage === "ID" 
+                ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan MENGHAPUS PERMANEN seluruh Paket Produk & Member Pelanggan yang terikat dengan vendor ini di database Google Sheets!\n\nApakah Om Yakin Ingin Eksekusi?`
+                : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will AUTOMATICALLY WIPE & PERMANENTLY DELETE all associated Packages and Customer Members inside Google Sheets!\n\nAre you absolutely sure you want to execute?`;
+            if(!confirm(msgConfirm)) return;
+
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
+                const res = await response.json();
+                if(res && res.status === "success") {
+                    await loadInitData(); await refreshMembersList();
+                    alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dan seluruh data terkait bersih terhapus." : "🗑️ Success! Vendor and all related data completely deleted.");
+                } else {
+                    alert("Failed: " + res.message);
+                }
+            } catch (e) {
+                alert("Error Delete Vendor!");
             }
         }
 
@@ -962,7 +986,6 @@
             renderMembersTable();
         }
 
-        // FUNGSI UTAMA DOWNLOAD DARI SCREEN DASHBOARD UTAMA (SINKRON PREFERENCES BAHASA & MATA UANG)
         function exportDashboardData(type) {
             if(filteredMembers.length === 0) { alert(clientLanguage === "ID" ? "Data Kosong!" : "No Data!"); return; }
             const lang = dictionary[clientLanguage] || dictionary.ID;
@@ -1229,7 +1252,6 @@
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
         }
 
-        // FUNGSI PRINT INVOICE SINKRONISASI TOTAL 100% BAHASA & DYNAMIC CONVERSION
         function printInvoice(mRowId) {
             const m = membersData.find(x => x.rowId === mRowId); 
             const lang = dictionary[clientLanguage] || dictionary.ID;
@@ -1261,7 +1283,6 @@
             doc.save(`Invoice_${m.namaMember}_${clientCurrency}.pdf`);
         }
 
-        // FUNGSI DOWNLOAD KATALOG EXCEL / PDF DI MENU FINANCE (SINKRON BAHASA DAN MATA UANG)
         function exportProData(type) {
             if(filteredMembers.length === 0) { alert("Data Kosong!"); return; }
             const lang = dictionary[clientLanguage] || dictionary.ID;
@@ -1402,20 +1423,11 @@
             const tbody = document.getElementById('masterProductTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
             const lang = dictionary[clientLanguage] || dictionary.ID;
-            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-800 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400">${lang.lblHapus}</button></td></tr>`; });
+            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-900 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400">${lang.lblHapus}</button></td></tr>`; });
         }
         async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); }
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
         
-        async function deleteCompany(name) { 
-            if(!validatePasswordSecurity()) return; 
-            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
-            await loadInitData(); 
-        }
-        
-        async function submitProductForm() { const payload = { action: "addProduct", perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value, varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value, hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value }; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); await loadInitData(); await refreshMembersList(); }
-        async function deleteProduct(id) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id }) }); await loadInitData(); await refreshMembersList(); }
-        async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
         function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
