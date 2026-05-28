@@ -29,12 +29,12 @@
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let currentUser = null; let currentPasswordPlain = ""; 
         let masterCompanies = []; let masterPackages = []; let membersData = []; let filteredMembers = [];
-        let activeFilterCompany = "ALL"; let currentFinanceMode = "all";
+        let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
 
         // CORE ENGINE API SAKTI: AMBIL KURS MATA UANG REAL-TIME GLOBAL (BASE IDR)
-        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 }; // Cadangan internal jika internet lemot
+        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 }; 
 
         async function fetchLiveGlobalRates() {
             try {
@@ -49,7 +49,6 @@
             }
         }
 
-        // CORE UTILITY FUNCTION UNTUK REALTIME AUTO CONVERT & MULTI-DECIMAL FORMATTING PROFESIONAL
         function convertAndFormat(amount, showPrefix = true) {
             const num = parseFloat(amount) || 0;
             const rate = currencyRates[clientCurrency] || 1;
@@ -159,7 +158,6 @@
         function applyGlobalLanguageUI() {
             const translation = dictionary[clientLanguage] || dictionary.ID;
             
-            // SECURITY FILTER: Deteksi keberadaan objek sebelum manipulasi agar tidak mematikan fungsi login screen
             if(document.getElementById('menu-dashboard')) document.getElementById('menu-dashboard').innerHTML = `<i class="fa-solid fa-house"></i> ` + translation.monitor;
             if(document.getElementById('menu-finance')) document.getElementById('menu-finance').innerHTML = `<i class="fa-solid fa-wallet text-emerald-400"></i> ` + translation.finance;
             if(document.getElementById('menu-input')) document.getElementById('menu-input').innerHTML = `<i class="fa-solid fa-user-plus text-blue-400"></i> ` + translation.input;
@@ -242,22 +240,16 @@
             if(document.getElementById('thMstReseller')) document.getElementById('thMstReseller').innerText = translation.thMstReseller;
             if(document.getElementById('thMstAksi')) document.getElementById('thMstAksi').innerText = translation.thMstAksi;
 
-            if(document.getElementById('mstWhitelabelTitle')) document.getElementById('mstWhitelabelTitle').innerText = translation.mstWhitelabelTitle;
-            if(document.getElementById('setBrandName')) document.getElementById('setBrandName').placeholder = translation.phNamaBrand;
-            if(document.getElementById('setLogoUrl')) document.getElementById('setLogoUrl').placeholder = translation.phUrlLogo;
-            if(document.getElementById('btnSaveBrand')) document.getElementById('btnSaveBrand').innerText = translation.btnSaveBrand;
-            if(document.getElementById('setCloudPrefsTitle')) document.getElementById('setCloudPrefsTitle').innerHTML = translation.setCloudPrefsTitle;
-            if(document.getElementById('setCloudPrefsDesc')) document.getElementById('setCloudPrefsDesc').innerText = translation.setCloudPrefsDesc;
-            if(document.getElementById('lblCurrencySelect')) document.getElementById('lblCurrencySelect').innerText = translation.lblCurrencySelect;
-            if(document.getElementById('lblLanguageSelect')) document.getElementById('lblLanguageSelect').innerText = translation.lblLanguageSelect;
-            if(document.getElementById('btnLockPrefs')) document.getElementById('btnLockPrefs').innerText = translation.btnLockPrefs;
-            if(document.getElementById('mstWipeoutTitle')) document.getElementById('mstWipeoutTitle').innerText = translation.mstWipeoutTitle;
-            if(document.getElementById('lblResetType')) document.getElementById('lblResetType').innerText = translation.lblResetType;
-            if(document.getElementById('lblResetScope')) document.getElementById('lblResetScope').innerText = translation.lblResetScope;
-            if(document.getElementById('btnTriggerReset')) document.getElementById('btnTriggerReset').innerText = translation.btnTriggerReset;
-            
             if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = translation.phSearchMember;
             if(document.getElementById('vendorSearchInput')) document.getElementById('vendorSearchInput').placeholder = translation.phSearchVendor;
+
+            // TRANSLATION SINKRONISASI UNTUK EKOSISTEM FILTER BARU DASHBOARD
+            if(document.getElementById('btn-dash-all')) document.getElementById('btn-dash-all').innerText = translation.lblSemua;
+            if(document.getElementById('btn-dash-today')) document.getElementById('btn-dash-today').innerText = translation.finDaily;
+            if(document.getElementById('btn-dash-3days')) document.getElementById('btn-dash-3days').innerText = clientLanguage === "ID" ? "3 Hari" : "3 Days";
+            if(document.getElementById('btn-dash-7days')) document.getElementById('btn-dash-7days').innerText = clientLanguage === "ID" ? "7 Hari" : "7 Days";
+            if(document.getElementById('btn-dash-monthly')) document.getElementById('btn-dash-monthly').innerText = clientLanguage === "ID" ? "1 Bulan" : "1 Month";
+            if(document.getElementById('btnDashApply')) document.getElementById('btnDashApply').innerText = clientLanguage === "ID" ? "Terapkan" : "Apply";
 
             const resetSel = document.getElementById('resetTypeSelect');
             if (resetSel) {
@@ -332,6 +324,25 @@
                             <button onclick="searchMembers()" class="bg-green-500 hover:bg-green-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs uppercase transition"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>
+
+                    <div class="flex flex-wrap gap-3 items-center bg-slate-950/50 p-4 rounded-2xl border border-slate-800 mb-4 text-xs">
+                        <button id="btn-dash-all" onclick="filterDashboard('all')" class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl font-bold hover:bg-slate-800 transition text-slate-300">Semua</button>
+                        <button id="btn-dash-today" onclick="filterDashboard('today')" class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl font-bold hover:bg-slate-800 transition text-slate-300">Hari Ini</button>
+                        <button id="btn-dash-3days" onclick="filterDashboard('3days')" class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl font-bold hover:bg-slate-800 transition text-slate-300">3 Hari</button>
+                        <button id="btn-dash-7days" onclick="filterDashboard('7days')" class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl font-bold hover:bg-slate-800 transition text-slate-300">7 Hari</button>
+                        <button id="btn-dash-monthly" onclick="filterDashboard('monthly')" class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl font-bold hover:bg-slate-800 transition text-slate-300">1 Bulan</button>
+                        <div class="flex items-center gap-2 md:ml-auto">
+                            <input type="date" id="dashStart" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+                            <span class="text-slate-600 text-xs">s/d</span>
+                            <input type="date" id="dashEnd" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+                            <button id="btnDashApply" onclick="filterDashboard('custom')" class="bg-green-600 px-4 py-2 rounded-xl font-bold text-slate-950 hover:bg-green-500 transition">Terapkan</button>
+                        </div>
+                        <div class="flex gap-2 border-l border-slate-800 pl-2">
+                            <button id="btnDashExcel" onclick="exportDashboardData('excel')" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-2 rounded-xl font-bold flex items-center gap-1 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                            <button id="btnDashPdf" onclick="exportDashboardData('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-1 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -629,6 +640,13 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tabId).classList.add('active');
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
             const activeBtn = document.getElementById('menu-' + tabId); if(activeBtn) activeBtn.classList.add('active-sidebar-menu');
+            
+            // AUTOMATIC INTERACTIVE RE-DASHBOARD FILTERING REFRESH TRIGGER
+            if (tabId === 'dashboard') {
+                filterDashboard(currentDashboardFilterMode);
+            } else if (tabId === 'finance') {
+                filterFinance(currentFinanceMode);
+            }
         }
         function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); switchTab('input'); }
         
@@ -639,7 +657,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            await fetchLiveGlobalRates(); // EKSEKUSI UTAMA: Tarik data pasar uang dunia terkini sebelum data ditampilkan
+            await fetchLiveGlobalRates(); 
             const savedUser = localStorage.getItem('milio_user');
             const savedPass = localStorage.getItem('milio_pass');
             if (savedUser && savedPass) {
@@ -830,7 +848,15 @@
 
         async function refreshMembersList() {
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getMembersData", resellerId: currentUser.userId, role: currentUser.role }) });
-            const res = await response.json(); if(res.status === "success") { membersData = res.data; filterFinance(currentFinanceMode); }
+            const res = await response.json(); 
+            if(res.status === "success") { 
+                membersData = res.data; 
+                if (document.getElementById('tab-dashboard').classList.contains('active')) {
+                    filterDashboard(currentDashboardFilterMode);
+                } else {
+                    filterFinance(currentFinanceMode); 
+                }
+            }
         }
 
         function filterCompanyData(compName) { 
@@ -843,6 +869,133 @@
 
         function searchMembers() {
             renderMembersTable();
+        }
+
+        // FUNGSI SAKTI ENGINE BARU: FILTERING DATE RANGE LEVEL DASHBOARD MONITOR (SINKRON KE SEMUA KARTU STATISTIK)
+        function filterDashboard(mode) {
+            currentDashboardFilterMode = mode;
+            document.querySelectorAll("#tab-dashboard button[id^='btn-dash-']").forEach(b => b.classList.remove('active-filter-btn'));
+            const btn = document.getElementById('btn-dash-' + mode);
+            if(btn) btn.classList.add('active-filter-btn');
+            
+            const skg = new Date();
+            let start, end;
+            
+            if(mode === 'today') {
+                start = new Date(); start.setHours(0,0,0,0);
+                end = new Date(); end.setHours(23,59,59,999);
+            } else if(mode === '3days') {
+                start = new Date(); start.setDate(start.getDate() - 3); start.setHours(0,0,0,0);
+                end = new Date(); end.setHours(23,59,59,999);
+            } else if(mode === '7days') {
+                start = new Date(); start.setDate(start.getDate() - 7); start.setHours(0,0,0,0);
+                end = new Date(); end.setHours(23,59,59,999);
+            } else if(mode === 'monthly') {
+                start = new Date(skg.getFullYear(), skg.getMonth(), 1);
+                end = new Date(skg.getFullYear(), skg.getMonth() + 1, 0, 23, 59, 59, 999);
+            } else if(mode === 'custom') {
+                start = new Date(document.getElementById('dashStart').value); start.setHours(0,0,0,0);
+                end = new Date(document.getElementById('dashEnd').value); end.setHours(23,59,59,999);
+            } else {
+                start = new Date(2000, 0, 1); end = new Date(2100, 0, 1);
+            }
+            
+            filteredMembers = membersData.filter(m => {
+                const t = new Date(m.timestamp);
+                return t >= start && t <= end;
+            });
+            
+            filteredMembers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            renderMembersTable();
+        }
+
+        // ENGINE GENERATOR LAPORAN DASHBOARD: MENYISIPKAN TEKS LOG KETERANGAN RANGE FILTER SECARA DINAMIS KE EXCEL & PDF
+        function exportDashboardData(type) {
+            if(filteredMembers.length === 0) { alert(clientLanguage === "ID" ? "Data Kosong!" : "No Data!"); return; }
+            
+            let startText = document.getElementById('dashStart').value || "-";
+            let endText = document.getElementById('dashEnd').value || "-";
+            
+            if (currentDashboardFilterMode !== 'custom') {
+                const skg = new Date();
+                endText = skg.toLocaleDateString('id-ID') + " 23:59:59";
+                if (currentDashboardFilterMode === 'today') startText = skg.toLocaleDateString('id-ID') + " 00:00:00";
+                else if (currentDashboardFilterMode === '3days') {
+                    let d = new Date(); d.setDate(d.getDate() - 3); startText = d.toLocaleDateString('id-ID') + " 00:00:00";
+                } else if (currentDashboardFilterMode === '7days') {
+                    let d = new Date(); d.setDate(d.getDate() - 7); startText = d.toLocaleDateString('id-ID') + " 00:00:00";
+                } else if (currentDashboardFilterMode === 'monthly') {
+                    let d = new Date(skg.getFullYear(), skg.getMonth(), 1); startText = d.toLocaleDateString('id-ID') + " 00:00:00";
+                } else {
+                    startText = "Awal"; endText = "Akhir";
+                }
+            } else {
+                startText += " 00:00:00";
+                endText += " 23:59:59";
+            }
+            
+            const noteText = clientLanguage === "ID" 
+                ? `Berikut ini member yang terdaftar pada tanggal: dari ${startText} ke ${endText}`
+                : `The following are members registered on dates: from ${startText} to ${endText}`;
+                
+            if(type === 'excel') {
+                const rate = currencyRates[clientCurrency] || 1;
+                let content = filteredMembers.map(m => ({
+                    "Tanggal Input": m.timestamp,
+                    "Nama Pelanggan": m.namaMember,
+                    "WhatsApp": m.noWhatsapp,
+                    "Email": m.email,
+                    "Platform": m.perusahaan,
+                    "Nama Paket": m.namaPaket,
+                    "Modal": (parseFloat(m.hargaBeli) * rate),
+                    "Jual": (parseFloat(m.hargaJual) * rate),
+                    "Profit": (parseFloat(m.profit) * rate),
+                    "Currency": clientCurrency,
+                    "Expired": m.tglExpired
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet([]);
+                XLSX.utils.sheet_add_aoa(ws, [[noteText], []], { origin: "A1" });
+                XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
+                
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Filtered Customers");
+                XLSX.writeFile(wb, `MILIOLAB_Filtered_Customers.xlsx`);
+            } else {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                doc.setFontSize(13);
+                doc.setFont("Helvetica", "bold");
+                doc.text(`LAPORAN MEMBER TERFILTER - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
+                
+                doc.setFontSize(8.5);
+                doc.setFont("Helvetica", "normal");
+                doc.text(noteText, 14, 21);
+                
+                doc.setDrawColor(34, 197, 94); doc.setLineWidth(0.5); doc.line(14, 24, 195, 24);
+                
+                let rows = filteredMembers.map(m => {
+                    let tglTime = "";
+                    if (m.timestamp && m.timestamp.includes('T')) tglTime = m.timestamp.split('T')[1].split('.')[0];
+                    else if (m.timestamp && m.timestamp.includes(' ')) tglTime = m.timestamp.split(' ')[1];
+                    return [
+                        m.timestamp.split('T')[0] + " " + tglTime,
+                        m.namaMember,
+                        m.perusahaan,
+                        m.namaPaket,
+                        convertAndFormat(m.profit)
+                    ];
+                });
+                
+                doc.autoTable({
+                    startY: 27,
+                    head: [['Tanggal & Jam', 'Nama Pelanggan', 'Vendor', 'Paket', 'Profit']],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [34, 197, 94] }
+                });
+                doc.save(`Laporan_Pelanggan_Miliolab.pdf`);
+            }
         }
 
         function renderMembersTable() {
@@ -903,11 +1056,20 @@
                 const tglDaftarClean = m.timestamp ? m.timestamp.split('T')[0] : "-";
                 const tglExpiredClean = m.tglExpired ? m.tglExpired.split('T')[0] : "-";
 
+                // PARSING LOGIC JAM MENIT DETIK (HH:mm:ss) SECARA DETIL DIBAWAH TANGGAL DAFTAR
+                let tglDaftarTime = "00:00:00";
+                if (m.timestamp && m.timestamp.includes('T')) {
+                    const timePart = m.timestamp.split('T')[1];
+                    if (timePart) tglDaftarTime = timePart.split('.')[0];
+                } else if (m.timestamp && m.timestamp.includes(' ')) {
+                    tglDaftarTime = m.timestamp.split(' ')[1] || "00:00:00";
+                }
+
                 tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40">
                     <td class="p-3 font-semibold">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
                     <td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br>${m.namaPaket}</td>
                     <td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td>
-                    <td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}</td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td>
+                    <td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}<br><span class="text-[10px] text-slate-500 font-normal">${tglDaftarTime}</span></td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td>
                     <td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-print"></i></button></td>
                     <td class="p-3"><div class="flex gap-1.5 items-center justify-center">
                         ${btnAction}
@@ -939,7 +1101,6 @@
             }
 
             filteredMembers = membersData.filter(m => { const t = new Date(m.timestamp); return t >= start && t <= end; });
-            
             filteredMembers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             
             let omset = 0, modal = 0, cuan = 0;
