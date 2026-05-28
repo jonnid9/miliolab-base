@@ -61,7 +61,7 @@
             return showPrefix ? `${clientCurrency} ${formattedNumber}` : formattedNumber;
         }
 
-        // Kamus Ekosistem Translasi Bahasa Universal (Seluruh Teks App Dinamis Sesuai Screenshot Coretan Merah)
+        // Kamus Ekosistem Translasi Bahasa Universal (Seluruh Teks App & Hasil File Download Sinkron)
         const dictionary = {
             ID: {
                 monitor: "Monitor Pelanggan", finance: "Keuangan & Analytics", input: "Input Member Baru",
@@ -106,7 +106,35 @@
                 
                 phSearchMember: "Cari nama, email, wa...",
                 phSearchVendor: "Cari nama vendor / mitra...",
-                btnEditVendor: "✏️ Edit"
+                btnEditVendor: "✏️ Edit",
+
+                // TRANSLASI BARU KHUSUS UNTUK DOKUMEN EXPORT / INVOICE / EXCEL
+                docInvoiceTitle: "Kwitansi Resmi Pembelian Layanan Cloud Premium",
+                docCustomerInfo: "DATA PELANGGAN / CUSTOMER INFO:",
+                docCustName: "Nama Pelanggan",
+                docCustEmail: "Email Akses",
+                docCustWA: "Nomor WhatsApp",
+                docInvDesc: "Deskripsi Item Produk & Vendor",
+                docInvActive: "Masa Aktif Paket",
+                docInvTotal: "Total Terbayar",
+                docPaidStatus: "STATUS PEMBAYARAN: PAID / LUNAS",
+                docThankYou: "\"Terima kasih banyak telah berlangganan! Kepuasan Anda adalah prioritas kami.\"",
+                docReportTitle: "LAPORAN KEUANGAN OFFICIAL",
+                docBarGross: "[Bar Hijau] Tren Gross Omset",
+                docBarModal: "[Bar Merah] Pengeluaran Modal",
+                docBarCuan: "[Bar Biru] Profit Cuan Bersih",
+                xlHeaderTimestamp: "Tanggal Input",
+                xlHeaderName: "Nama Pelanggan",
+                xlHeaderWA: "WhatsApp",
+                xlHeaderEmail: "Email",
+                xlHeaderPlatform: "Platform / Vendor",
+                xlHeaderPackage: "Nama Paket",
+                xlHeaderCost: "Modal Beli",
+                xlHeaderSell: "Harga Jual",
+                xlHeaderProfit: "Cuan Bersih",
+                xlHeaderCurrency: "Mata Uang",
+                xlHeaderExpired: "Tanggal Expired",
+                docNoteFilter: "Berikut ini member yang terdaftar pada tanggal:"
             },
             EN: {
                 monitor: "Customer Monitor", finance: "Finance & Analytics", input: "Input New Member",
@@ -151,7 +179,35 @@
                 
                 phSearchMember: "Search name, email, wa...",
                 phSearchVendor: "Search vendor name...",
-                btnEditVendor: "✏️ Edit"
+                btnEditVendor: "✏️ Edit",
+
+                // TRANSLASI BARU KHUSUS UNTUK DOKUMEN EXPORT / INVOICE / EXCEL (VERSI ENGLISH)
+                docInvoiceTitle: "Official Premium Cloud Service Subscription Receipt",
+                docCustomerInfo: "CUSTOMER INFORMATION DATABASE:",
+                docCustName: "Customer Name",
+                docCustEmail: "Access Email",
+                docCustWA: "WhatsApp Number",
+                docInvDesc: "Product Description & Platform Vendor",
+                docInvActive: "Package Active Period",
+                docInvTotal: "Total Amount Paid",
+                docPaidStatus: "PAYMENT STATUS: PAID / SETTLED",
+                docThankYou: "\"Thank you very much for your subscription! Customer satisfaction is our highest priority.\"",
+                docReportTitle: "OFFICIAL FINANCIAL ANALYTICS REPORT",
+                docBarGross: "[Green Bar] Gross Turnover Trend",
+                docBarModal: "[Red Bar] Capital Expenditure Outflow",
+                docBarCuan: "[Blue Bar] Net Profit Margin Return",
+                xlHeaderTimestamp: "Input Timestamp",
+                xlHeaderName: "Customer Name",
+                xlHeaderWA: "WhatsApp Number",
+                xlHeaderEmail: "Email Address",
+                xlHeaderPlatform: "Platform Vendor",
+                xlHeaderPackage: "Package Name",
+                xlHeaderCost: "Cost Capital",
+                xlHeaderSell: "Selling Price",
+                xlHeaderProfit: "Net Profit",
+                xlHeaderCurrency: "Currency Code",
+                xlHeaderExpired: "Expiry Date",
+                docNoteFilter: "The following are members registered on dates:"
             }
         };
 
@@ -243,7 +299,6 @@
             if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = translation.phSearchMember;
             if(document.getElementById('vendorSearchInput')) document.getElementById('vendorSearchInput').placeholder = translation.phSearchVendor;
 
-            // TRANSLATION SINKRONISASI UNTUK EKOSISTEM FILTER BARU DASHBOARD
             if(document.getElementById('btn-dash-all')) document.getElementById('btn-dash-all').innerText = translation.lblSemua;
             if(document.getElementById('btn-dash-today')) document.getElementById('btn-dash-today').innerText = translation.finDaily;
             if(document.getElementById('btn-dash-3days')) document.getElementById('btn-dash-3days').innerText = clientLanguage === "ID" ? "3 Hari" : "3 Days";
@@ -641,7 +696,6 @@
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
             const activeBtn = document.getElementById('menu-' + tabId); if(activeBtn) activeBtn.classList.add('active-sidebar-menu');
             
-            // AUTOMATIC INTERACTIVE RE-DASHBOARD FILTERING REFRESH TRIGGER
             if (tabId === 'dashboard') {
                 filterDashboard(currentDashboardFilterMode);
             } else if (tabId === 'finance') {
@@ -871,7 +925,6 @@
             renderMembersTable();
         }
 
-        // FUNGSI SAKTI ENGINE BARU: FILTERING DATE RANGE LEVEL DASHBOARD MONITOR (SINKRON KE SEMUA KARTU STATISTIK)
         function filterDashboard(mode) {
             currentDashboardFilterMode = mode;
             document.querySelectorAll("#tab-dashboard button[id^='btn-dash-']").forEach(b => b.classList.remove('active-filter-btn'));
@@ -909,9 +962,10 @@
             renderMembersTable();
         }
 
-        // ENGINE GENERATOR LAPORAN DASHBOARD: MENYISIPKAN TEKS LOG KETERANGAN RANGE FILTER SECARA DINAMIS KE EXCEL & PDF
+        // FUNGSI UTAMA DOWNLOAD DARI SCREEN DASHBOARD UTAMA (SINKRON PREFERENCES BAHASA & MATA UANG)
         function exportDashboardData(type) {
             if(filteredMembers.length === 0) { alert(clientLanguage === "ID" ? "Data Kosong!" : "No Data!"); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
             
             let startText = document.getElementById('dashStart').value || "-";
             let endText = document.getElementById('dashEnd').value || "-";
@@ -927,74 +981,66 @@
                 } else if (currentDashboardFilterMode === 'monthly') {
                     let d = new Date(skg.getFullYear(), skg.getMonth(), 1); startText = d.toLocaleDateString('id-ID') + " 00:00:00";
                 } else {
-                    startText = "Awal"; endText = "Akhir";
+                    startText = "Awal/Start"; endText = "Akhir/End";
                 }
             } else {
-                startText += " 00:00:00";
-                endText += " 23:59:59";
+                startText += " 00:00:00"; endText += " 23:59:59";
             }
             
-            const noteText = clientLanguage === "ID" 
-                ? `Berikut ini member yang terdaftar pada tanggal: dari ${startText} ke ${endText}`
-                : `The following are members registered on dates: from ${startText} to ${endText}`;
+            const noteText = `${lang.docNoteFilter} ${startText} s/d ${endText}`;
                 
             if(type === 'excel') {
                 const rate = currencyRates[clientCurrency] || 1;
-                let content = filteredMembers.map(m => ({
-                    "Tanggal Input": m.timestamp,
-                    "Nama Pelanggan": m.namaMember,
-                    "WhatsApp": m.noWhatsapp,
-                    "Email": m.email,
-                    "Platform": m.perusahaan,
-                    "Nama Paket": m.namaPaket,
-                    "Modal": (parseFloat(m.hargaBeli) * rate),
-                    "Jual": (parseFloat(m.hargaJual) * rate),
-                    "Profit": (parseFloat(m.profit) * rate),
-                    "Currency": clientCurrency,
-                    "Expired": m.tglExpired
-                }));
+                let content = filteredMembers.map(m => {
+                    let obj = {};
+                    obj[lang.xlHeaderTimestamp] = m.timestamp;
+                    obj[lang.xlHeaderName] = m.namaMember;
+                    obj[lang.xlHeaderWA] = m.noWhatsapp;
+                    obj[lang.xlHeaderEmail] = m.email;
+                    obj[lang.xlHeaderPlatform] = m.perusahaan;
+                    obj[lang.xlHeaderPackage] = m.namaPaket;
+                    obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate);
+                    obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate);
+                    obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate);
+                    obj[lang.xlHeaderCurrency] = clientCurrency;
+                    obj[lang.xlHeaderExpired] = m.tglExpired;
+                    return obj;
+                });
                 
                 const ws = XLSX.utils.json_to_sheet([]);
                 XLSX.utils.sheet_add_aoa(ws, [[noteText], []], { origin: "A1" });
                 XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
                 
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Filtered Customers");
-                XLSX.writeFile(wb, `MILIOLAB_Filtered_Customers.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "Filtered Members");
+                XLSX.writeFile(wb, `MILIOLAB_Export_${clientCurrency}.xlsx`);
             } else {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('p', 'mm', 'a4');
-                doc.setFontSize(13);
-                doc.setFont("Helvetica", "bold");
-                doc.text(`LAPORAN MEMBER TERFILTER - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
+                doc.setFontSize(13); doc.setFont("Helvetica", "bold");
+                doc.text(`${lang.monitor.toUpperCase()} - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
                 
-                doc.setFontSize(8.5);
-                doc.setFont("Helvetica", "normal");
+                doc.setFontSize(8.5); doc.setFont("Helvetica", "normal");
                 doc.text(noteText, 14, 21);
                 
                 doc.setDrawColor(34, 197, 94); doc.setLineWidth(0.5); doc.line(14, 24, 195, 24);
                 
                 let rows = filteredMembers.map(m => {
-                    let tglTime = "";
+                    let tglTime = "-";
                     if (m.timestamp && m.timestamp.includes('T')) tglTime = m.timestamp.split('T')[1].split('.')[0];
                     else if (m.timestamp && m.timestamp.includes(' ')) tglTime = m.timestamp.split(' ')[1];
                     return [
                         m.timestamp.split('T')[0] + " " + tglTime,
-                        m.namaMember,
-                        m.perusahaan,
-                        m.namaPaket,
-                        convertAndFormat(m.profit)
+                        m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)
                     ];
                 });
                 
                 doc.autoTable({
                     startY: 27,
-                    head: [['Tanggal & Jam', 'Nama Pelanggan', 'Vendor', 'Paket', 'Profit']],
-                    body: rows,
-                    theme: 'grid',
-                    headStyles: { fillColor: [34, 197, 94] }
+                    head: [[lang.xlHeaderTimestamp, lang.xlHeaderName, lang.xlHeaderPlatform, lang.xlHeaderPackage, lang.xlHeaderProfit]],
+                    body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] }
                 });
-                doc.save(`Laporan_Pelanggan_Miliolab.pdf`);
+                doc.save(`MILIOLAB_Report_${clientCurrency}.pdf`);
             }
         }
 
@@ -1056,7 +1102,6 @@
                 const tglDaftarClean = m.timestamp ? m.timestamp.split('T')[0] : "-";
                 const tglExpiredClean = m.tglExpired ? m.tglExpired.split('T')[0] : "-";
 
-                // PARSING LOGIC JAM MENIT DETIK (HH:mm:ss) SECARA DETIL DIBAWAH TANGGAL DAFTAR
                 let tglDaftarTime = "00:00:00";
                 if (m.timestamp && m.timestamp.includes('T')) {
                     const timePart = m.timestamp.split('T')[1];
@@ -1184,42 +1229,64 @@
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
         }
 
+        // FUNGSI PRINT INVOICE SINKRONISASI TOTAL 100% BAHASA & DYNAMIC CONVERSION
         function printInvoice(mRowId) {
-            const m = membersData.find(x => x.rowId === mRowId); const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            const m = membersData.find(x => x.rowId === mRowId); 
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            
             const tglSkg = new Date(m.timestamp).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             const tglExp = new Date(m.tglExpired).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
             
             doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(34, 197, 94); doc.text(currentUser.namaBisnis.toUpperCase(), 20, 25);
-            doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120); doc.text("Kwitansi Resmi Pembelian Layanan Cloud Premium", 20, 31); doc.line(20, 35, 190, 35);
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120); 
+            doc.text(lang.docInvoiceTitle, 20, 31); doc.line(20, 35, 190, 35);
             
-            doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(40); doc.text("DATA PELANGGAN / CUSTOMER INFO:", 20, 44);
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(40); doc.text(lang.docCustomerInfo, 20, 44);
             doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(80);
-            doc.text(`Nama Pelanggan  :  ${m.namaMember}`, 20, 50);
-            doc.text(`Email Akses      :  ${m.email}`, 20, 55);
-            doc.text(`Nomor WhatsApp   :  +${m.noWhatsapp}`, 20, 60);
+            doc.text(`${lang.docCustName}  :  ${m.namaMember}`, 20, 50);
+            doc.text(`${lang.docCustEmail}      :  ${m.email}`, 20, 55);
+            doc.text(`${lang.docCustWA}   :  +${m.noWhatsapp}`, 20, 60);
             
             doc.autoTable({ 
                 startY: 66, 
-                head: [['Deskripsi Item Produk & Vendor', 'Masa Aktif Paket', 'Total Terbayar']], 
+                head: [[lang.docInvDesc, lang.docInvActive, lang.docInvTotal]], 
                 body: [[m.namaPaket + "\nVendor Platform: " + m.perusahaan, tglSkg + " s/d\n" + tglExp, convertAndFormat(m.hargaJual)]], 
-                theme: 'striped', 
-                headStyles: { fillColor: [7, 10, 19] } 
+                theme: 'striped', headStyles: { fillColor: [7, 10, 19] } 
             });
             
-            const currentY = doc.lastAutoTable.finalY; doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(34, 197, 94); doc.text("STATUS PEMBAYARAN: PAID / LUNAS", 20, currentY + 12);
+            const currentY = doc.lastAutoTable.finalY; doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(34, 197, 94); doc.text(lang.docPaidStatus, 20, currentY + 12);
             doc.setFont("Helvetica", "italic"); doc.setTextColor(150); doc.setFontSize(9);
-            doc.text(`"Terima kasih banyak telah berlangganan! Kepuasan Anda adalah prioritas kami."\nPowered By: ${currentUser.namaBisnis}.AI`, 20, currentY + 22);
-            doc.save("Invoice_" + m.namaMember + ".pdf");
+            doc.text(`${lang.docThankYou}\nPowered By: ${currentUser.namaBisnis}.AI`, 20, currentY + 22);
+            doc.save(`Invoice_${m.namaMember}_${clientCurrency}.pdf`);
         }
 
+        // FUNGSI DOWNLOAD KATALOG EXCEL / PDF DI MENU FINANCE (SINKRON BAHASA DAN MATA UANG)
         function exportProData(type) {
             if(filteredMembers.length === 0) { alert("Data Kosong!"); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            
             if(type === 'excel') {
                 const rate = currencyRates[clientCurrency] || 1;
-                let content = filteredMembers.map(m => ({ "Tanggal Input": m.timestamp, "Nama Pelanggan": m.namaMember, "WhatsApp": m.noWhatsapp, "Email": m.email, "Platform": m.perusahaan, "Nama Paket": m.namaPaket, "Modal": (parseFloat(m.hargaBeli) * rate), "Jual": (parseFloat(m.hargaJual) * rate), "Profit": (parseFloat(m.profit) * rate), "Currency": clientCurrency, "Expired": m.tglExpired }));
-                const ws = XLSX.utils.json_to_sheet(content), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Laporan"); XLSX.writeFile(wb, `MILIOLAB_Report.xlsx`);
+                let content = filteredMembers.map(m => {
+                    let obj = {};
+                    obj[lang.xlHeaderTimestamp] = m.timestamp;
+                    obj[lang.xlHeaderName] = m.namaMember;
+                    obj[lang.xlHeaderWA] = m.noWhatsapp;
+                    obj[lang.xlHeaderEmail] = m.email;
+                    obj[lang.xlHeaderPlatform] = m.perusahaan;
+                    obj[lang.xlHeaderPackage] = m.namaPaket;
+                    obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate);
+                    obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate);
+                    obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate);
+                    obj[lang.xlHeaderCurrency] = clientCurrency;
+                    obj[lang.xlHeaderExpired] = m.tglExpired;
+                    return obj;
+                });
+                const ws = XLSX.utils.json_to_sheet(content), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Financial Report"); XLSX.writeFile(wb, `MILIOLAB_Finance_${clientCurrency}.xlsx`);
             } else {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(14); doc.text(`LAPORAN KEUANGAN OFFICIAL - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(14); 
+                doc.text(`${lang.docReportTitle} - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
                 let omset = 0, modal = 0, cuan = 0;
                 let rows = filteredMembers.map(m => {
                     omset += parseFloat(m.hargaJual); modal += parseFloat(m.hargaBeli); cuan += parseFloat(m.profit);
@@ -1228,18 +1295,18 @@
                 
                 doc.setDrawColor(34, 197, 94); doc.setLineWidth(0.5); doc.line(14, 25, 195, 25);
                 doc.setFontSize(9); doc.setFont("Helvetica", "bold");
-                doc.text(`Gross Omset: ${convertAndFormat(omset)}  | Total Modal: ${convertAndFormat(modal)}  | Net Profit: ${convertAndFormat(cuan)}`, 14, 22);
+                doc.text(`${lang.lblFinOmset.split(' ')[1]}: ${convertAndFormat(omset)}  | ${lang.lblFinModal.split(' ')[1]}: ${convertAndFormat(modal)}  | ${lang.lblFinCuan.split(' ')[0]}: ${convertAndFormat(cuan)}`, 14, 22);
                 
                 let graphStartY = 32;
                 doc.setFillColor(34, 197, 94); doc.rect(14, graphStartY, Math.min(omset/5000, 100), 5, 'F'); 
-                doc.setFont("Helvetica", "normal"); doc.text(`[Bar Hijau] Tren Gross Omset`, 14, graphStartY + 9);
+                doc.setFont("Helvetica", "normal"); doc.text(lang.docBarGross, 14, graphStartY + 9);
                 doc.setFillColor(239, 68, 68); doc.rect(14, graphStartY + 14, Math.min(modal/5000, 100), 5, 'F'); 
-                doc.text(`[Bar Merah] Pengeluaran Modal`, 14, graphStartY + 23);
+                doc.text(lang.docBarModal, 14, graphStartY + 23);
                 doc.setFillColor(59, 130, 246); doc.rect(14, graphStartY + 28, Math.min(cuan/5000, 100), 5, 'F'); 
-                doc.text(`[Bar Biru] Profit Cuan Bersih`, 14, graphStartY + 37);
+                doc.text(lang.docBarCuan, 14, graphStartY + 37);
                 
-                doc.autoTable({ startY: graphStartY + 45, head: [['Tanggal', 'Nama', 'Vendor', 'Paket', 'Profit']], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
-                doc.save(`Laporan_Analytic_Miliolab.pdf`);
+                doc.autoTable({ startY: graphStartY + 45, head: [[lang.xlHeaderTimestamp.split(' ')[0], lang.xlHeaderName.split(' ')[0], lang.thMstMitra, lang.xlHeaderPackage, lang.xlHeaderProfit]], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
+                doc.save(`Financial_Report_${clientCurrency}.pdf`);
             }
         }
 
@@ -1335,7 +1402,7 @@
             const tbody = document.getElementById('masterProductTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
             const lang = dictionary[clientLanguage] || dictionary.ID;
-            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-900 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400">${lang.lblHapus}</button></td></tr>`; });
+            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-800 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400">${lang.lblHapus}</button></td></tr>`; });
         }
         async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); }
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
