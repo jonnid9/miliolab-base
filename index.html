@@ -841,7 +841,6 @@
             });
         }
 
-        // PERBAIKAN TIMEOUT LOGIC EDIT VENDOR AGAR HARUS MENUNGGU KONDISI DATABASE SINKRON
         async function editCompanyName(oldName) {
             if(!validatePasswordSecurity()) {
                 alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
@@ -865,7 +864,6 @@
             }
         }
 
-        // PERBAIKAN TIMEOUT LOGIC HAPUS VENDOR BERANTAI BESERTA SELURUH DATA TERKAITNYA
         async function deleteCompany(name) { 
             if(!validatePasswordSecurity()) return; 
             const msgConfirm = clientLanguage === "ID" 
@@ -1067,6 +1065,7 @@
             }
         }
 
+        // UPGRADE SISTEM TABLE: INYEKSI DYNAMIC DUAL-COLOR HIGHLIGHT KHUSUS MEMBER RESELLER (YANG DIKOTAKIN)
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
@@ -1133,9 +1132,19 @@
                     tglDaftarTime = m.timestamp.split(' ')[1] || "00:00:00";
                 }
 
+                // SINKRONISASI LOGIC IDENTIFIKASI DAN EDIT WARNA KUNING MENYALA KHUSUS RESELLER
+                const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
+                const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
+                const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
+                const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
+
                 tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40">
-                    <td class="p-3 font-semibold">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
-                    <td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br>${m.namaPaket}</td>
+                    <td class="${nameClass}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
+                    <td class="p-3 text-xs">
+                        <span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br>
+                        <span class="text-slate-300">${m.namaPaket}</span><br>
+                        <span class="${jenisClass} text-[10px] uppercase tracking-widest mt-1 block">${jenisLabel}</span>
+                    </td>
                     <td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td>
                     <td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}<br><span class="text-[10px] text-slate-500 font-normal">${tglDaftarTime}</span></td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td>
                     <td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-print"></i></button></td>
@@ -1423,11 +1432,51 @@
             const tbody = document.getElementById('masterProductTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
             const lang = dictionary[clientLanguage] || dictionary.ID;
-            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-900 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400">${lang.lblHapus}</button></td></tr>`; });
+            masterPackages.forEach(p => { tbody.innerHTML += `<tr class="border-b border-slate-800 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400">${p.perusahaan}</td><td class="p-2">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><button onclick="deleteProduct('${p.id}')" class="text-red-400 hover:text-red-300 cursor-pointer">${lang.lblHapus}</button></td></tr>`; });
         }
         async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); }
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
         
+        async function deleteCompany(name) { 
+            if(!validatePasswordSecurity()) return; 
+            const msgConfirm = clientLanguage === "ID" 
+                ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan MENGHAPUS PERMANEN seluruh Paket Produk & Member Pelanggan yang terikat dengan vendor ini di database Google Sheets!\n\nApakah Om Yakin Ingin Eksekusi?`
+                : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will AUTOMATICALLY WIPE & PERMANENTLY DELETE all associated Packages and Customer Members inside Google Sheets!\n\nAre you absolutely sure you want to execute?`;
+            if(!confirm(msgConfirm)) return;
+
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
+                const res = await response.json();
+                if(res && res.status === "success") {
+                    await loadInitData(); await refreshMembersList();
+                    alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dan seluruh data terkait bersih terhapus." : "🗑️ Success! Vendor and all related data completely deleted.");
+                } else {
+                    alert("Failed: " + res.message);
+                }
+            } catch (e) {
+                alert("Error Delete Vendor!");
+            }
+        }
+
+        // PERBAIKAN TOTAL SAKTI KALI INI: LOGIKA HAPUS KATALOG PRODUK BESERTA PROMPT PASSWORD KEAMANAN SINKRON
+        async function deleteProduct(id) {
+            if(!validatePasswordSecurity()) return;
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id }) });
+                const res = await response.json();
+                if(res && res.status === "success") {
+                    await loadInitData(); await refreshMembersList();
+                    alert(clientLanguage === "ID" ? "🗑️ Produk berhasil dihapus dari katalog!" : "🗑️ Product successfully deleted from catalog!");
+                } else {
+                    alert("Failed: " + res.message);
+                }
+            } catch (e) {
+                alert("Error Delete Product!");
+            }
+        }
+        
+        async function submitProductForm() { const payload = { action: "addProduct", perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value, varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value, hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value }; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); await loadInitData(); await refreshMembersList(); }
+        async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
         function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
