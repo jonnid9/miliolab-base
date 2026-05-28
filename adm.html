@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v7.2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Urbanist', sans-serif; background-color: #0c0714; }
+        button { transition: all 0.1s ease-in-out; cursor: pointer; }
+        button:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen p-4 md:p-8">
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
+        let tenantsList = []; 
+        let ownerSessionPass = ""; 
+    </script>
+
+    <div id="gatekeeperScreen" class="flex flex-col items-center justify-center min-h-screen">
+        <div class="bg-slate-900 border border-purple-900/40 p-8 rounded-3xl w-full max-w-md text-center shadow-2xl space-y-4">
+            <div class="p-3 bg-purple-500/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-purple-400 border border-purple-500/30"><i class="fa-solid fa-shield-halved text-2xl"></i></div>
+            <h2 class="text-2xl font-bold text-white tracking-wider">Owner Authentication</h2>
+            <p class="text-xs text-slate-400">Masukkan akun Admin Anda yang terdaftar sebagai Owner di Sheets.</p>
+            <input type="text" id="masterGateUser" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-center text-white outline-none" placeholder="Username Owner">
+            <input type="password" id="masterGatePass" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-center text-white outline-none font-mono" placeholder="••••••••">
+            <button onclick="submitGatekeeper()" id="btnGatekeeper" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold p-3 rounded-xl uppercase text-xs tracking-wider">Buka Command Center 🔓</button>
+        </div>
+    </div>
+
+    <div id="controlCenterScreen" class="hidden max-w-6xl mx-auto space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/60 p-6 rounded-3xl border border-purple-900/30 gap-4 shadow-2xl">
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v7.2</span></h1>
+                <p class="text-slate-400 text-xs mt-1 uppercase font-bold tracking-widest">Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot</p>
+            </div>
+            <div class="flex gap-2 w-full md:w-auto">
+                <button onclick="openAddTenantModal()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-plus-circle mr-2"></i> Daftarkan Pembeli Baru</button>
+                <button onclick="handleOwnerLogout()" class="bg-red-950/40 border border-red-500/30 text-red-400 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-power-off"></i> Keluar</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/30 border border-slate-800 rounded-3xl p-6 shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-500 text-xs uppercase font-bold">
+                            <th class="p-4">Nama Aplikasi / Pembeli</th>
+                            <th class="p-4">Otentikasi Akun</th>
+                            <th class="p-4 text-center">Tanggal Join / Expired</th>
+                            <th class="p-4 text-center">Masa Aktif Sisa</th>
+                            <th class="p-4 text-center">Status Akses</th>
+                            <th class="p-4 text-center">Tindakan Owner (Kelola Lisensi)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tenantTableBody" class="text-sm divide-y divide-slate-800/40"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tenantModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+            <h3 id="modalTitle" class="text-xl font-bold text-purple-400"></h3>
+            <form id="tenantForm" onsubmit="event.preventDefault(); submitTenantForm();" class="space-y-4 text-sm">
+                <input type="hidden" id="tenantUserId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-400 block mb-1">Nama Brand Bisnis</label><input type="text" id="tenantNamaBisnis" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-400 block mb-1">Link Logo URL</label><input type="text" id="tenantLogoUrl" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-400 block mb-1">Username Login</label><input type="text" id="tenantUsername" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-400 block mb-1">Password Login</label><input type="text" id="tenantPassword" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-400 block mb-1">Tanggal Mulai</label><input type="date" id="tenantTglMulai" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-400 block mb-1">Tanggal Expired</label><input type="date" id="tenantTglExpired" required class="w-full bg-slate-950 border border-purple-900 p-3 rounded-xl text-white outline-none"></div>
+                </div>
+                <div id="statusContainer" class="hidden">
+                    <label class="text-xs text-slate-400 block mb-1">Status Lisensi Pembeli</label>
+                    <select id="tenantStatusSaaS" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"><option value="Aktif">Aktif (Berikan Akses Penuh)</option><option value="Suspended">Suspended (Blokir Sementara)</option></select>
+                </div>
+                <div class="flex gap-2 pt-2 text-xs font-bold"><button type="button" onclick="closeTenantModal()" class="flex-1 bg-slate-800 p-3 rounded-xl">Batal</button><button type="submit" class="flex-1 bg-purple-600 text-white p-3 rounded-xl uppercase">Simpan Lisensi 🚀</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('keydown', function(e) { if (e.key === 'Enter') { if (!document.getElementById('gatekeeperScreen').classList.contains('hidden')) { submitGatekeeper(); } } });
+        
+        window.addEventListener('DOMContentLoaded', async () => {
+            const savedOwnerUser = localStorage.getItem('milio_owner_user');
+            const savedOwnerPass = localStorage.getItem('milio_owner_pass');
+            if (savedOwnerUser && savedOwnerPass) {
+                document.getElementById('masterGateUser').value = savedOwnerUser;
+                document.getElementById('masterGatePass').value = savedOwnerPass;
+                await submitGatekeeper(true);
+            }
+        });
+
+        async function submitGatekeeper(isAutoLogin = false) {
+            const u = document.getElementById('masterGateUser').value.trim();
+            const p = document.getElementById('masterGatePass').value.trim();
+            const btn = document.getElementById('btnGatekeeper');
+            if(!u || !p) { alert("Username dan Password wajib diisi!"); return; }
+            btn.disabled = true; btn.innerHTML = 'Memverifikasi Keamanan...';
+            try {
+                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
+                const res = await r.json();
+                if(res.status === "success" && (res.user.role === "Owner" || res.user.role === "OWNER")) {
+                    localStorage.setItem('milio_owner_user', u);
+                    localStorage.setItem('milio_owner_pass', p);
+                    ownerSessionPass = p;
+                    document.getElementById('gatekeeperScreen').classList.add('hidden');
+                    document.getElementById('controlCenterScreen').classList.remove('hidden');
+                    await loadTenants();
+                } else { 
+                    alert("Akses Ditolak! Akun Anda wajib bertipe 'Owner' di Sheets.");
+                    if (isAutoLogin) { handleOwnerLogout(); }
+                }
+            } catch (e) { alert("Koneksi Error! Cek URL Script Anda."); } finally { btn.disabled = false; btn.innerHTML = 'Buka Command Center 🔓'; }
+        }
+
+        async function loadTenants() {
+            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getAllTenants" }) });
+            const res = await r.json(); if(res.status === "success") { tenantsList = res.data; renderTenantTable(); }
+        }
+
+        function renderTenantTable() {
+            const tbody = document.getElementById('tenantTableBody'); tbody.innerHTML = '';
+            tenantsList.forEach(t => {
+                if(t.role === "Owner" || t.role === "OWNER") return;
+                const isExpired = new Date(t.tglExpired) < new Date();
+                const statusStyle = (t.statusSaaS === "Aktif" && !isExpired) ? "bg-green-500/10 text-green-400 border border-green-500/30" : "bg-red-500/10 text-red-400 border border-red-500/30";
+                const badgeStatus = (t.statusSaaS === "Aktif" && !isExpired) ? "Active ✅" : (isExpired ? "Expired ❌" : "Suspended 🚫");
+                const diffTime = new Date(t.tglExpired) - new Date(), diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)), textSisaHari = diffDays > 0 ? `${diffDays} Hari` : "Habis";
+
+                tbody.innerHTML += `<tr class="border-b border-slate-800/40 text-slate-300">
+                    <td class="p-4 flex items-center gap-3">
+                        <div class="w-9 h-9 bg-purple-500/10 border border-purple-500/30 rounded-xl flex items-center justify-center font-bold text-purple-400"><i class="fa-solid fa-shop"></i></div>
+                        <div><div class="font-bold text-white">${t.namaBisnis}</div><div class="text-[10px] text-slate-500">${t.userId}</div></div>
+                    </td>
+                    <td class="p-4 font-mono text-xs">User: <b>${t.username}</b><br>Pass: <b>${t.password}</b></td>
+                    <td class="p-4 text-center text-xs font-semibold text-indigo-300">${t.tglMulai} <span class="text-slate-500">s/d</span><br><span class="text-red-400">${t.tglExpired}</span></td>
+                    <td class="p-4 text-center text-yellow-400 font-bold font-mono text-xs">${textSisaHari} aktif</td>
+                    <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
+                    <td class="p-4 text-center flex gap-2 justify-center mt-1">
+                        <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-purple-600 hover:text-white">⚙️ Kelola Akun</button>
+                        <button onclick="deleteTenant('${t.userId}')" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
+            });
+        }
+
+        function openAddTenantModal() {
+            document.getElementById('tenantForm').reset(); document.getElementById('tenantUserId').value = "";
+            document.getElementById('modalTitle').innerText = "Daftarkan Pembeli App Baru"; document.getElementById('statusContainer').classList.add('hidden');
+            document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0]; document.getElementById('tenantModal').classList.remove('hidden');
+        }
+
+        function openEditTenantModal(userId) {
+            const t = tenantsList.find(x => x.userId === userId); if(!t) return;
+            document.getElementById('tenantUserId').value = t.userId; document.getElementById('tenantNamaBisnis').value = t.namaBisnis;
+            document.getElementById('tenantLogoUrl').value = t.logoUrl; document.getElementById('tenantUsername').value = t.username;
+            document.getElementById('tenantPassword').value = t.password; document.getElementById('tenantTglMulai').value = t.tglMulai;
+            document.getElementById('tenantTglExpired').value = t.tglExpired; document.getElementById('tenantStatusSaaS').value = t.statusSaaS;
+            document.getElementById('modalTitle').innerText = `Kelola Lisensi Klien: ${t.namaBisnis}`;
+            document.getElementById('statusContainer').classList.remove('hidden'); document.getElementById('tenantModal').classList.remove('hidden');
+        }
+        function closeTenantModal() { document.getElementById('tenantModal').classList.add('hidden'); }
+
+        async function submitTenantForm() {
+            const id = document.getElementById('tenantUserId').value;
+            const payload = { action: id ? "editTenant" : "addTenant", userId: id, namaBisnis: document.getElementById('tenantNamaBisnis').value, logoUrl: document.getElementById('tenantLogoUrl').value, username: document.getElementById('tenantUsername').value, password: document.getElementById('tenantPassword').value, tglMulai: document.getElementById('tenantTglMulai').value, tglExpired: document.getElementById('tenantTglExpired').value, statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif" };
+            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const res = await r.json(); alert(res.message); closeTenantModal(); await loadTenants();
+        }
+
+        async function deleteTenant(userId) { 
+            if(confirm("⚠️ PERINGATAN CRITICAL:\nApakah Om yakin ingin menghapus permanent akun pembeli dengan ID: " + userId + "?\nSemua akses login mereka akan langsung terputus!")) {
+                const pin = prompt("🔐 VALIDASI KEAMANAN OWNER:\nMasukkan kembali Password Admin Om untuk mengeksekusi penghapusan:");
+                if (pin === null) { return; } 
+                else if (pin !== ownerSessionPass) { alert("❌ Akses Ditolak: Password Admin yang Om masukkan SALAH! Data aman tidak terhapus."); return; }
+                try {
+                    const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteTenant", userId: userId }) }); 
+                    const res = await r.json(); alert("🗑️ " + res.message); await loadTenants(); 
+                } catch (e) { alert("❌ Gagal terhubung ke cloud database."); }
+            }
+        }
+
+        function handleOwnerLogout() { localStorage.removeItem('milio_owner_user'); localStorage.removeItem('milio_owner_pass'); location.reload(); }
+    </script>
+</body>
+</html>
