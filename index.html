@@ -240,14 +240,15 @@
         <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
             <div><h1 class="text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v7.6 Final Gold Stable</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
-            <div class="space-y-4 text-left">
-                <input type="text" id="usernameInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none" placeholder="Username">
+            
+            <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
+                <input type="text" id="usernameInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none" placeholder="Username">
                 <div class="relative">
-                    <input type="password" id="passwordInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none" placeholder="Password">
-                    <button onclick="togglePasswordVisibility()" class="absolute right-3 top-3.5 text-slate-500 hover:text-white"><i id="eyeIcon" class="fa-solid fa-eye"></i></button>
+                    <input type="password" id="passwordInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none" placeholder="Password">
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-3.5 text-slate-500 hover:text-white"><i id="eyeIcon" class="fa-solid fa-eye"></i></button>
                 </div>
-                <button onclick="handleLogin(false)" id="btnLogin" class="w-full bg-green-500 hover:bg-green-400 text-slate-950 font-bold p-3 rounded-xl transition">MASUK KE DASHBOARD</button>
-            </div>
+                <button type="submit" id="btnLogin" class="w-full bg-green-500 hover:bg-green-400 text-slate-950 font-bold p-3 rounded-xl transition">MASUK KE DASHBOARD</button>
+            </form>
         </div>
     </div>
 
