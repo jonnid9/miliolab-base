@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -49,7 +48,6 @@
             }
         }
 
-        // TAMBAHAN CORE UTILITY SAKTI: AMANKAN PARSING TANGGAL INDONESIA DD/MM/YYYY AGAR TIDAK JADI INVALID DATE
         function parseJsonDate(dateVal) {
             if (!dateVal) return new Date(0);
             if (dateVal instanceof Date) return dateVal;
@@ -161,7 +159,19 @@
                 
                 btnDone: "✔️ Done",
                 statusSelesai: "Selesai 🏁",
-                confirmDone: "Apakah Om yakin ingin menyelesaikan misi pelayanan member ini secara manual? Tombol kedip-kedip akan langsung mati total."
+                confirmDone: "Apakah Om yakin ingin menyelesaikan misi pelayanan member ini secara manual? Tombol kedip-kedip akan langsung mati total.",
+                
+                txtWaExpired: "Hai Kak {NAME} 😊, paket Anda *${' {PACKAGE} '}* untuk akun *${' {EMAIL} '}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *${' {BRAND} '}* ✨",
+                txtWaReminder: "Hai Kak {NAME} 😊, sekadar reminding paket Anda *${' {PACKAGE} '}* untuk akun *${' {EMAIL} '}* akan berakhir dalam *${' {DAYS} '} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *${' {BRAND} '}* ✨",
+
+                // DICTIONARY DIALOG PROTOKOL BROADCAST TERBARU
+                bcTitle: "Omni-Broadcast Command Center 📢",
+                bcPlaceholder: "Ketik pesan broadcast Anda disini (Maksimal 10.000 Karakter)... Spasi dan enter dihitung otomatis.",
+                bcLockBtn: "Kunci & Pilih Target 🔒",
+                bcUnlockBtn: "Buka & Edit Pesan 🔓",
+                bcTargetLabel: "Pilih Target Segmentasi Berdasarkan Varian Produk:",
+                bcGlobalOption: "Semua Member (Global Broadcast)",
+                bcSendBtn: "Kirim WA 📲"
             },
             EN: {
                 monitor: "Customer Monitor", finance: "Finance & Analytics", input: "Input New Member",
@@ -237,7 +247,18 @@
                 
                 btnDone: "✔️ Done",
                 statusSelesai: "Completed 🏁",
-                confirmDone: "Are you sure you want to mark this member's mission as completed manually? Flashing alerts will stop instantly."
+                confirmDone: "Are you sure you want to mark this member's mission as completed manually? Flashing alerts will stop instantly.",
+                
+                txtWaExpired: "Hi {NAME} 😊, your package *{PACKAGE}* for account *{EMAIL}* has Expired... Please confirm if you wish to renew or temporarily stop for active member database updates 🙏, reply with **YES** to continue or **NO** to stop... Best regards from *{BRAND}* ✨",
+                txtWaReminder: "Hi {NAME} 😊, just a quick reminder that your package *{PACKAGE}* for account *{EMAIL}* will expire in *{DAYS} Days*... Please confirm if you wish to renew or if you have any issues, so that your active member status remains seamless 🙏. Best regards from *{BRAND}* ✨",
+
+                bcTitle: "Omni-Broadcast Command Center 📢",
+                bcPlaceholder: "Type your broadcast message here (Max 10,000 Characters)... Spaces and breaks are automatically preserved.",
+                bcLockBtn: "Lock & Select Target 🔒",
+                bcUnlockBtn: "Unlock & Edit Message 🔓",
+                bcTargetLabel: "Select Target Segment by Product Variant:",
+                bcGlobalOption: "All Members (Global Broadcast)",
+                bcSendBtn: "Send WA 📲"
             }
         };
 
@@ -341,6 +362,13 @@
             if(document.getElementById('btn-dash-7days')) document.getElementById('btn-dash-7days').innerText = clientLanguage === "ID" ? "7 Hari" : "7 Days";
             if(document.getElementById('btn-dash-monthly')) document.getElementById('btn-dash-monthly').innerText = clientLanguage === "ID" ? "1 Bulan" : "1 Month";
             if(document.getElementById('btnDashApply')) document.getElementById('btnDashApply').innerText = clientLanguage === "ID" ? "Terapkan" : "Apply";
+
+            // SINKRONISASI MANIFEST BAHASA BROADCAST ENGINE
+            if(document.getElementById('bcTitle')) document.getElementById('bcTitle').innerHTML = `<i class="fa-solid fa-bullhorn text-green-400"></i> ` + translation.bcTitle;
+            if(document.getElementById('broadcastTextArea')) document.getElementById('broadcastTextArea').placeholder = translation.bcPlaceholder;
+            if(document.getElementById('btnLockBroadcast')) document.getElementById('btnLockBroadcast').innerText = translation.bcLockBtn;
+            if(document.getElementById('btnUnlockBroadcast')) document.getElementById('btnUnlockBroadcast').innerText = translation.bcUnlockBtn;
+            if(document.getElementById('bcSelectTarget')) document.getElementById('bcSelectTarget').innerText = translation.bcTargetLabel;
 
             const resetSel = document.getElementById('resetTypeSelect');
             if (resetSel) {
@@ -544,6 +572,35 @@
                     
                     <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-xl"><h3 id="mstProdTitle" class="text-xl font-bold mb-4">📦 Tambah Varian / Produk</h3><form id="productForm" onsubmit="event.preventDefault(); submitProductForm();" class="space-y-3 text-sm"><select id="prodFormComp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></select><div class="grid grid-cols-2 gap-2"><input type="text" id="prodFormTarget" style="display:none;"><input type="text" id="prodFormNama" required placeholder="Nama Paket" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"><input type="text" id="prodFormVarian" placeholder="Varian" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div><div class="grid grid-cols-4 gap-2"><input type="number" id="prodFormDurasi" required value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"><input type="number" id="prodFormModal" required placeholder="Modal" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"><input type="number" id="prodFormUser" required placeholder="User" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"><input type="number" id="prodFormReseller" required placeholder="Reseller" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div><button id="btnSaveCatalog" type="submit" class="w-full bg-green-500 text-slate-950 p-2.5 rounded-xl font-bold">SIMPAN KATALOG</button></form></div>
                 </div>
+
+                <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+                    <h3 id="bcTitle" class="text-xl font-bold text-white flex items-center gap-2"></h3>
+                    <div class="space-y-3">
+                        <textarea id="broadcastTextArea" maxlength="10000" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-green-500 transition"></textarea>
+                        <div class="flex gap-2">
+                            <button id="btnLockBroadcast" onclick="lockBroadcastText()" class="bg-green-600 hover:bg-green-500 text-slate-950 text-xs px-5 py-2.5 rounded-xl font-bold transition uppercase tracking-wider"></button>
+                            <button id="btnUnlockBroadcast" onclick="unlockBroadcastText()" class="hidden bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs px-5 py-2.5 rounded-xl font-bold transition uppercase tracking-wider"></button>
+                        </div>
+                    </div>
+                    <div id="broadcastTargetSection" class="hidden space-y-4 pt-4 border-t border-slate-800/60">
+                        <label id="bcSelectTarget" class="text-xs text-slate-400 block font-bold uppercase tracking-wider"></label>
+                        <select id="broadcastTargetSelect" onchange="renderBroadcastMembers()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none cursor-pointer"></select>
+                        <div class="overflow-x-auto bg-slate-950/40 rounded-xl p-1 border border-slate-900/80 max-h-72 overflow-y-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-500 font-bold border-b border-slate-900 p-3 uppercase tracking-wider bg-slate-950/80">
+                                        <th class="p-3">Nama Member</th>
+                                        <th class="p-3">WhatsApp / Email</th>
+                                        <th class="p-3">Varian Paket Mitra</th>
+                                        <th class="p-3 text-center">Aksi Broadcast</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="broadcastMembersTableBody" class="divide-y divide-slate-800/40"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 shadow-xl overflow-x-auto">
                     <table class="w-full text-left text-sm border-collapse">
                         <thead>
@@ -1008,7 +1065,7 @@
             }
             
             filteredMembers = membersData.filter(m => {
-                const t = parseJsonDate(m.timestamp); // PERBAIKAN SAKTI SINKRONISASI TANGGAL SPREADSHEET
+                const t = parseJsonDate(m.timestamp); 
                 return t >= start && t <= end;
             });
             
@@ -1097,6 +1154,7 @@
             }
         }
 
+        // MONITOR DATA MEMBER TABLE ENGINE - VERSI PERBAIKAN TOTAL SAKTI ANTI-BENTROK DAN AMAN BLINKER
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
@@ -1137,12 +1195,14 @@
                     if(diffDays < 0) {
                         const batasMaxHangus = Math.abs(diffDays) <= 15;
                         textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
-                        const teksWaExpired = `Hai Kak ${m.namaMember} 😊, paket Anda *${m.namaPaket}* untuk akun *${m.email}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *${currentUser.namaBisnis}* ✨`;
+                        
+                        let teksWaExpired = lang.txtWaExpired.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{BRAND}', currentUser.namaBisnis);
                         const msg = encodeURIComponent(teksWaExpired);
                         
                         if (batasMaxHangus) {
                             const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
-                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
+                            // FIX LOGIC RE-DESIGN: KLIK TOMBOL CHAT MEMBER PADA EXPIRED STATUS TIDAK AKAN PERNAH MEMBUATNYA HILANG KECUALI KLIK DONE MANUAL
+                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
                         } else {
                             btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
                         }
@@ -1150,13 +1210,15 @@
                         activeCount++;
                         if(diffDays <= 3) {
                             textSisa = `<span class="text-amber-400 font-bold">H-${diffDays} ⚠️</span>`; rowStyle = "bg-amber-950/10";
-                            const teksWaReminder = `Hai Kak ${m.namaMember} 😊, sekadar reminding paket Anda *${m.namaPaket}* untuk akun *${m.email}* akan berakhir dalam *${diffDays} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *${currentUser.namaBisnis}* ✨`;
+                            
+                            let teksWaReminder = lang.txtWaReminder.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{DAYS}', diffDays).replace('{BRAND}', currentUser.namaBisnis);
                             const msg = encodeURIComponent(teksWaReminder);
                             
                             if (!sudahFuHariIni) {
                                 followCount++; 
                                 const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
-                                btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
+                                // PENGAMAN LIVE INTERACTIVE VIEW: KLIK DISINI AKAN MENYUNTIKKAN FUNGSI DISAPPEAR SEBELUM DATA REFRESH NETWORK SELESAI
+                                btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
                             } else {
                                 btnAction = `<div class="w-[76px]"></div>`; 
                             }
@@ -1237,6 +1299,71 @@
             if(document.getElementById('finModal')) document.getElementById('finModal').innerText = convertAndFormat(modal); 
             if(document.getElementById('finCuan')) document.getElementById('finCuan').innerText = convertAndFormat(cuan);
             renderMembersTable();
+        }
+
+        // JURUS INTERACTIVE BROADCAST COMMAND ENGINE LOGIC
+        function lockBroadcastText() {
+            const txt = document.getElementById('broadcastTextArea').value.trim();
+            if(!txt) { alert(clientLanguage === "ID" ? "Teks broadcast tidak boleh kosong!" : "Broadcast message cannot be empty!"); return; }
+            
+            document.getElementById('broadcastTextArea').disabled = true;
+            document.getElementById('btnLockBroadcast').classList.add('hidden');
+            document.getElementById('btnUnlockBroadcast').classList.remove('hidden');
+            
+            // Populasikan Dropdown Segmentasi Varian Secara Dinamis Berdasarkan Katalog Terdaftar
+            const selectTarget = document.getElementById('broadcastTargetSelect');
+            const translation = dictionary[clientLanguage] || dictionary.ID;
+            selectTarget.innerHTML = `<option value="GLOBAL_ALL">📢 ${translation.bcGlobalOption}</option>`;
+            
+            masterPackages.forEach(p => {
+                const optText = `${p.perusahaan} - ${p.namaPaket} [${p.varian}]`;
+                const optValue = `${p.perusahaan}::${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']' : ''}`;
+                selectTarget.innerHTML += `<option value="${optValue}">📦 ${optText}</option>`;
+            });
+            
+            document.getElementById('broadcastTargetSection').classList.remove('hidden');
+            renderBroadcastMembers();
+        }
+
+        function unlockBroadcastText() {
+            document.getElementById('broadcastTextArea').disabled = false;
+            document.getElementById('btnLockBroadcast').classList.remove('hidden');
+            document.getElementById('btnUnlockBroadcast').classList.add('hidden');
+            document.getElementById('broadcastTargetSection').classList.add('hidden');
+        }
+
+        function renderBroadcastMembers() {
+            const tbody = document.getElementById('broadcastMembersTableBody'); if(!tbody) return;
+            tbody.innerHTML = '';
+            const selectedValue = document.getElementById('broadcastTargetSelect').value;
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            
+            membersData.forEach(m => {
+                // Hanya kirim pesan ke member yang statusnya masih aktif
+                if (m.status !== "Aktif") return;
+                
+                if (selectedValue !== "GLOBAL_ALL") {
+                    const parts = selectedValue.split('::');
+                    if (m.perusahaan !== parts[0] || m.namaPaket !== parts[1]) return;
+                }
+                
+                tbody.innerHTML += `<tr class="border-b border-slate-900 text-slate-300">
+                    <td class="p-3 font-semibold text-white">${m.namaMember}</td>
+                    <td class="p-3 text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
+                    <td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-bold">${m.perusahaan}</span><br>${m.namaPaket}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="executeIndividualBroadcastWA('${m.noWhatsapp}', this)" class="bg-green-600 hover:bg-green-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase transition flex items-center gap-1 mx-auto shadow-md shadow-green-500/10">${lang.bcSendBtn}</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function executeIndividualBroadcastWA(phone, buttonEl) {
+            const msgRaw = document.getElementById('broadcastTextArea').value;
+            const encodedText = encodeURIComponent(msgRaw);
+            window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+            // PROTEKSI ANTI-GANDA: Tombol kirim pesan langsung terhapus mutlak dari baris list agar tidak bingung!
+            buttonEl.parentElement.innerHTML = `<span class="text-[10px] text-green-400 font-bold uppercase tracking-wider bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-md">Sent ✔️</span>`;
         }
 
         function openEditModal(rowId) {
@@ -1419,23 +1546,6 @@
                     alert(clientLanguage === "ID" ? "🗑️ Produk berhasil dihapus dari katalog!" : "🗑️ Product successfully deleted from catalog!");
                 } else { alert("Failed: " + res.message); }
             } catch (e) { alert("Error Delete Product!"); }
-        }
-
-        async function deleteCompany(name) { 
-            if(!validatePasswordSecurity()) return; 
-            const msgConfirm = clientLanguage === "ID" 
-                ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan MENGHAPUS PERMANEN seluruh Paket Produk & Member Pelanggan yang terikat dengan vendor ini di database Google Sheets!\n\nApakah Om Yakin Ingin Eksekusi?`
-                : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will AUTOMATICALLY WIPE & PERMANENTLY DELETE all associated Packages and Customer Members inside Google Sheets!\n\nAre you absolutely sure you want to execute?`;
-            if(!confirm(msgConfirm)) return;
-
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
-                const res = await response.json();
-                if(res && res.status === "success") {
-                    await loadInitData(); await refreshMembersList();
-                    alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dan seluruh data terkait bersih terhapus." : "🗑️ Success! Vendor and all related data completely deleted.");
-                } else { alert("Failed: " + res.message); }
-            } catch (e) { alert("Error Delete Vendor!"); }
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
