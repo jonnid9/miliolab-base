@@ -161,10 +161,9 @@
                 statusSelesai: "Selesai 🏁",
                 confirmDone: "Apakah Om yakin ingin menyelesaikan misi pelayanan member ini secara manual? Tombol kedip-kedip akan langsung mati total.",
                 
-                txtWaExpired: "Hai Kak {NAME} 😊, paket Anda *${' {PACKAGE} '}* untuk akun *${' {EMAIL} '}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *${' {BRAND} '}* ✨",
-                txtWaReminder: "Hai Kak {NAME} 😊, sekadar reminding paket Anda *${' {PACKAGE} '}* untuk akun *${' {EMAIL} '}* akan berakhir dalam *${' {DAYS} '} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *${' {BRAND} '}* ✨",
+                txtWaExpired: "Hai Kak {NAME} 😊, paket Anda *{PACKAGE}* untuk akun *{EMAIL}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *{BRAND}* ✨",
+                txtWaReminder: "Hai Kak {NAME} 😊, sekadar reminding paket Anda *{PACKAGE}* untuk akun *{EMAIL}* akan berakhir dalam *{DAYS} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *{BRAND}* ✨",
 
-                // DICTIONARY DIALOG PROTOKOL BROADCAST TERBARU
                 bcTitle: "Omni-Broadcast Command Center 📢",
                 bcPlaceholder: "Ketik pesan broadcast Anda disini (Maksimal 10.000 Karakter)... Spasi dan enter dihitung otomatis.",
                 bcLockBtn: "Kunci & Pilih Target 🔒",
@@ -363,7 +362,6 @@
             if(document.getElementById('btn-dash-monthly')) document.getElementById('btn-dash-monthly').innerText = clientLanguage === "ID" ? "1 Bulan" : "1 Month";
             if(document.getElementById('btnDashApply')) document.getElementById('btnDashApply').innerText = clientLanguage === "ID" ? "Terapkan" : "Apply";
 
-            // SINKRONISASI MANIFEST BAHASA BROADCAST ENGINE
             if(document.getElementById('bcTitle')) document.getElementById('bcTitle').innerHTML = `<i class="fa-solid fa-bullhorn text-green-400"></i> ` + translation.bcTitle;
             if(document.getElementById('broadcastTextArea')) document.getElementById('broadcastTextArea').placeholder = translation.bcPlaceholder;
             if(document.getElementById('btnLockBroadcast')) document.getElementById('btnLockBroadcast').innerText = translation.bcLockBtn;
@@ -670,23 +668,6 @@
         </div>
     </div>
 
-    <div id="currencyBlockerModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 backdrop-blur-md">
-        <div class="bg-slate-900 border border-green-500/30 p-8 rounded-3xl w-full max-w-md text-center shadow-2xl space-y-4">
-            <div class="p-3 bg-green-500/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-green-400 border border-green-500/30 animate-bounce"><i class="fa-solid fa-globe text-2xl"></i></div>
-            <h3 class="text-xl font-bold text-white tracking-wide">Inisialisasi Mata Uang & Bahasa</h3>
-            <p class="text-xs text-slate-400">Akun baru dideteksi! Demi keakuratan laporan keuangan, Om wajib mengunci preferensi bisnis Anda di awal:</p>
-            <div class="grid grid-cols-2 gap-2">
-                <select id="blockerCurrencySelect" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white text-xs outline-none">
-                    <option value="IDR">IDR (Rupiah)</option><option value="MYR">MYR (Ringgit)</option><option value="SGD">SGD (Dollar)</option><option value="USD">USD (Dollar)</option>
-                </select>
-                <select id="blockerLanguageSelect" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white text-xs outline-none">
-                    <option value="ID">Indonesia</option><option value="EN">English</option>
-                </select>
-            </div>
-            <button onclick="submitFirstTimeCurrency()" class="w-full bg-green-500 text-slate-950 font-bold p-3 rounded-xl uppercase text-xs tracking-wider">Kunci Default Aplikasi 🔒</button>
-        </div>
-    </div>
-
     <div id="editFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-6 shadow-2xl space-y-4">
             <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-gear"></i> Ralat Koreksi / Upgrade Selisih Paket</h3>
@@ -769,7 +750,7 @@
             if (type === 'all') {
                 scopeSelect.innerHTML = '<option value="ALL">Wipeout Seluruh Isi Database Asset</option>';
             } else {
-                masterCompanies.forEach(c => { scopeSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+                masterCompanies.forEach(c => { scopeSelect.innerHTML += `<option value="${c}">${c}</option>'; });
             }
         }
 
@@ -785,7 +766,7 @@
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tabId).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tabId).className = 'tab-content active space-y-6';
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
             const activeBtn = document.getElementById('menu-' + tabId); if(activeBtn) activeBtn.classList.add('active-sidebar-menu');
             
@@ -832,7 +813,6 @@
                     localStorage.setItem('milio_lang', clientLanguage);
                     localStorage.setItem('milio_currency', clientCurrency);
                     
-                    document.getElementById('currencyBlockerModal').classList.add('hidden');
                     document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
                     await loadInitData(); await refreshMembersList();
                 } else { err.innerText = res.message; err.classList.remove('hidden'); if(isAutoLogin) handleLogout(); }
@@ -1154,12 +1134,18 @@
             }
         }
 
-        // MONITOR DATA MEMBER TABLE ENGINE - VERSI PERBAIKAN TOTAL SAKTI ANTI-BENTROK DAN AMAN BLINKER
+        // MONITOR DATA MEMBER TABLE ENGINE - KALIBRASI TOTAL ANTI BUG & ANTI LOMPAT TIMEZONE
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
-            let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date(), hariIniStr = now.toISOString().split('T')[0];
+            let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date();
             const lang = dictionary[clientLanguage] || dictionary.ID;
+            
+            const localDate = new Date();
+            const yyyy = localDate.getFullYear();
+            const mm = String(localDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(localDate.getDate()).padStart(2, '0');
+            const hariIniStr = `${yyyy}-${mm}-${dd}`;
             
             const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : "";
             
@@ -1179,7 +1165,16 @@
                 totalProfit += parseFloat(m.profit); 
                 
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
-                const sudahFuHariIni = (m.lastFuDate === hariIniStr);
+                
+                let cleanLastFu = "";
+                if (m.lastFuDate) { 
+                    let pFu = parseJsonDate(m.lastFuDate);
+                    if (pFu.getFullYear() > 1970) {
+                        cleanLastFu = `${pFu.getFullYear()}-${String(pFu.getMonth() + 1).padStart(2, '0')}-${String(pFu.getDate()).padStart(2, '0')}`;
+                    }
+                }
+                const sudahFuHariIni = (cleanLastFu === hariIniStr);
+                
                 const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
                 const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
                 const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
@@ -1201,7 +1196,6 @@
                         
                         if (batasMaxHangus) {
                             const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
-                            // FIX LOGIC RE-DESIGN: KLIK TOMBOL CHAT MEMBER PADA EXPIRED STATUS TIDAK AKAN PERNAH MEMBUATNYA HILANG KECUALI KLIK DONE MANUAL
                             btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
                         } else {
                             btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
@@ -1217,7 +1211,6 @@
                             if (!sudahFuHariIni) {
                                 followCount++; 
                                 const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
-                                // PENGAMAN LIVE INTERACTIVE VIEW: KLIK DISINI AKAN MENYUNTIKKAN FUNGSI DISAPPEAR SEBELUM DATA REFRESH NETWORK SELESAI
                                 btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
                             } else {
                                 btnAction = `<div class="w-[76px]"></div>`; 
@@ -1301,71 +1294,6 @@
             renderMembersTable();
         }
 
-        // JURUS INTERACTIVE BROADCAST COMMAND ENGINE LOGIC
-        function lockBroadcastText() {
-            const txt = document.getElementById('broadcastTextArea').value.trim();
-            if(!txt) { alert(clientLanguage === "ID" ? "Teks broadcast tidak boleh kosong!" : "Broadcast message cannot be empty!"); return; }
-            
-            document.getElementById('broadcastTextArea').disabled = true;
-            document.getElementById('btnLockBroadcast').classList.add('hidden');
-            document.getElementById('btnUnlockBroadcast').classList.remove('hidden');
-            
-            // Populasikan Dropdown Segmentasi Varian Secara Dinamis Berdasarkan Katalog Terdaftar
-            const selectTarget = document.getElementById('broadcastTargetSelect');
-            const translation = dictionary[clientLanguage] || dictionary.ID;
-            selectTarget.innerHTML = `<option value="GLOBAL_ALL">📢 ${translation.bcGlobalOption}</option>`;
-            
-            masterPackages.forEach(p => {
-                const optText = `${p.perusahaan} - ${p.namaPaket} [${p.varian}]`;
-                const optValue = `${p.perusahaan}::${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']' : ''}`;
-                selectTarget.innerHTML += `<option value="${optValue}">📦 ${optText}</option>`;
-            });
-            
-            document.getElementById('broadcastTargetSection').classList.remove('hidden');
-            renderBroadcastMembers();
-        }
-
-        function unlockBroadcastText() {
-            document.getElementById('broadcastTextArea').disabled = false;
-            document.getElementById('btnLockBroadcast').classList.remove('hidden');
-            document.getElementById('btnUnlockBroadcast').classList.add('hidden');
-            document.getElementById('broadcastTargetSection').classList.add('hidden');
-        }
-
-        function renderBroadcastMembers() {
-            const tbody = document.getElementById('broadcastMembersTableBody'); if(!tbody) return;
-            tbody.innerHTML = '';
-            const selectedValue = document.getElementById('broadcastTargetSelect').value;
-            const lang = dictionary[clientLanguage] || dictionary.ID;
-            
-            membersData.forEach(m => {
-                // Hanya kirim pesan ke member yang statusnya masih aktif
-                if (m.status !== "Aktif") return;
-                
-                if (selectedValue !== "GLOBAL_ALL") {
-                    const parts = selectedValue.split('::');
-                    if (m.perusahaan !== parts[0] || m.namaPaket !== parts[1]) return;
-                }
-                
-                tbody.innerHTML += `<tr class="border-b border-slate-900 text-slate-300">
-                    <td class="p-3 font-semibold text-white">${m.namaMember}</td>
-                    <td class="p-3 text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
-                    <td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-bold">${m.perusahaan}</span><br>${m.namaPaket}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="executeIndividualBroadcastWA('${m.noWhatsapp}', this)" class="bg-green-600 hover:bg-green-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase transition flex items-center gap-1 mx-auto shadow-md shadow-green-500/10">${lang.bcSendBtn}</button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        function executeIndividualBroadcastWA(phone, buttonEl) {
-            const msgRaw = document.getElementById('broadcastTextArea').value;
-            const encodedText = encodeURIComponent(msgRaw);
-            window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
-            // PROTEKSI ANTI-GANDA: Tombol kirim pesan langsung terhapus mutlak dari baris list agar tidak bingung!
-            buttonEl.parentElement.innerHTML = `<span class="text-[10px] text-green-400 font-bold uppercase tracking-wider bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-md">Sent ✔️</span>`;
-        }
-
         function openEditModal(rowId) {
             const m = membersData.find(x => x.rowId === rowId); if(!m) return;
             document.getElementById('editFormRowId').value = m.rowId;
@@ -1411,6 +1339,7 @@
         }
         function closeEditModal() { document.getElementById('editFormModalModal').classList.add('hidden'); }
 
+        // SINKRONISASI CORES: PERBAIKAN LOGIC EDIT NAMAPAKET AGAR DETAIL PRODUK TIDAK TERHAPUS / NGILANG DI SPREADSHEET
         async function submitEditForm() {
             const rowId = document.getElementById('editFormRowId').value;
             const targetPkgId = document.getElementById('editFormPaket').value; 
@@ -1427,7 +1356,8 @@
             const payload = {
                 action: "editMember", rowId: rowId, isMutation: isMutation,
                 namaMember: document.getElementById('editFormNama').value, noWhatsapp: inputWa, email: document.getElementById('editFormEmail').value,
-                perusahaanSumber: document.getElementById('editFormPerusahaan').value, textPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''),
+                perusahaanSumber: document.getElementById('editFormPerusahaan').value, 
+                namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), 
                 durasiHari: document.getElementById('editFormDurasi').value, jenisPembeli: document.getElementById('editFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual
             };
             try { 
@@ -1435,6 +1365,88 @@
                 closeEditModal(); 
                 await refreshMembersList(); 
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
+        }
+
+        // PERBAIKAN SAKTI INVOICE ENGINE: AMANKAN PARSING TANGGAL INDONESIA SEBELUM CETAK PDF
+        function printInvoice(mRowId) {
+            const m = membersData.find(x => x.rowId == mRowId); 
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            
+            const pTimestamp = parseJsonDate(m.timestamp);
+            const pExpired = parseJsonDate(m.tglExpired);
+            const tglSkg = pTimestamp.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            const tglExp = pExpired.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(34, 197, 94); doc.text(currentUser.namaBisnis.toUpperCase(), 20, 25);
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120); 
+            doc.text(lang.docInvoiceTitle, 20, 31); doc.line(20, 35, 190, 35);
+            
+            doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(40); doc.text(lang.docCustomerInfo, 20, 44);
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(80);
+            doc.text(`${lang.docCustName}  :  ${m.namaMember}`, 20, 50);
+            doc.text(`${lang.docCustEmail}      :  ${m.email}`, 20, 55);
+            doc.text(`${lang.docCustWA}   :  +${m.noWhatsapp}`, 20, 60);
+            
+            doc.autoTable({ 
+                startY: 66, 
+                head: [[lang.docInvDesc, lang.docInvActive, lang.docInvTotal]], 
+                body: [[m.namaPaket + "\nVendor Platform: " + m.perusahaan, tglSkg + " s/d\n" + tglExp, convertAndFormat(m.hargaJual)]], 
+                theme: 'striped', headStyles: { fillColor: [7, 10, 19] } 
+            });
+            
+            const currentY = doc.lastAutoTable.finalY; doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(34, 197, 94); doc.text(lang.docPaidStatus, 20, currentY + 12);
+            doc.setFont("Helvetica", "italic"); doc.setTextColor(150); doc.setFontSize(9);
+            doc.text(`${lang.docThankYou}\nPowered By: ${currentUser.namaBisnis}.AI`, 20, currentY + 22);
+            doc.save(`Invoice_${m.namaMember}_${clientCurrency}.pdf`);
+        }
+
+        function exportProData(type) {
+            if(filteredMembers.length === 0) { alert("Data Kosong!"); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            
+            if(type === 'excel') {
+                const rate = currencyRates[clientCurrency] || 1;
+                let content = filteredMembers.map(m => {
+                    let obj = {};
+                    obj[lang.xlHeaderTimestamp] = m.timestamp;
+                    obj[lang.xlHeaderName] = m.namaMember;
+                    obj[lang.xlHeaderWA] = m.noWhatsapp;
+                    obj[lang.xlHeaderEmail] = m.email;
+                    obj[lang.xlHeaderPlatform] = m.perusahaan;
+                    obj[lang.xlHeaderPackage] = m.namaPaket;
+                    obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate);
+                    obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate);
+                    obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate);
+                    obj[lang.xlHeaderCurrency] = clientCurrency;
+                    obj[lang.xlHeaderExpired] = m.tglExpired;
+                    return obj;
+                });
+                const ws = XLSX.utils.json_to_sheet(content), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Financial Report"); XLSX.writeFile(wb, `MILIOLAB_Finance_${clientCurrency}.xlsx`);
+            } else {
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(14); 
+                doc.text(`${lang.docReportTitle} - ${currentUser.namaBisnis.toUpperCase()}`, 14, 15);
+                let omset = 0, modal = 0, cuan = 0;
+                let rows = filteredMembers.map(m => {
+                    omset += parseFloat(m.hargaJual); modal += parseFloat(m.hargaBeli); cuan += parseFloat(m.profit);
+                    return [m.timestamp.split('T')[0], m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)];
+                });
+                
+                doc.setDrawColor(34, 197, 94); doc.setLineWidth(0.5); doc.line(14, 25, 195, 25);
+                doc.setFontSize(9); doc.setFont("Helvetica", "bold");
+                doc.text(`${lang.lblFinOmset.split(' ')[1]}: ${convertAndFormat(omset)}  | ${lang.lblFinModal.split(' ')[1]}: ${convertAndFormat(modal)}  | ${lang.lblFinCuan.split(' ')[0]}: ${convertAndFormat(cuan)}`, 14, 22);
+                
+                let graphStartY = 32;
+                doc.setFillColor(34, 197, 94); doc.rect(14, graphStartY, Math.min(omset/5000, 100), 5, 'F'); 
+                doc.setFont("Helvetica", "normal"); doc.text(lang.docBarGross, 14, graphStartY + 9);
+                doc.setFillColor(239, 68, 68); doc.rect(14, graphStartY + 14, Math.min(modal/5000, 100), 5, 'F'); 
+                doc.text(lang.docBarModal, 14, graphStartY + 23);
+                doc.setFillColor(59, 130, 246); doc.rect(14, graphStartY + 28, Math.min(cuan/5000, 100), 5, 'F'); 
+                doc.text(lang.docBarCuan, 14, graphStartY + 37);
+                
+                doc.autoTable({ startY: graphStartY + 45, head: [[lang.xlHeaderTimestamp.split(' ')[0], lang.xlHeaderName.split(' ')[0], lang.thMstMitra, lang.xlHeaderPackage, lang.xlHeaderProfit]], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
+                doc.save(`Financial_Report_${clientCurrency}.pdf`);
+            }
         }
 
         function handleExcelUpload(event) {
@@ -1546,6 +1558,60 @@
                     alert(clientLanguage === "ID" ? "🗑️ Produk berhasil dihapus dari katalog!" : "🗑️ Product successfully deleted from catalog!");
                 } else { alert("Failed: " + res.message); }
             } catch (e) { alert("Error Delete Product!"); }
+        }
+
+        function lockBroadcastText() {
+            const txt = document.getElementById('broadcastTextArea').value.trim();
+            if(!txt) { alert(clientLanguage === "ID" ? "Teks broadcast tidak boleh kosong!" : "Broadcast message cannot be empty!"); return; }
+            document.getElementById('broadcastTextArea').disabled = true;
+            document.getElementById('btnLockBroadcast').classList.add('hidden');
+            document.getElementById('btnUnlockBroadcast').classList.remove('hidden');
+            const selectTarget = document.getElementById('broadcastTargetSelect');
+            const translation = dictionary[clientLanguage] || dictionary.ID;
+            selectTarget.innerHTML = `<option value="GLOBAL_ALL">📢 ${translation.bcGlobalOption}</option>`;
+            masterPackages.forEach(p => {
+                const optText = `${p.perusahaan} - ${p.namaPaket} [${p.varian}]`;
+                const optValue = `${p.perusahaan}::${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']' : ''}`;
+                selectTarget.innerHTML += `<option value="${optValue}">📦 ${optText}</option>`;
+            });
+            document.getElementById('broadcastTargetSection').classList.remove('hidden');
+            renderBroadcastMembers();
+        }
+
+        function unlockBroadcastText() {
+            document.getElementById('broadcastTextArea').disabled = false;
+            document.getElementById('btnLockBroadcast').classList.remove('hidden');
+            document.getElementById('btnUnlockBroadcast').classList.add('hidden');
+            document.getElementById('broadcastTargetSection').classList.add('hidden');
+        }
+
+        function renderBroadcastMembers() {
+            const tbody = document.getElementById('broadcastMembersTableBody'); if(!tbody) return;
+            tbody.innerHTML = '';
+            const selectedValue = document.getElementById('broadcastTargetSelect').value;
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            membersData.forEach(m => {
+                if (m.status !== "Aktif") return;
+                if (selectedValue !== "GLOBAL_ALL") {
+                    const parts = selectedValue.split('::');
+                    if (m.perusahaan !== parts[0] || m.namaPaket !== parts[1]) return;
+                }
+                tbody.innerHTML += `<tr class="border-b border-slate-900 text-slate-300">
+                    <td class="p-3 font-semibold text-white">${m.namaMember}</td>
+                    <td class="p-3 text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
+                    <td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-bold">${m.perusahaan}</span><br>${m.namaPaket}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="executeIndividualBroadcastWA('${m.noWhatsapp}', this)" class="bg-green-600 hover:bg-green-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase transition flex items-center gap-1 mx-auto shadow-md shadow-green-500/10">${lang.bcSendBtn}</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function executeIndividualBroadcastWA(phone, buttonEl) {
+            const msgRaw = document.getElementById('broadcastTextArea').value;
+            const encodedText = encodeURIComponent(msgRaw);
+            window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+            buttonEl.parentElement.innerHTML = `<span class="text-[10px] text-green-400 font-bold uppercase tracking-wider bg-green-500/10 border border-green-500/20 px-2 py-1 rounded-md">Sent ✔️</span>`;
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
