@@ -29,6 +29,11 @@
 </head>
 <body class="text-slate-200 min-h-screen">
 
+    <div id="globalLoader" class="hidden fixed inset-0 bg-slate-950/80 z-[9999] flex flex-col items-center justify-center backdrop-blur-sm transition-all">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-500 mb-3"></div>
+        <div class="text-green-400 font-bold tracking-widest text-sm animate-pulse">MEMUAT DATA...</div>
+    </div>
+
     <script>
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let currentUser = null; let currentPasswordPlain = ""; 
@@ -773,17 +778,29 @@
 
         function switchTab(tabId) {
             if(window.innerWidth < 768) { document.getElementById('mobileNavContainer').classList.add('hidden'); }
-            document.querySelectorAll('.tab-content').forEach(el => el.className = 'tab-content hidden'); 
-            document.getElementById('tab-' + tabId).className = 'tab-content active space-y-6';
-            document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
-            const activeBtn = document.getElementById('menu-' + tabId); if(activeBtn) activeBtn.classList.add('active-sidebar-menu');
             
-            if (tabId === 'dashboard') {
-                filterDashboard(currentDashboardFilterMode);
-            } else if (tabId === 'finance') {
-                filterFinance(currentFinanceMode);
-            }
+            // 1. Munculkan Animasi Loading
+            const loader = document.getElementById('globalLoader');
+            if(loader) loader.classList.remove('hidden');
+
+            // 2. Tahan selama 0.25 detik (250ms)
+            setTimeout(() => {
+                document.querySelectorAll('.tab-content').forEach(el => el.className = 'tab-content hidden'); 
+                document.getElementById('tab-' + tabId).className = 'tab-content active space-y-6';
+                document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
+                const activeBtn = document.getElementById('menu-' + tabId); if(activeBtn) activeBtn.classList.add('active-sidebar-menu');
+                
+                if (tabId === 'dashboard') {
+                    filterDashboard(currentDashboardFilterMode);
+                } else if (tabId === 'finance') {
+                    filterFinance(currentFinanceMode);
+                }
+                
+                // 3. Matikan Animasi Loading
+                if(loader) loader.classList.add('hidden');
+            }, 250);
         }
+        
         function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); switchTab('input'); }
         
         function validatePasswordSecurity() { 
@@ -999,6 +1016,74 @@
             }
         }
 
+        async function submitMemberForm() {
+            const btn = document.getElementById('btnSubmitMember');
+            const originalText = btn.innerText;
+            btn.innerText = 'MENYIMPAN DATA...';
+            btn.disabled = true;
+
+            let inputWa = document.getElementById('formWA').value.trim();
+            const countryCode = document.getElementById('formCountryCode').value;
+            if(countryCode !== "CUSTOM") {
+                if(inputWa.startsWith("0")) inputWa = inputWa.slice(1);
+                inputWa = countryCode + inputWa;
+            }
+
+            const isCustomDate = document.getElementById('checkBackdate').checked;
+            const selectedPkgId = document.getElementById('formPaket').value;
+            const pkg = masterPackages.find(p => p.id === selectedPkgId);
+            
+            if(!pkg) {
+                alert("Paket belum dipilih atau tidak valid!");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            const jenisPembeli = document.getElementById('formJenis').value;
+            const hargaJual = (jenisPembeli === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+
+            const payload = {
+                action: "addMember",
+                resellerId: currentUser.userId,
+                namaMember: document.getElementById('formNama').value,
+                noWhatsapp: inputWa,
+                email: document.getElementById('formEmail').value,
+                perusahaanSumber: document.getElementById('formPerusahaan').value,
+                namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' [' + pkg.varian + ']' : ''),
+                jenisPembeli: jenisPembeli,
+                isCustomDate: isCustomDate,
+                customTglDaftar: document.getElementById('customTglDaftar').value,
+                customTglExpired: document.getElementById('customTglExpired').value,
+                durasiHari: document.getElementById('formDurasiKustom').value,
+                hargaBeli: pkg.hargaBeli,
+                hargaJual: hargaJual
+            };
+
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await response.json();
+                if(res.status === "success") {
+                    alert("Data Pelanggan Berhasil Disimpan! 🚀");
+                    
+                    document.getElementById('memberForm').reset();
+                    document.getElementById('checkBackdate').checked = false;
+                    document.getElementById('backdateFields').classList.add('hidden');
+                    populateFormDropdowns();
+                    
+                    await refreshMembersList();
+                    switchTab('dashboard');
+                } else {
+                    alert("Gagal menyimpan data: " + res.message);
+                }
+            } catch (error) {
+                alert("Terjadi kesalahan jaringan!");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
         async function refreshMembersList() {
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getMembersData", resellerId: currentUser.userId, role: currentUser.role }) });
             const res = await response.json(); 
@@ -1143,7 +1228,6 @@
             }
         }
 
-        // MONITOR DATA MEMBER TABLE ENGINE - KALIBRASI TOTAL ANTI BUG & ANTI LOMPAT TIMEZONE
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
@@ -1205,7 +1289,6 @@
                         
                         if (batasMaxHangus) {
                             const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
-                            // JURUS CHAT MEMBER EXPIRED: TIDAK AKAN HILANG SETELAH DIKLIK KECUALI DI DONE MANUALLY
                             btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block text-wrap max-w-[85px]">${lang.btnChat}</a>`;
                         } else {
                             btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
@@ -1221,7 +1304,6 @@
                             if (!sudahFuHariIni) {
                                 followCount++; 
                                 const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
-                                // JURUS FOLLOW UP BERKALA: KLIK LANGSUNG HILANG HARI INI, BARU BANGUN LAGI BESOK JAM 00:00 AM
                                 btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block text-wrap max-w-[85px]">${lang.btnFollow}</a>`;
                             } else {
                                 btnAction = `<div class="w-[76px]"></div>`; 
@@ -1350,7 +1432,6 @@
         }
         function closeEditModal() { document.getElementById('editFormModalModal').classList.add('hidden'); }
 
-        // SINKRONISASI CORES: PERBAIKAN UTUH NAMA PARAMETER BIAR DETAIL PRODUK TIDAK TERHAPUS/NGILANG SAAT DIEDIT
         async function submitEditForm() {
             const rowId = document.getElementById('editFormRowId').value;
             const targetPkgId = document.getElementById('editFormPaket').value; 
@@ -1378,7 +1459,6 @@
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
         }
 
-        // PERBAIKAN SAKTI INVOICE ENGINE: AMANKAN PARSING FORMAT INDONESIA SEBELUM DIRECT CETAK PDF DILAKUKAN
         function printInvoice(mRowId) {
             const m = membersData.find(x => x.rowId == mRowId); 
             const lang = dictionary[clientLanguage] || dictionary.ID;
@@ -1523,7 +1603,6 @@
             } catch (e) { alert("Error Delete Product!"); }
         }
 
-        // BROADCAST ENGINE CORE CONTROLLER
         function lockBroadcastText() {
             const txt = document.getElementById('broadcastTextArea').value.trim();
             if(!txt) { alert(clientLanguage === "ID" ? "Teks broadcast tidak boleh kosong!" : "Broadcast message cannot be empty!"); return; }
