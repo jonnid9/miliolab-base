@@ -48,7 +48,6 @@
             }
         }
 
-        // FORMATTER FINANSIAL MULTI-CURRENCY MULTI-DECIMAL
         function convertAndFormat(amount, showPrefix = true) {
             const num = parseFloat(amount) || 0;
             const rate = currencyRates[clientCurrency] || 1;
@@ -132,7 +131,12 @@
                 xlHeaderProfit: "Cuan Bersih",
                 xlHeaderCurrency: "Mata Uang",
                 xlHeaderExpired: "Tanggal Expired",
-                docNoteFilter: "Berikut ini member yang terdaftar pada tanggal:"
+                docNoteFilter: "Berikut ini member yang terdaftar pada tanggal:",
+                
+                // DICTIONARY DIALOG PROTOKOL DONE MANUAL
+                btnDone: "✔️ Done",
+                statusSelesai: "Selesai 🏁",
+                confirmDone: "Apakah Om yakin ingin menyelesaikan misi pelayanan member ini secara manual? Tombol kedip-kedip akan langsung mati total."
             },
             EN: {
                 monitor: "Customer Monitor", finance: "Finance & Analytics", input: "Input New Member",
@@ -204,7 +208,11 @@
                 xlHeaderProfit: "Net Profit",
                 xlHeaderCurrency: "Currency Code",
                 xlHeaderExpired: "Expiry Date",
-                docNoteFilter: "The following are members registered on dates:"
+                docNoteFilter: "The following are members registered on dates:",
+                
+                btnDone: "✔️ Done",
+                statusSelesai: "Completed 🏁",
+                confirmDone: "Are you sure you want to mark this member's mission as completed manually? Flashing alerts will stop instantly."
             }
         };
 
@@ -863,12 +871,8 @@
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
                     alert(clientLanguage === "ID" ? "🚀 Sukses Update Nama Vendor Berantai!" : "🚀 Vendor Name Updated Everywhere Successfully!");
-                } else {
-                    alert("Failed: " + res.message);
-                }
-            } catch (e) {
-                alert("Error Update Vendor!");
-            }
+                } else { alert("Failed: " + res.message); }
+            } catch (e) { alert("Error Update Vendor!"); }
         }
 
         async function deleteCompany(name) { 
@@ -884,12 +888,8 @@
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
                     alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dan seluruh data terkait bersih terhapus." : "🗑️ Success! Vendor and all related data completely deleted.");
-                } else {
-                    alert("Failed: " + res.message);
-                }
-            } catch (e) {
-                alert("Error Delete Vendor!");
-            }
+                } else { alert("Failed: " + res.message); }
+            } catch (e) { alert("Error Delete Vendor!"); }
         }
 
         function populateFormDropdowns() {
@@ -1072,6 +1072,7 @@
             }
         }
 
+        // UPGRADE UTAMA CORE TABLE ENGINE: SINKRONISASI KONDISI STATUS JURUS ANTI-KEDIP-KEDIP
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
@@ -1091,57 +1092,65 @@
                 }
                 
                 const diffDays = Math.ceil((new Date(m.tglExpired) - now) / (1000 * 60 * 60 * 24));
-                totalProfit += parseFloat(m.profit); let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
+                totalProfit += parseFloat(m.profit); 
                 
+                let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
                 const sudahFuHariIni = (m.lastFuDate === hariIniStr);
+                const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
+                const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
+                const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
+                const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
 
-                if(diffDays < 0) {
-                    const batasMaxHangus = Math.abs(diffDays) <= 15;
-                    textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
-                    const teksWaExpired = `Hai Kak ${m.namaMember} 😊, paket Anda *${m.namaPaket}* untuk akun *${m.email}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *${currentUser.namaBisnis}* ✨`;
-                    const msg = encodeURIComponent(teksWaExpired);
-                    
-                    if (batasMaxHangus) {
-                        const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
-                        btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
-                    } else {
-                        btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
-                    }
+                // INTERACTIVE LOGIC VALIDATOR PREFERENCES: CEK APAKAH BARIS INI STATUSNYA SUDAH SELESAI / DONE / MATI
+                const isCompleted = (m.status !== "Aktif");
+
+                if (isCompleted) {
+                    // JURUS AMAN FINANSIAL: TETAP DIHITUNG PROFITNYA, TAPI DI-MATIKAN KEDIP-KEDIP DAN TOMBOL CHAT/FU NYA!
+                    textSisa = `<span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">${lang.statusSelesai}</span>`; 
+                    rowStyle = "opacity-40 text-slate-500 bg-slate-950/10";
+                    btnAction = `<div class="w-[76px]"></div>`; // Kosongkan agar clean
                 } else {
-                    activeCount++;
-                    if(diffDays <= 3) {
-                        textSisa = `<span class="text-amber-400 font-bold">H-${diffDays} ⚠️</span>`; rowStyle = "bg-amber-950/10";
-                        const teksWaReminder = `Hai Kak ${m.namaMember} 😊, sekadar reminding paket Anda *${m.namaPaket}* untuk akun *${m.email}* akan berakhir dalam *${diffDays} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *${currentUser.namaBisnis}* ✨`;
-                        const msg = encodeURIComponent(teksWaReminder);
+                    // JALUR NORMAL: MEMBER STATUS MASIH AKTIF PEMBUKUAN JALAN TERUS
+                    if(diffDays < 0) {
+                        const batasMaxHangus = Math.abs(diffDays) <= 15;
+                        textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
+                        const teksWaExpired = `Hai Kak ${m.namaMember} 😊, paket Anda *${m.namaPaket}* untuk akun *${m.email}* telah Expired... Mohon konfirmasi ya mau perpanjang atau stop dahulu untuk kepentingan pendataan member aktif 🙏, balas saja **YA** jika mau lanjut dan balas **NO** jika mau stop dulu... Salam hormat by *${currentUser.namaBisnis}* ✨`;
+                        const msg = encodeURIComponent(teksWaExpired);
                         
-                        if (!sudahFuHariIni) {
-                            followCount++; 
-                            const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
-                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
+                        if (batasMaxHangus) {
+                            const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
+                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
                         } else {
-                            btnAction = `<div class="w-[76px]"></div>`; 
+                            btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
                         }
-                    } else { 
-                        textSisa = `<span class="text-green-400 font-mono">${diffDays} ${lang.statusHari} ✅</span>`; 
-                        btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusAman}</span>`; 
+                    } else {
+                        activeCount++;
+                        if(diffDays <= 3) {
+                            textSisa = `<span class="text-amber-400 font-bold">H-${diffDays} ⚠️</span>`; rowStyle = "bg-amber-950/10";
+                            const teksWaReminder = `Hai Kak ${m.namaMember} 😊, sekadar reminding paket Anda *${m.namaPaket}* untuk akun *${m.email}* akan berakhir dalam *${diffDays} Hari lagi* nih... Mohon konfirmasi ya mau perpanjang atau ada kendala, biar data member aktif kakak tetap terjaga dan tidak terputus kondisinya 🙏. Salam hormat by *${currentUser.namaBisnis}* ✨`;
+                            const msg = encodeURIComponent(teksWaReminder);
+                            
+                            if (!sudahFuHariIni) {
+                                followCount++; 
+                                const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
+                                btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId})" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
+                            } else {
+                                btnAction = `<div class="w-[76px]"></div>`; 
+                            }
+                        } else { 
+                            textSisa = `<span class="text-green-400 font-mono">${diffDays} ${lang.statusHari} ✅</span>`; 
+                            btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusAman}</span>`; 
+                        }
                     }
                 }
                 
                 const tglDaftarClean = m.timestamp ? m.timestamp.split('T')[0] : "-";
                 const tglExpiredClean = m.tglExpired ? m.tglExpired.split('T')[0] : "-";
 
-                let tglDaftarTime = "00:00:00";
-                if (m.timestamp && m.timestamp.includes('T')) {
-                    const timePart = m.timestamp.split('T')[1];
-                    if (timePart) tglDaftarTime = timePart.split('.')[0];
-                } else if (m.timestamp && m.timestamp.includes(' ')) {
-                    tglDaftarTime = m.timestamp.split(' ')[1] || "00:00:00";
-                }
-
-                const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
-                const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
-                const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
-                const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
+                // INJEKSI INTERAKTIF: SEMUA MEMBER AKTIF DISEDIAKAN TOMBOL DONE DI SEBELAH RENEW UNTUK MEMATIKAN BLINKER MANUAL
+                const doneButtonHtml = !isCompleted 
+                    ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/40 px-2 py-1.5 rounded-lg text-xs font-bold transition">${lang.btnDone}</button>`
+                    : ``;
 
                 tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40">
                     <td class="${nameClass}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
@@ -1157,12 +1166,27 @@
                         ${btnAction}
                         <button onclick="openEditModal(${m.rowId})" class="bg-amber-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-amber-500">${lang.btnEdit}</button>
                         <button onclick="openRenewModal(${m.rowId})" class="bg-blue-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-blue-500">${lang.btnRenew}</button>
+                        ${doneButtonHtml}
                         <button onclick="deleteMember(${m.rowId})" class="text-red-500 hover:text-red-400 text-sm ml-1"><i class="fa-solid fa-trash-can"></i></button>
                     </div></td></tr>`;
             });
             if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount; 
             if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount; 
             if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
+        }
+
+        // ACTION FUNCTION: EKSEKUSI MANIPULASI TOMBOL DONE KE CLOUD DATABASE SECARA LIVE
+        async function executeManualDone(rowId) {
+            const translation = dictionary[clientLanguage] || dictionary.ID;
+            if (confirm(translation.confirmDone)) {
+                try {
+                    const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateMemberStatus", rowId: rowId, status: "Selesai" }) });
+                    const res = await response.json();
+                    if(res && res.status === "success") {
+                        await refreshMembersList();
+                    } else { alert("Failed updating status."); }
+                } catch(e) { alert("Error connecting to database."); }
+            }
         }
 
         function filterFinance(mode) {
@@ -1199,7 +1223,7 @@
             document.getElementById('editFormNama').value = m.namaMember;
             document.getElementById('editFormWA').value = m.noWhatsapp;
             document.getElementById('editFormEmail').value = m.email;
-            document.getElementById('editFormJenis').value = m.jenisPembeli || "User Langsung";
+            document.getElementById('editFormFocusJenis').value = m.jenisPembeli || "User Langsung";
             document.getElementById('checkUpgradeMutation').checked = false;
             document.getElementById('boxEditDurasi').classList.remove('hidden');
 
@@ -1208,10 +1232,8 @@
 
             const targetDate = new Date(m.tglExpired); targetDate.setHours(0,0,0,0);
             const currentDate = new Date(); currentDate.setHours(0,0,0,0);
-            
             const diffTime = targetDate.getTime() - currentDate.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
             document.getElementById('editFormDurasi').value = diffDays > 0 ? diffDays : 30;
 
             filterEditPackageDropdown(m.namaPaket);
@@ -1266,7 +1288,6 @@
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
         }
 
-        // PERBAIKAN SAKTI INTERACTIVE: KALIBRATOR IMPORT EXCEL BULK DUA PRESTASI TANGGAL & HAPUS BUG TANGGAL NGACCO
         function handleExcelUpload(event) {
             const file = event.target.files[0]; if(!file) return;
             const reader = new FileReader(); reader.onload = function(e) {
@@ -1274,12 +1295,9 @@
                 const workbook = XLSX.read(data, {type: 'array', cellDates: true});
                 const sheetName = workbook.SheetNames[0]; const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
                 
-                // PARSER STANDAR UNTUK MENGUBAH STRING INDONESIA DD/MM/YYYY MENJADI STANDAR ISO GLOBAL YYYY-MM-DD
                 function parseExcelDate(dateVal) {
                     if (!dateVal) return null;
-                    if (dateVal instanceof Date) {
-                        return dateVal.toISOString().split('T')[0];
-                    }
+                    if (dateVal instanceof Date) { return dateVal.toISOString().split('T')[0]; }
                     let dateStr = dateVal.toString().trim();
                     if (dateStr.includes('/')) {
                         let parts = dateStr.split('/');
@@ -1299,8 +1317,7 @@
                         perusahaan: row["Platform"] || row["Perusahaan Sumber"] || masterCompanies[0], paket: row["Nama Paket"] || "Premium", 
                         jenis: row["Jenis"] || row["Jenis (User Langsung / Reseller)"] || "User Langsung",
                         hargaBeli: row["Harga Beli"] || 0, hargaJual: row["Harga Jual"] || 0, 
-                        tglDaftar: parseExcelDate(row["Tgl Daftar"]), 
-                        tglExpired: parseExcelDate(row["Tgl Expired"])
+                        tglDaftar: parseExcelDate(row["Tgl Daftar"]), tglExpired: parseExcelDate(row["Tgl Expired"])
                     };
                 });
                 if(confirm("Import " + rows.length + " member sekaligus?")) {
