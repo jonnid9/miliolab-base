@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB BASE v8.0 Official Premium Gold</title>
+    <title>MILIOLAB BASE v8.5 Official Premium Gold</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -11,6 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="manifest" href='data:application/json,{"name":"MILIOLAB MEMBER BASE","short_name":"MilioBase","start_url":".","display":"standalone","background_color":"#070a13","theme_color":"#22c55e","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/6821/6821171.png","sizes":"512x512","type":"image/png"}]}'>
+
     <style>
         body { font-family: 'Urbanist', sans-serif; background-color: #070a13; transition: background-color 0.3s, color 0.3s; }
         .tab-content { display: none; } .tab-content.active { display: block; }
@@ -22,20 +25,27 @@
         .active-sidebar-menu i { color: #eab308 !important; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.6; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+        
+        /* RESPONSIVITAS TOTAL ANTI TERPOTONG DI MOBILE ATAU MAC */
+        th, td, span, h1, h2, h3, p, button { text-wrap: wrap !important; word-break: break-word !important; }
+        
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #070a13; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 99px; }
         ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
 
-        /* STANDARISASI GAYA TEMA TERANG (LIGHT MODE ECOSYSTEM) */
+        /* KOREKSI TOTAL WARNA LIGHT MODE: ELEGAN, KONTRAS SANGAT TAJAM, EKSKLUSIF */
         body.light-theme { background-color: #f8fafc; color: #0f172a; }
-        body.light-theme #globalLoader { background-color: rgba(255, 255, 255, 0.85); }
-        body.light-theme .bg-slate-900, body.light-theme .bg-slate-900\/50, body.light-theme .bg-slate-900\/40 { background-color: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        body.light-theme .bg-slate-950, body.light-theme .bg-slate-950\/50 { background-color: #f1f5f9; border-color: #cbd5e1; }
-        body.light-theme input, body.light-theme select, body.light-theme textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
-        body.light-theme .text-white { color: #0f172a !important; }
+        body.light-theme #globalLoader { background-color: rgba(255, 255, 255, 0.9); }
+        body.light-theme .bg-slate-900, body.light-theme .bg-slate-900\/50, body.light-theme .bg-slate-900\/40 { background-color: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.08); }
+        body.light-theme .bg-slate-950, body.light-theme .bg-slate-950\/50 { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+        body.light-theme input, body.light-theme select, body.light-theme textarea { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #94a3b8 !important; }
+        body.light-theme .text-white, body.light-theme td.text-white, body.light-theme h1, body.light-theme h2, body.light-theme h3 { color: #0f172a !important; font-weight: 700; }
         body.light-theme .text-slate-200, body.light-theme .text-slate-300, body.light-theme .text-slate-400 { color: #334155 !important; }
+        body.light-theme .text-slate-500 { color: #64748b !important; }
         body.light-theme input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); }
+        body.light-theme thead tr { background-color: #e2e8f0 !important; border-bottom: 2px solid #cbd5e1; }
+        body.light-theme thead tr th { color: #1e293b !important; font-weight: 700; }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen">
@@ -46,6 +56,9 @@
     </div>
 
     <script>
+        // SERVICE WORKER AUTOMATIC UNTUK INSTALASI LAYAR HP (PWA READY)
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('data:application/javascript,self.addEventListener("fetch",function(e){});').catch(function(e){}); }
+
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let currentUser = null; let currentPasswordPlain = ""; 
         let masterCompanies = []; let masterPackages = []; let membersData = []; let filteredMembers = []; let masterResellers = [];
@@ -58,22 +71,33 @@
             try {
                 const response = await fetch("https://open.er-api.com/v6/latest/IDR");
                 const data = await response.json();
-                if (data && data.rates) { currencyRates = data.rates; console.log("Miliolab Exchange Core Connected!"); }
+                if (data && data.rates) { currencyRates = data.rates; console.log("Exchange Core connected!"); }
             } catch (e) { console.error("Gagal sinkronisasi kurs live global, memakai backup internal."); }
         }
 
-        // TOGGLE FITUR GELAP/TERANG AUTOMATICPermanen
+        // AMBIL HISTORI CACHE LOCAL (ANTI-LEMUT DAN INSTAN SAAT PINDAH TAB)
+        function loadCachedLocalStorageData() {
+            const cacheMembers = localStorage.getItem('milio_cache_members');
+            const cacheComp = localStorage.getItem('milio_cache_companies');
+            const cachePkg = localStorage.getItem('milio_cache_packages');
+            const cacheRes = localStorage.getItem('milio_cache_resellers');
+            
+            if(cacheMembers) membersData = JSON.parse(cacheMembers);
+            if(cacheComp) masterCompanies = JSON.parse(cacheComp);
+            if(cachePkg) masterPackages = JSON.parse(cachePkg);
+            if(cacheRes) masterResellers = JSON.parse(cacheRes);
+        }
+
         function toggleThemeMode() {
-            const body = document.body;
-            body.classList.toggle('light-theme');
+            const body = document.body; body.classList.toggle('light-theme');
             const currentMode = body.classList.contains('light-theme') ? 'light' : 'dark';
             localStorage.setItem('milio_theme_mode', currentMode);
             const icon = document.getElementById('themeIconBtn');
-            if(icon) icon.className = currentMode === 'light' ? 'fa-solid fa-moon text-indigo-500' : 'fa-solid fa-sun text-amber-400';
-            if(financeChart) { filterFinance(currentFinanceMode); } // Draw ulang grafik biar warna ikut sinkron
+            if(icon) icon.className = currentMode === 'light' ? 'fa-solid fa-moon text-indigo-600 text-lg' : 'fa-solid fa-sun text-amber-400 text-lg';
+            if(financeChart) { filterFinance(currentFinanceMode); } 
         }
 
-        // CORE SYSTEM INTERACTION SHORTCUTS (KEYBOARDSHORTCUTS)
+        // AKOMODASI JALAN PINTAS KEYBOARD (SHORTCUTS ACTIVE)
         window.addEventListener('keydown', function(e) {
             if (e.altKey && e.key.toLowerCase() === 'n') { e.preventDefault(); openFormInputBaru(); }
             if (e.ctrlKey && e.key.toLowerCase() === 'f') {
@@ -83,22 +107,17 @@
         });
 
         function parseJsonDate(dateVal) {
-            if (!dateVal) return new Date(0);
-            if (dateVal instanceof Date) return dateVal;
+            if (!dateVal) return new Date(0); if (dateVal instanceof Date) return dateVal;
             let str = dateVal.toString().trim();
             if (str.includes('/')) {
                 let parts = str.split(' '); let dateParts = parts[0].split('/');
                 if (dateParts.length === 3) {
                     let day = parseInt(dateParts[0]); let month = parseInt(dateParts[1]) - 1; let year = parseInt(dateParts[2]);
                     let hour = 0, min = 0, sec = 0;
-                    if (parts[1]) {
-                        let timeParts = parts[1].split(':');
-                        hour = parseInt(timeParts[0]) || 0; min = parseInt(timeParts[1]) || 0; sec = parseInt(timeParts[2]) || 0;
-                    }
+                    if (parts[1]) { let timeParts = parts[1].split(':'); hour = parseInt(timeParts[0]) || 0; min = parseInt(timeParts[1]) || 0; sec = parseInt(timeParts[2]) || 0; }
                     return new Date(year, month, day, hour, min, sec);
                 }
-            }
-            return new Date(str);
+            } return new Date(str);
         }
 
         function convertAndFormat(amount, showPrefix = true) {
@@ -116,8 +135,8 @@
                 subTitle: "Monitor Data Pelanggan", thNama: "Nama Member", thKontak: "WhatsApp / Email", thProduk: "Mitra & Produk", thProfit: "Profit",
                 thDaftar: "Tgl Daftar", thBerakhir: "Tgl Berakhir", thSisa: "Sisa Hari", thInv: "Inv", thAksi: "Aksi",
                 statusAman: "Aman", statusExpired: "Expired ❌", statusHangus: "Hangus (15H+)", statusHari: "Hari",
-                btnChat: "Chat Member", btnFollow: "Follow Up", btnEdit: "✏️ Edit/Upgrade", btnRenew: "🔄 Renew", lblSemua: "Semua", 
-                modalEditTitle: "Ralat Koreksi / Upgrade Selisih Paket", modalEditUpgradeMode: "Aktifkan Mode Upgrade Paket (Hitung Selisih Uang)",
+                btnChat: "Chat Member", btnFollow: "Follow Up", btnEdit: "✏️ Edit/Upgrade", btnRenew: "🔄 Renew",
+                lblSemua: "Semua", modalEditTitle: "Ralat Koreksi / Upgrade Selisih Paket", modalEditUpgradeMode: "Aktifkan Mode Upgrade Paket (Hitung Selisih Uang)",
                 lblTampilkanSemua: "Tampilkan Semua", sideExit: "<i class=\"fa-solid fa-power-off\"></i> Keluar", finTitle: "Income Analytics 📊",
                 finAll: "Semua Data", finDaily: "Hari Ini", finWeekly: "7 Hari Terakhir", finMonthly: "Bulan Ini", finApply: "Terapkan Filter",
                 lblFinOmset: "TOTAL OMSET TERFILTER (GROSS)", lblFinModal: "TOTAL PENGELUARAN MODAL", lblFinCuan: "CUAN BERSIH (NET PROFIT)",
@@ -125,8 +144,9 @@
                 inpTitle: "Input Member Baru", inpSubtitle: "MENDUKUNG PENCATATAN MEMBER BARU ATAU DATA MEMBER LAMA (BACKDATE)", phNamaMember: "Nama Member", optUserLangsung: "User Langsung", optReseller: "Reseller",
                 lblCheckBackdate: "GUNAKAN TANGGAL KUSTOM (MEMBER LAMA)", lblInpHargaBeli: "Modal Beli:", lblInpHargaJual: "Harga Jual:", btnSubmitMember: "SIMPAN DATA PELANGGAN 🚀",
                 impTitle: "Import Member Bulk (XLS) 📁", btnChooseExcel: "PILIH FILE EXCEL", lblExcelHeaderWarn: "<i class=\"fa-solid fa-circle-info\"></i> CONTOH FORMAT JUDUL KOLOM EXCEL (HEADER):",
-                mstCompTitle: "🏢  Manajemen Perusahaan", phNamaBaru: "Nama Baru", btnSaveComp: "Tambah", mstProdTitle: "📦 Tambah Varian / Produk", phNamaPaket: "Nama Paket", phVarian: "Varian", phModal: "Modal", btnSaveCatalog: "SIMPAN KATALOG",
-                thMstId: "ID", thMstMitra: "MITRA", thMstPaket: "NAMA PAKET", thMstVarian: "VARIAN", thMstModal: "MODAL", thMstUser: "USER", thMstReseller: "RESELLER", thMstAksi: "AKSI", lblHapus: "Hapus", mstWhitelabelTitle: "Whitelabel Identity", phNamaBrand: "Nama Brand", phUrlLogo: "URL Logo Link", btnSaveBrand: "Simpan Brand",
+                mstCompTitle: "🏢  Manajemen Perusahaan", phNamaBaru: "Nama Baru", btnSaveComp: "Tambah",
+                mstProdTitle: "📦 Tambah Varian / Produk", phNamaPaket: "Nama Paket", phVarian: "Varian", phModal: "Modal", btnSaveCatalog: "SIMPAN KATALOG",
+                thMstId: "ID", thMstMitra: "MITRA", thMstPaket: "NAMA PAKET", thMstVarian: "VARIAN", thMstModal: "MODAL", thMstUser: "USER", thMstReseller: "RESELLER", thMstAksi: "AKSI", lblHapus: "Hapus", mstWhitelabelTitle: "Brand Identity", phNamaBrand: "Nama Brand", phUrlLogo: "URL Logo Link", btnSaveBrand: "Simpan Brand",
                 setCloudPrefsTitle: "<i class=\"fa-solid fa-gears\"></i> KUNCI PREFERENCES AKUN (CLOUD SAVED)", setCloudPrefsDesc: "Mata uang transaksi dan bahasa laporan otomatis terkunci permanen di akun pengguna.", lblCurrencySelect: "Mata Uang:", lblLanguageSelect: "Bahasa Aplikasi:", btnLockPrefs: "KUNCI PREFERENCES AKUN 🔒",
                 mstWipeoutTitle: "Advanced System Wipeout", lblResetType: "Pilih Tipe Target Reset:", lblResetScope: "Pilih Target Scope Nama Mitra:", btnTriggerReset: "EKSEKUSI PENGHAPUSAN ASSET ⚠️",
                 optResetMember: "Reset Member Perusahaan Tertentu", optResetProfile: "Hapus Profil Mitra Tertentu", optResetCatalog: "Bersihkan Katalog Produk Perusahaan", optResetAll: "RESET ALL ASSET (TOTAL WIPE)", phSearchMember: "Cari nama, email, wa...", phSearchVendor: "Cari nama vendor / mitra...", btnEditVendor: "✏️ Edit",
@@ -146,6 +166,7 @@
             if(document.getElementById('menu-master')) document.getElementById('menu-master').innerHTML = `<i class="fa-solid fa-database"></i> ` + translation.master;
             if(document.getElementById('menu-settings')) document.getElementById('menu-settings').innerHTML = `<i class="fa-solid fa-cog"></i> ` + translation.settings;
             if(document.getElementById('sideExit')) document.getElementById('sideExit').innerHTML = translation.sideExit;
+
             if(document.getElementById('h1-title')) document.getElementById('h1-title').innerText = translation.monitor;
             if(document.getElementById('p-aktif')) document.getElementById('p-aktif').innerText = translation.aktifSales;
             if(document.getElementById('p-follow')) document.getElementById('p-follow').innerText = translation.followUp;
@@ -153,16 +174,14 @@
             
             const ths = document.querySelectorAll('#tab-dashboard table thead tr th');
             if(ths && ths.length >= 9) {
-                ths[0].innerText = translation.thNama; ths[1].innerText = translation.thKontak;
-                ths[2].innerText = translation.thProduk; ths[3].innerText = translation.thProfit;
-                ths[4].innerText = translation.thDaftar; ths[5].innerText = translation.thBerakhir;
-                ths[6].innerText = translation.thSisa; ths[7].innerText = translation.thInv; ths[8].innerText = translation.thAksi;
+                ths[0].innerText = translation.thNama; ths[1].innerText = translation.thKontak; ths[2].innerText = translation.thProduk; ths[3].innerText = translation.thProfit;
+                ths[4].innerText = translation.thDaftar; ths[5].innerText = translation.thBerakhir; ths[6].innerText = translation.thSisa; ths[7].innerText = translation.thInv; ths[8].innerText = translation.thAksi;
             }
             applyGlobalLanguageUIExtended(translation);
         }
 
         function applyGlobalLanguageUIExtended(translation) {
-            if(document.getElementById('editFormModalModal h3')) document.querySelector('#editFormModalModal h3').innerHTML = `<i class="fa-solid fa-user-gear"></i> ` + translation.modalEditTitle;
+            const modalTitleEl = document.querySelector('#editFormModalModal h3'); if(modalTitleEl) modalTitleEl.innerHTML = `<i class="fa-solid fa-user-gear"></i> ` + translation.modalEditTitle;
             if(document.getElementById('lblCheckUpgradeMutation')) document.getElementById('lblCheckUpgradeMutation').innerHTML = `<input type="checkbox" id="checkUpgradeMutation" onchange="toggleUpgradeMutationMode()" class="w-4 h-4 text-amber-500"> ` + translation.modalEditUpgradeMode;
             if(document.getElementById('h3-sub')) document.getElementById('h3-sub').innerHTML = translation.subTitle + ` (<span id="filterLabel">${activeFilterCompany === "ALL" ? translation.lblSemua : activeFilterCompany}</span>)`;
             if(document.getElementById('finTitle')) document.getElementById('finTitle').innerText = translation.finTitle;
@@ -172,28 +191,80 @@
             if(document.getElementById('titExportSec')) document.getElementById('titExportSec').innerHTML = translation.titExportSec;
             if(document.getElementById('btnExpExcel')) document.getElementById('btnExpExcel').innerText = translation.btnExpExcel;
             if(document.getElementById('btnExpPdf')) document.getElementById('btnExpPdf').innerText = translation.btnExpPdf;
+
             if(document.getElementById('inpTitle')) document.getElementById('inpTitle').innerText = translation.inpTitle;
             if(document.getElementById('inpSubtitle')) document.getElementById('inpSubtitle').innerText = translation.inpSubtitle;
             if(document.getElementById('formNama')) document.getElementById('formNama').placeholder = translation.phNamaMember;
             
-            const formJenis = document.getElementById('formJenis');
-            if(formJenis && formJenis.options.length >= 2) { formJenis.options[0].text = translation.optUserLangsung; formJenis.options[1].text = translation.optReseller; }
+            const formJenis = document.getElementById('formJenis'); if(formJenis && formJenis.options.length >= 2) { formJenis.options[0].text = translation.optUserLangsung; formJenis.options[1].text = translation.optReseller; }
+            if(document.getElementById('lblCheckBackdate')) { const stateBox = document.getElementById('checkBackdate') ? document.getElementById('checkBackdate').checked : false; document.getElementById('lblCheckBackdate').innerHTML = `<input type="checkbox" id="checkBackdate" onchange="toggleBackdateFields()" class="rounded bg-slate-900 border-slate-700 text-green-500 w-4 h-4"> ` + translation.lblCheckBackdate; if(document.getElementById('checkBackdate')) document.getElementById('checkBackdate').checked = stateBox; }
+            if(document.getElementById('lblInpHargaBeli')) document.getElementById('lblInpHargaBeli').innerText = translation.lblInpHargaBeli;
+            if(document.getElementById('lblInpHargaJual')) document.getElementById('lblInpHargaJual').innerText = translation.lblInpHargaJual;
             if(document.getElementById('btnSubmitMember')) document.getElementById('btnSubmitMember').innerText = translation.btnSubmitMember;
+
+            if(document.getElementById('impTitle')) document.getElementById('impTitle').innerText = translation.impTitle;
+            if(document.getElementById('btnChooseExcel')) document.getElementById('btnChooseExcel').innerText = translation.btnChooseExcel;
+            if(document.getElementById('lblExcelHeaderWarn')) document.getElementById('lblExcelHeaderWarn').innerHTML = translation.lblExcelHeaderWarn;
+
+            if(document.getElementById('mstCompTitle')) document.getElementById('mstCompTitle').innerText = translation.mstCompTitle;
+            if(document.getElementById('newCompanyName')) document.getElementById('newCompanyName').placeholder = translation.phNamaBaru;
+            if(document.getElementById('btnSaveComp')) document.getElementById('btnSaveComp').innerText = translation.btnSaveComp;
+            if(document.getElementById('mstProdTitle')) document.getElementById('mstProdTitle').innerText = translation.mstProdTitle;
+            if(document.getElementById('prodFormNama')) document.getElementById('prodFormNama').placeholder = translation.phNamaPaket;
+            if(document.getElementById('prodFormVarian')) document.getElementById('prodFormVarian').placeholder = translation.phVarian;
+            if(document.getElementById('prodFormModal')) document.getElementById('prodFormModal').placeholder = translation.phModal;
+            
+            const isEditingPkg = document.getElementById('prodFormTarget') && document.getElementById('prodFormTarget').value !== "";
+            if(document.getElementById('btnSaveCatalog')) { document.getElementById('btnSaveCatalog').innerText = isEditingPkg ? "UPDATE KATALOG 🚀" : translation.btnSaveCatalog; }
+            
+            if(document.getElementById('thMstId')) document.getElementById('thMstId').innerText = translation.thMstId;
+            if(document.getElementById('thMstMitra')) document.getElementById('thMstMitra').innerText = translation.thMstMitra;
+            if(document.getElementById('thMstPaket')) document.getElementById('thMstPaket').innerText = translation.thMstPaket;
+            if(document.getElementById('thMstVarian')) document.getElementById('thMstVarian').innerText = translation.thMstVarian;
+            if(document.getElementById('thMstModal')) document.getElementById('thMstModal').innerText = translation.thMstModal;
+            if(document.getElementById('thMstUser')) document.getElementById('thMstUser').innerText = translation.thMstUser;
+            if(document.getElementById('thMstReseller')) document.getElementById('thMstReseller').innerText = translation.thMstReseller;
+            if(document.getElementById('thMstAksi')) document.getElementById('thMstAksi').innerText = translation.thMstAksi;
+
+            if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = translation.phSearchMember;
+            if(document.getElementById('vendorSearchInput')) document.getElementById('vendorSearchInput').placeholder = translation.phSearchVendor;
+
+            if(document.getElementById('btn-dash-all')) document.getElementById('btn-dash-all').innerText = translation.lblSemua;
+            if(document.getElementById('btn-dash-today')) document.getElementById('btn-dash-today').innerText = translation.finDaily;
+            if(document.getElementById('btn-dash-3days')) document.getElementById('btn-dash-3days').innerText = clientLanguage === "ID" ? "3 Hari" : "3 Days";
+            if(document.getElementById('btn-dash-7days')) document.getElementById('btn-dash-7days').innerText = clientLanguage === "ID" ? "7 Hari" : "7 Days";
+            if(document.getElementById('btn-dash-monthly')) document.getElementById('btn-dash-monthly').innerText = clientLanguage === "ID" ? "1 Bulan" : "1 Month";
+            if(document.getElementById('btnDashApply')) document.getElementById('btnDashApply').innerText = clientLanguage === "ID" ? "Terapkan" : "Apply";
+
+            if(document.getElementById('bcTitle')) document.getElementById('bcTitle').innerHTML = `<i class="fa-solid fa-bullhorn text-green-400"></i> ` + translation.bcTitle;
+            if(document.getElementById('broadcastTextArea')) document.getElementById('broadcastTextArea').placeholder = translation.bcPlaceholder;
+            if(document.getElementById('btnLockBroadcast')) document.getElementById('btnLockBroadcast').innerText = translation.bcLockBtn;
+            if(document.getElementById('btnUnlockBroadcast')) document.getElementById('btnUnlockBroadcast').innerText = translation.bcUnlockBtn;
+            if(document.getElementById('bcSelectTarget')) document.getElementById('bcSelectTarget').innerText = translation.bcTargetLabel;
+
+            const resetSel = document.getElementById('resetTypeSelect');
+            if (resetSel) {
+                const currentVal = resetSel.value;
+                resetSel.innerHTML = `<option value="member_comp">${translation.optResetMember}</option><option value="company_only">${translation.optResetProfile}</option><option value="product_comp">${translation.optResetCatalog}</option><option value="all">${translation.optResetAll}</option>`;
+                if (currentVal) resetSel.value = currentVal;
+            }
+            if(document.getElementById('setLanguageSelector')) document.getElementById('setLanguageSelector').value = clientLanguage;
+            if(document.getElementById('setCurrencySelector')) document.getElementById('setCurrencySelector').value = clientCurrency;
             renderMasterCompanyList();
         }
     </script>
 
     <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
-            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v8.0 Final Gold Stable</p></div>
+            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v8.5 Premium Secured</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
             <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
-                <input type="text" id="usernameInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm" placeholder="Username">
+                <input type="text" id="usernameInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none" placeholder="Username">
                 <div class="relative">
-                    <input type="password" id="passwordInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm" placeholder="Password">
+                    <input type="password" id="passwordInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none" placeholder="Password">
                     <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-3 text-slate-500 hover:text-white"><i id="eyeIcon" class="fa-solid fa-eye"></i></button>
                 </div>
-                <button type="submit" id="btnLogin" class="w-full bg-green-500 hover:bg-green-400 text-slate-950 font-bold p-3 rounded-xl text-sm">MASUK KE DASHBOARD</button>
+                <button type="submit" id="btnLogin" class="w-full bg-green-500 hover:bg-green-400 text-slate-950 font-bold p-3 rounded-xl text-sm transition">MASUK KE DASHBOARD</button>
             </form>
         </div>
     </div>
@@ -201,29 +272,33 @@
     <div id="mainApp" class="hidden min-h-screen flex flex-col md:flex-row">
         <div class="w-full md:w-64 bg-slate-950 p-4 md:p-6 border-b md:border-r border-slate-900 flex flex-col justify-between shadow-xl shrink-0 md:h-screen md:sticky md:top-0">
             <div>
-                <div class="mb-4 md:mb-8 flex items-center justify-between md:justify-start gap-3">
+                <div class="mb-4 md:mb-8 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3 w-full min-w-0">
                         <img id="appLogo" src="" class="w-10 h-10 rounded-xl border border-slate-800 object-cover hidden">
                         <div id="defaultLogoIcon" class="w-10 h-10 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center shrink-0"><i class="fa-solid fa-cubes text-green-400 text-xl"></i></div>
                         <div class="min-w-0 flex-1"><h2 id="brandName" class="text-white font-bold text-sm md:text-base whitespace-normal break-words leading-tight">MILIOLAB</h2><span id="userRole" class="text-[9px] text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full font-bold">OWNER</span></div>
                     </div>
-                    <button onclick="toggleThemeMode()" class="bg-slate-900 border border-slate-800 p-2 rounded-xl hover:bg-slate-800 shrink-0"><i id="themeIconBtn" class="fa-solid fa-sun text-amber-400"></i></button>
                     <button onclick="document.getElementById('mobileNavContainer').classList.toggle('hidden')" class="md:hidden text-slate-400 hover:text-white text-lg p-1 shrink-0"><i class="fa-solid fa-bars"></i></button>
                 </div>
                 <nav id="mobileNavContainer" class="hidden md:block space-y-1 mt-3 md:mt-0">
                     <button id="menu-dashboard" onclick="switchTab('dashboard')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
                     <button id="menu-finance" onclick="switchTab('finance')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
-                    <button id="menu-input" onclick="openFormInputBaru()" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
+                    <button id="menu-input" onclick="openFormInputBaru()" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-user-plus text-blue-400"></i> Input Member Baru</button>
                     <button id="menu-import" onclick="switchTab('import')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
                     <button id="menu-master" onclick="switchTab('master')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
                     <button id="menu-settings" onclick="switchTab('settings')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"></button>
                     <div id="companyMenuContainer" class="mt-4 pt-3 border-t border-slate-800 flex flex-wrap md:flex-col gap-1 max-h-[140px] md:max-h-none overflow-y-auto"></div>
                 </nav>
             </div>
-            <button id="sideExit" onclick="handleLogout()" class="hidden md:flex p-2.5 text-red-500 hover:bg-red-950/20 rounded-xl items-center gap-3 font-bold text-xs md:text-sm mt-6"></button>
+            <div class="border-t border-slate-900 pt-3 mt-4 space-y-2 flex flex-col">
+                <button onclick="toggleThemeMode()" class="w-full bg-slate-900 hover:bg-slate-800 p-2 rounded-xl flex items-center justify-center gap-2 border border-slate-800 text-xs font-semibold">
+                    <i id="themeIconBtn" class="fa-solid fa-sun text-amber-400"></i> Ubah Tema
+                </button>
+                <button id="sideExit" onclick="handleLogout()" class="w-full text-red-500 hover:bg-red-950/20 p-2 rounded-xl flex items-center justify-center gap-2 font-bold text-xs"></button>
+            </div>
         </div>
 
-        <div class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto">
+        <div class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto w-full">
             
             <div id="tab-dashboard" class="tab-content active space-y-6">
                 <h1 id="h1-title" class="text-2xl md:text-3xl font-bold tracking-tight">Monitor Pelanggan</h1>
@@ -237,7 +312,7 @@
                         <h3 id="h3-sub" class="text-base md:text-lg font-bold text-white"></h3>
                         <div class="flex gap-2 w-full lg:w-auto">
                             <input type="text" id="searchInput" oninput="searchMembers()" placeholder="Cari nama, email, wa..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none w-full lg:w-64">
-                            <button onclick="searchMembers()" class="bg-green-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs uppercase transition shrink-0"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button onclick="refreshLiveServerData()" class="bg-slate-800 hover:bg-slate-700 text-green-400 border border-slate-700 font-bold px-3 py-2 rounded-xl text-xs uppercase transition shrink-0" title="Sinkronisasi Cloud"><i class="fa-solid fa-arrows-rotate"></i> Sync Live</button>
                         </div>
                     </div>
                     <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-slate-950/50 p-4 rounded-2xl border border-slate-800 text-xs">
@@ -259,7 +334,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="overflow-x-auto rounded-xl border border-slate-800/80">
+                    <div class="overflow-x-auto rounded-xl border border-slate-800/80 w-full">
                         <table class="w-full text-left border-collapse whitespace-nowrap">
                             <thead>
                                 <tr class="text-slate-500 text-xs uppercase font-bold border-b border-slate-800 bg-slate-950/40">
@@ -345,7 +420,7 @@
                         <input type="number" id="formDurasiKustom" required value="30" class="w-full bg-slate-950 p-3 rounded-xl border border-amber-500/40 text-amber-300 font-bold outline-none">
                     </div>
                     <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <label id="lblCheckBackdate" class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase cursor-pointer"></label>
+                        <label id="lblCheckBackdate" class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer"></label>
                         <div id="backdateFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                             <div>Tanggal Mulai Beli:<input type="date" id="customTglDaftar" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
                             <div>Tanggal Masa Berakhir:<input type="date" id="customTglExpired" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
@@ -362,10 +437,11 @@
 
             <div id="tab-import" class="tab-content max-w-2xl space-y-6">
                 <h1 id="impTitle" class="text-2xl md:text-3xl font-bold text-white">Import Member Bulk (XLS) 📁</h1>
-                <div class="bg-slate-900 p-6 md:p-10 rounded-2xl border-2 border-dashed border-slate-800 text-center space-y-4">
-                    <i class="fa-solid fa-cloud-upload text-4xl md:text-5xl text-slate-700"></i>
+                <div class="bg-slate-900 p-6 md:p-10 rounded-2xl border-2 border-dashed border-slate-700 text-center space-y-4">
+                    <i class="fa-solid fa-file-excel text-5xl text-green-500 animate-bounce"></i>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Klik Tombol Di Bawah Untuk Mengunggah File Microsoft Excel (.XLS / .XLSX)</p>
                     <input type="file" id="excelFile" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
-                    <button id="btnChooseExcel" onclick="document.getElementById('excelFile').click()" class="bg-green-600 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs md:text-sm"></button>
+                    <button id="btnChooseExcel" onclick="document.getElementById('excelFile').click()" class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-slate-950 font-bold px-8 py-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 mx-auto"><i class="fa-solid fa-file-import"></i> PILIH FILE EXCEL ANDA</button>
                 </div>
                 <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 space-y-2 shadow-xl">
                     <h4 id="lblExcelHeaderWarn" class="text-xs font-bold uppercase text-amber-400 flex items-center gap-1.5"></h4>
@@ -381,14 +457,14 @@
                         <div class="space-y-3">
                             <h3 id="mstCompTitle" class="text-lg md:text-xl font-bold text-white">🏢 Manajemen Perusahaan</h3>
                             <div class="flex gap-2">
-                                <input type="text" id="newCompanyName" placeholder="Nama Baru" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-xs md:text-sm outline-none">
-                                <button id="btnSaveComp" onclick="submitCompany()" class="bg-green-500 text-slate-950 px-4 rounded-xl font-bold text-xs md:text-sm shrink-0">Tambah</button>
+                                <input type="text" id="newCompanyName" placeholder="Nama Baru" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-xs outline-none">
+                                <button id="btnSaveComp" onclick="submitCompany()" class="bg-green-500 text-slate-950 px-4 rounded-xl font-bold text-xs shrink-0">Tambah</button>
                             </div>
                             <input type="text" id="vendorSearchInput" oninput="renderMasterCompanyList()" placeholder="Cari nama vendor..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none">
                         </div>
                         <div id="masterCompanyList" class="space-y-2 max-h-48 overflow-y-auto pr-1 flex-1 mt-2"></div>
                     </div>
-                    <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl shadow-xl"><h3 id="mstProdTitle" class="text-lg md:text-xl font-bold text-white mb-4">📦 Tambah Varian / Produk</h3><form id="productForm" onsubmit="event.preventDefault(); submitProductForm();" class="space-y-3 text-xs md:text-sm"><select id="prodFormComp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white cursor-pointer"></select><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input type="text" id="prodFormTarget" class="hidden"><input type="text" id="prodFormNama" required placeholder="Nama Paket" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="text" id="prodFormVarian" placeholder="Varian" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2"><input type="number" id="prodFormDurasi" required value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormModal" required placeholder="Modal" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormUser" required placeholder="User" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormReseller" required placeholder="Reseller" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><button id="btnSaveCatalog" type="submit" class="w-full bg-green-500 text-slate-950 p-2.5 rounded-xl font-bold tracking-wide transition uppercase text-xs">SIMPAN KATALOG</button></form></div>
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl shadow-xl"><h3 id="mstProdTitle" class="text-lg md:text-xl font-bold text-white mb-4">📦 Tambah Varian / Produk</h3><form id="productForm" onsubmit="event.preventDefault(); submitProductForm();" class="space-y-3 text-xs md:text-sm"><select id="prodFormComp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white cursor-pointer"></select><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input type="text" id="prodFormTarget" class="hidden"><input type="text" id="prodFormNama" required placeholder="Nama Paket" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="text" id="prodFormVarian" placeholder="Varian" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2"><input type="number" id="prodFormDurasi" required value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormModal" required placeholder="Modal" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormUser" required placeholder="User" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormReseller" required placeholder="Reseller" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><button id="btnSaveCatalog" type="submit" class="w-full bg-green-500 text-slate-950 p-2.5 rounded-xl font-bold tracking-wide uppercase text-xs">SIMPAN KATALOG</button></form></div>
                 </div>
                 <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl shadow-xl space-y-4">
                     <h3 id="bcTitle" class="text-base md:text-lg font-bold text-white flex items-center gap-2"></h3>
@@ -470,9 +546,7 @@
     <div id="editFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-5 shadow-2xl space-y-4 my-auto">
             <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-gear"></i> Ralat Koreksi / Upgrade Selisih Paket</h3>
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
-                <label id="lblCheckUpgradeMutation" class="flex items-center gap-2 text-slate-400 uppercase font-bold cursor-pointer"></label>
-            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between"><label id="lblCheckUpgradeMutation" class="flex items-center gap-2 text-slate-400 uppercase font-bold cursor-pointer"></label></div>
             <div class="grid grid-cols-2 gap-3 text-sm">
                 <div><label class="text-xs text-slate-500 block mb-1">Nama</label><input type="text" id="editFormNama" class="w-full bg-slate-950 p-3 rounded-xl text-white outline-none"></div>
                 <div><label class="text-xs text-slate-500 block mb-1">WhatsApp</label><input type="text" id="editFormWA" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
@@ -499,10 +573,7 @@
     <div id="renewFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-5 shadow-2xl space-y-4 my-auto">
             <h3 class="text-xl font-bold text-blue-400 flex items-center gap-2"><i class="fa-solid fa-arrows-spin"></i> Perpanjang / Mutasi Upgrade Member</h3>
-            <div id="renewMemberIdentityBox" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1 text-slate-400">
-                <p>Nama Pelanggan: <b id="renewLabelNama" class="text-white text-sm"></b></p>
-                <p>WhatsApp / Email: <span id="renewLabelKontak" class="text-slate-300"></span></p>
-            </div>
+            <div id="renewMemberIdentityBox" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1 text-slate-400"><p>Nama Pelanggan: <b id="renewLabelNama" class="text-white text-sm"></b></p><p>WhatsApp / Email: <span id="renewLabelKontak" class="text-slate-300"></span></p></div>
             <div class="grid grid-cols-2 gap-3 text-sm">
                 <div><label class="text-xs text-slate-500 block mb-1">Tipe Pembeli</label><select id="renewFormJenis" onchange="autoFillRenewPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select></div>
                 <div><label class="text-xs text-slate-500 block mb-1">Durasi Hari Baru</label><input type="number" id="renewFormDurasi" value="30" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
@@ -525,18 +596,10 @@
         <div class="bg-slate-900 border border-indigo-500/30 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl">
             <h3 class="text-lg font-bold text-indigo-400 flex items-center gap-2"><i class="fa-solid fa-user-tie"></i> Tambah Reseller Baru ke Cloud</h3>
             <div class="space-y-3 text-sm">
-                <div><label class="text-xs text-slate-400 block mb-1">Nama Reseller</label><input type="text" id="resellerDbName" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none" placeholder="Masukkan nama reseller"></div>
+                <div><label class="text-xs text-slate-400 block mb-1">Nama Reseller</label><input type="text" id="resellerDbName" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none" placeholder="Nama reseller"></div>
                 <div class="grid grid-cols-3 gap-2">
-                    <div class="col-span-1">
-                        <label class="text-xs text-slate-400 block mb-1">Negara</label>
-                        <select id="resellerDbCountry" class="w-full bg-slate-950 border border-slate-800 p-3 text-xs font-bold text-slate-300 rounded-xl cursor-pointer">
-                            <option value="62">ID (+62)</option><option value="60">MY (+60)</option><option value="65">SG (+65)</option>
-                        </select>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="text-xs text-slate-400 block mb-1">No WhatsApp</label>
-                        <input type="text" id="resellerDbWa" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none" placeholder="Contoh: 81234567">
-                    </div>
+                    <div class="col-span-1"><label class="text-xs text-slate-400 block mb-1">Negara</label><select id="resellerDbCountry" class="w-full bg-slate-950 border border-slate-800 p-3 text-xs font-bold text-slate-300 rounded-xl cursor-pointer"><option value="62">ID (+62)</option><option value="60">MY (+60)</option><option value="65">SG (+65)</option></select></div>
+                    <div class="col-span-2"><label class="text-xs text-slate-400 block mb-1">No WhatsApp</label><input type="text" id="resellerDbWa" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none" placeholder="81234567"></div>
                 </div>
             </div>
             <div class="flex gap-2 text-xs font-bold pt-2"><button onclick="closeAddResellerModal()" class="flex-1 bg-slate-800 p-3 rounded-xl">Batal</button><button onclick="submitResellerDatabase()" class="flex-1 bg-indigo-600 text-white p-3 rounded-xl uppercase">Simpan Cloud 🔒</button></div>
@@ -544,38 +607,94 @@
     </div>
 
     <script>
-        function toggleBackdateFields() {
-            const chk = document.getElementById('checkBackdate').checked;
-            document.getElementById('backdateFields').classList.toggle('hidden', !chk);
-            if(chk) {
-                document.getElementById('customTglDaftar').value = new Date().toISOString().split('T')[0];
-                let exp = new Date(); exp.setDate(exp.getDate() + 30);
-                document.getElementById('customTglExpired').value = exp.toISOString().split('T')[0];
+        // KOREKSI LOGIN: ENKRIPSI PASSWORD ENCODE BASE64 SEBELUM DIKIRIM KE GOOGLE SCRIPTS API
+        async function handleLogin(isAutoLogin = false) {
+            const u = document.getElementById('usernameInput').value.trim();
+            const p = document.getElementById('passwordInput').value.trim();
+            const btn = document.getElementById('btnLogin'); const err = document.getElementById('loginError');
+            if(!u || !p) return; btn.disabled = true; btn.innerHTML = 'Memverifikasi...'; err.classList.add('hidden');
+            
+            // Mengubah plain text password menjadi Base64 demi keamanan USERS sheet
+            const securedPassword = btoa(p);
+            
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: securedPassword }) });
+                const res = await response.json();
+                if(res.status === "success") {
+                    localStorage.setItem('milio_user', u); localStorage.setItem('milio_pass', p);
+                    currentUser = res.user; currentPasswordPlain = p; applyBrandIdentity(currentUser.namaBisnis, currentUser.logoUrl, currentUser.role);
+                    clientCurrency = localStorage.getItem('milio_currency') || res.user.currency || "IDR";
+                    clientLanguage = localStorage.getItem('milio_lang') || res.user.language || "ID";
+                    localStorage.setItem('milio_lang', clientLanguage); localStorage.setItem('milio_currency', clientCurrency);
+                    document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
+                    
+                    loadCachedLocalStorageData(); // Memuat data cache local instan
+                    await loadInitData(); await fetchResellersDatabase(); await refreshMembersList();
+                } else { err.innerText = res.message; err.classList.remove('hidden'); if(isAutoLogin) handleLogout(); }
+            } catch (e) { err.innerText = "Koneksi Gagal! Periksa API URL Anda."; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.innerHTML = 'MASUK KE DASHBOARD'; }
+        }
+
+        // KOREKSI UTAMA: REAKTIVASI SELESAI FUNGSI INPUT MEMBER BARU AGAR TIDAK MACET BENTROK
+        function openFormInputBaru() {
+            document.getElementById('memberForm').reset();
+            document.getElementById('formDurasiKustom').value = "30";
+            if(document.getElementById('checkBackdate')) document.getElementById('checkBackdate').checked = false;
+            document.getElementById('backdateFields').classList.add('hidden');
+            handleJenisPembeliChange();
+            populateFormDropdowns();
+            switchTab('input');
+        }
+
+        async function refreshMembersList() {
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getMembersData", resellerId: currentUser.userId, role: currentUser.role }) });
+            const res = await response.json(); 
+            if(res.status === "success") { 
+                membersData = res.data; 
+                localStorage.setItem('milio_cache_members', JSON.stringify(res.data)); // Set data cache terbaru
+                if (document.getElementById('tab-dashboard').classList.contains('active')) { filterDashboard(currentDashboardFilterMode); } 
+                else { filterFinance(currentFinanceMode); }
             }
         }
 
-        function toggleUpgradeMutationMode() {
-            const isMutation = document.getElementById('checkUpgradeMutation').checked;
-            document.getElementById('boxEditDurasi').classList.toggle('hidden', isMutation);
-            document.getElementById('lblFormModal').innerText = isMutation ? "Selisih Modal Tambahan:" : "Harga Modal:";
-            document.getElementById('lblFormJual').innerText = isMutation ? "Selisih Jual Tambahan:" : "Harga Jual:";
-            autoFillEditPrices();
+        async function refreshLiveServerData() {
+            document.getElementById('globalLoader').classList.remove('hidden');
+            await loadInitData(); await fetchResellersDatabase(); await refreshMembersList();
+            document.getElementById('globalLoader').classList.add('hidden');
+            alert("Database Cloud Google Sheets Berhasil Disinkronkan Terbaru! 🌪️");
         }
 
-        function updateResetScopeOptions() {
-            const type = document.getElementById('resetTypeSelect').value; const scopeSelect = document.getElementById('resetScopeSelect'); scopeSelect.innerHTML = '';
-            if (type === 'all') { scopeSelect.innerHTML = '<option value="ALL">Wipeout Seluruh Isi Database Asset</option>'; } 
-            else { masterCompanies.forEach(c => { scopeSelect.innerHTML += `<option value="${c}">${c}</option>`; }); }
+        async function fetchResellersDatabase() {
+            try {
+                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getResellers", userId: currentUser.userId }) });
+                const res = await r.json();
+                if(res.status === "success") { masterResellers = res.data; localStorage.setItem('milio_cache_resellers', JSON.stringify(res.data)); populateResellerDropdown(); }
+            } catch (e) { console.error("Gagal sinkron database reseller"); }
         }
 
-        async function triggerAdvancedReset() {
-            const type = document.getElementById('resetTypeSelect').value; const scope = document.getElementById('resetScopeSelect').value;
-            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Action ini permanen!")) {
-                if(validatePasswordSecurity()) {
-                    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope }) });
-                    window.location.reload();
-                }
-            }
+        function openAddResellerModal() { document.getElementById('resellerDbName').value = ""; document.getElementById('resellerDbWa').value = ""; document.getElementById('addResellerModal').classList.remove('hidden'); }
+        function closeAddResellerModal() { document.getElementById('addResellerModal').classList.add('hidden'); }
+        async function submitResellerDatabase() {
+            const name = document.getElementById('resellerDbName').value.trim(); const country = document.getElementById('resellerDbCountry').value; let wa = document.getElementById('resellerDbWa').value.trim();
+            if(!name || !wa) { alert("Semua wajib diisi!"); return; } if(wa.startsWith("0")) wa = wa.slice(1);
+            closeAddResellerModal(); document.getElementById('globalLoader').classList.remove('hidden');
+            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addReseller", userId: currentUser.userId, name: name, wa: wa, country: country }) });
+            await fetchResellersDatabase(); document.getElementById('globalLoader').classList.add('hidden');
+        }
+
+        function handleJenisPembeliChange() {
+            const j = document.getElementById('formJenis').value; const wrap = document.getElementById('wrapperSelectResellerDb');
+            if(j === "Reseller") { wrap.classList.remove('hidden'); populateResellerDropdown(); } 
+            else { wrap.classList.add('hidden'); document.getElementById('memberForm').reset(); document.getElementById('formJenis').value = "User Langsung"; document.getElementById('formDurasiKustom').value = "30"; }
+            autoFillPrices();
+        }
+        function populateResellerDropdown() {
+            const select = document.getElementById('formSelectResellerDb'); if(!select) return;
+            select.innerHTML = '<option value="">-- Klik Pilih Nama Reseller Om --</option>';
+            masterResellers.forEach((r, idx) => { select.innerHTML += `<option value="${idx}">${r.name} (+${r.country}${r.wa})</option>`; });
+        }
+        function autoFillResellerData() {
+            const idx = document.getElementById('formSelectResellerDb').value; if(idx === "") return;
+            const res = masterResellers[parseInt(idx)]; if(res) { document.getElementById('formNama').value = res.name; document.getElementById('formCountryCode').value = res.country; document.getElementById('formWA').value = res.wa; }
         }
 
         function switchTab(tabId) {
@@ -589,247 +708,11 @@
                 if (tabId === 'dashboard') { filterDashboard(currentDashboardFilterMode); } 
                 else if (tabId === 'finance') { filterFinance(currentFinanceMode); }
                 if(loader) loader.classList.add('hidden');
-            }, 250);
+            }, 200);
         }
-        
-        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); handleJenisPembeliChange(); populateFormDropdowns(); switchTab('input'); }
-        
-        function validatePasswordSecurity() { 
-            const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN OWNER:\nMasukkan Password Akun Om untuk mengonfirmasi:" : "🔐 OWNER SECURITY VALIDATION:\nEnter Your Account Password to Confirm:";
-            const pin = prompt(msg); return (pin === currentPasswordPlain); 
-        }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Check status Light/Dark mode history user
-            const savedTheme = localStorage.getItem('milio_theme_mode');
-            if(savedTheme === 'light') { document.body.classList.add('light-theme'); const icon = document.getElementById('themeIconBtn'); if(icon) icon.className = 'fa-solid fa-moon text-indigo-500'; }
-            
-            await fetchLiveGlobalRates(); 
-            const savedUser = localStorage.getItem('milio_user'); const savedPass = localStorage.getItem('milio_pass');
-            if (savedUser && savedPass) {
-                document.getElementById('usernameInput').value = savedUser; document.getElementById('passwordInput').value = savedPass;
-                await handleLogin(true);
-            }
-        });
-
-        async function handleLogin(isAutoLogin = false) {
-            const u = document.getElementById('usernameInput').value.trim(); const p = document.getElementById('passwordInput').value.trim();
-            const btn = document.getElementById('btnLogin'); const err = document.getElementById('loginError');
-            if(!u || !p) return; btn.disabled = true; btn.innerHTML = 'Memverifikasi...'; err.classList.add('hidden');
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
-                const res = await response.json();
-                if(res.status === "success") {
-                    localStorage.setItem('milio_user', u); localStorage.setItem('milio_pass', p);
-                    currentUser = res.user; currentPasswordPlain = p; applyBrandIdentity(currentUser.namaBisnis, currentUser.logoUrl, currentUser.role);
-                    clientCurrency = localStorage.getItem('milio_currency') || res.user.currency || "IDR";
-                    clientLanguage = localStorage.getItem('milio_lang') || res.user.language || "ID";
-                    localStorage.setItem('milio_lang', clientLanguage); localStorage.setItem('milio_currency', clientCurrency);
-                    document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
-                    await loadInitData(); await fetchResellersDatabase(); await refreshMembersList();
-                } else { err.innerText = res.message; err.classList.remove('hidden'); if(isAutoLogin) handleLogout(); }
-            } catch (e) { err.innerText = "Koneksi Gagal! Periksa API URL Anda."; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.innerHTML = 'MASUK KE DASHBOARD'; }
-        }
-
-        async function lockClientPreferences() {
-            const languageVal = document.getElementById('setLanguageSelector').value; const currencyVal = document.getElementById('setCurrencySelector').value;
-            if(validatePasswordSecurity()) {
-                localStorage.setItem('milio_lang', languageVal); localStorage.setItem('milio_currency', currencyVal);
-                clientLanguage = languageVal; clientCurrency = currencyVal; applyGlobalLanguageUI();
-                await executePrefsCloudSave(currencyVal, languageVal);
-            } else {
-                alert(clientLanguage === "ID" ? "❌ Validasi Gagal: Password Salah!" : "❌ Validation Failed!");
-                if(document.getElementById('setLanguageSelector')) document.getElementById('setLanguageSelector').value = clientLanguage;
-                if(document.getElementById('setCurrencySelector')) document.getElementById('setCurrencySelector').value = clientCurrency;
-            }
-        }
-
-        async function executePrefsCloudSave(currencyVal, languageVal) {
-            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal };
-            try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); window.location.reload(); } catch (e) { window.location.reload(); }
-        }
-
-        function applyBrandIdentity(name, logo, role) {
-            if(document.getElementById('brandName')) document.getElementById('brandName').innerText = name; 
-            if(document.getElementById('userRole')) document.getElementById('userRole').innerText = role;
-            const logoImg = document.getElementById('appLogo'), defaultIcon = document.getElementById('defaultLogoIcon');
-            if(logoImg && defaultIcon) {
-                if(logo && logo.trim() !== "") { logoImg.src = logo; logoImg.classList.remove('hidden'); defaultIcon.classList.add('hidden'); }
-                else { logoImg.classList.add('hidden'); defaultIcon.classList.remove('hidden'); }
-            }
-        }
-
-        async function loadInitData() {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getFormInitData" }) });
-            const res = await response.json(); 
-            if(res.status === "success") { 
-                masterCompanies = res.companies; masterPackages = res.packages; 
-                renderCompanyMenus(); populateFormDropdowns(); applyGlobalLanguageUI(); 
-            }
-        }
-
-        // AMBIL DATA DATABASE RESELLER DARI GOOGLE SHEETS CLOUD
-        async function fetchResellersDatabase() {
-            try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getResellers", userId: currentUser.userId }) });
-                const res = await r.json();
-                if(res.status === "success") { masterResellers = res.data; populateResellerDropdown(); }
-            } catch (e) { console.error("Error loading resellers base"); }
-        }
-
-        function openAddResellerModal() { document.getElementById('resellerDbName').value = ""; document.getElementById('resellerDbWa').value = ""; document.getElementById('addResellerModal').classList.remove('hidden'); }
-        function closeAddResellerModal() { document.getElementById('addResellerModal').classList.add('hidden'); }
-
-        async function submitResellerDatabase() {
-            const name = document.getElementById('resellerDbName').value.trim();
-            const country = document.getElementById('resellerDbCountry').value;
-            let wa = document.getElementById('resellerDbWa').value.trim();
-            if(!name || !wa) { alert("Semua kolom wajib diisi!"); return; }
-            if(wa.startsWith("0")) wa = wa.slice(1);
-
-            const payload = { action: "addReseller", userId: currentUser.userId, name: name, wa: wa, country: country };
-            closeAddResellerModal();
-            document.getElementById('globalLoader').classList.remove('hidden');
-            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            await fetchResellersDatabase();
-            document.getElementById('globalLoader').classList.add('hidden');
-            alert("Database Reseller Sukses Disimpan Permanen! 🔒");
-        }
-
-        function handleJenisPembeliChange() {
-            const j = document.getElementById('formJenis').value;
-            const wrap = document.getElementById('wrapperSelectResellerDb');
-            if(j === "Reseller") { wrap.classList.remove('hidden'); populateResellerDropdown(); } 
-            else { wrap.classList.add('hidden'); document.getElementById('formNama').value = ""; document.getElementById('formWA').value = ""; }
-            autoFillPrices();
-        }
-
-        function populateResellerDropdown() {
-            const select = document.getElementById('formSelectResellerDb'); if(!select) return;
-            select.innerHTML = '<option value="">-- Klik Pilih Nama Reseller Om --</option>';
-            masterResellers.forEach((r, idx) => { select.innerHTML += `<option value="${idx}">${r.name} (+${r.country}${r.wa})</option>`; });
-        }
-
-        function autoFillResellerData() {
-            const idx = document.getElementById('formSelectResellerDb').value;
-            if(idx === "") return;
-            const res = masterResellers[parseInt(idx)];
-            if(res) {
-                document.getElementById('formNama').value = res.name;
-                document.getElementById('formCountryCode').value = res.country;
-                document.getElementById('formWA').value = res.wa;
-            }
-        }
-
-        function renderCompanyMenus() {
-            const sideMenu = document.getElementById('companyMenuContainer'), formProdComp = document.getElementById('prodFormComp');
-            const translation = dictionary[clientLanguage] || dictionary.ID;
-            if(sideMenu) sideMenu.innerHTML = `<button onclick="filterCompanyData('ALL')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 hover:bg-slate-900 text-xs font-semibold cursor-pointer shrink-0">📁 ${translation.lblTampilkanSemua}</button>`;
-            if(formProdComp) {
-                formProdComp.innerHTML = '';
-                masterCompanies.forEach(comp => {
-                    if(sideMenu) sideMenu.innerHTML += `<button onclick="filterCompanyData('${comp}')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 hover:bg-slate-900 text-xs shrink-0"><span>Mitra: ${comp}</span></button>`;
-                    formProdComp.innerHTML += `<option value="${comp}">${comp}</option>`;
-                });
-            }
-        }
-
-        function renderMasterCompanyList() {
-            const listContainer = document.getElementById('masterCompanyList'); if(!listContainer) return;
-            listContainer.innerHTML = ''; const searchVal = document.getElementById('vendorSearchInput') ? document.getElementById('vendorSearchInput').value.toLowerCase().trim() : "";
-            const translation = dictionary[clientLanguage] || dictionary.ID;
-            masterCompanies.forEach(comp => {
-                if(searchVal !== "" && !comp.toLowerCase().includes(searchVal)) return;
-                listContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-900 text-xs gap-2"><span class="font-semibold text-slate-300 truncate">🏢 ${comp}</span><div class="flex gap-1 shrink-0"><button onclick="editCompanyName('${comp}')" class="bg-amber-600/20 border border-amber-500/30 text-amber-400 px-2 py-1 rounded-lg font-bold text-[10px]">${translation.btnEditVendor}</button><button onclick="deleteCompany('${comp}')" class="bg-red-600/20 border border-red-500/30 text-red-400 px-2 py-1 rounded-lg font-bold text-[10px]">${translation.lblHapus}</button></div></div>`;
-            });
-        }
-
-        async function editCompanyName(oldName) {
-            if(!validatePasswordSecurity()) { alert("❌ Akses Ditolak!"); return; }
-            const newName = prompt(`✏️ EDIT NAMA VENDOR:\nUbah nama "${oldName}" menjadi:`, oldName);
-            if(newName === null || newName.trim() === "" || newName.trim() === oldName) return;
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim() }) });
-                if((await response.json()).status === "success") { await loadInitData(); await refreshMembersList(); alert("🚀 Sukses Update!"); }
-            } catch (e) { alert("Error!"); }
-        }
-
-        async function deleteCompany(name) { 
-            if(!validatePasswordSecurity()) return; 
-            if(!confirm(`⚠️ WARNING:\nMenghapus vendor "${name}" otomatis membersihkan seluruh data terkait. Yakin?`)) return;
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
-                if((await response.json()).status === "success") { await loadInitData(); await refreshMembersList(); alert("🗑️ Sukses!"); }
-            } catch (e) { alert("Error!"); }
-        }
-
-        function populateFormDropdowns() {
-            const formComp = document.getElementById('formPerusahaan'); 
-            if(formComp) {
-                formComp.innerHTML = ''; masterCompanies.forEach(c => formComp.innerHTML += `<option value="${c}">${c}</option>`); 
-                filterPackageDropdown(); renderMasterProductTable();
-            }
-        }
-
-        function filterPackageDropdown() {
-            const formPerusahaanEl = document.getElementById('formPerusahaan'); const formPkg = document.getElementById('formPaket');
-            if(formPerusahaanEl && formPkg) {
-                const selectedComp = formPerusahaanEl.value; formPkg.innerHTML = '';
-                masterPackages.filter(p => p.perusahaan === selectedComp).forEach(p => { formPkg.innerHTML += `<option value="${p.id}">${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']' : ''}</option>`; });
-                autoFillPrices();
-            }
-        }
-
-        function autoFillPrices() {
-            const formPkg = document.getElementById('formPaket'); const formJenis = document.getElementById('formJenis');
-            if(formPkg && formJenis) {
-                const selectedPkgId = formPkg.value; const jenis = formJenis.value; const pkg = masterPackages.find(p => p.id === selectedPkgId);
-                if(pkg) {
-                    const rate = currencyRates[clientCurrency] || 1;
-                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                    const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-                    if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                    if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
-                }
-            }
-        }
-
-        async function submitMemberForm() {
-            const btn = document.getElementById('btnSubmitMember'); const originalText = btn.innerText;
-            btn.innerText = 'MENYIMPAN DATA...'; btn.disabled = true;
-
-            let inputWa = document.getElementById('formWA').value.trim(); const countryCode = document.getElementById('formCountryCode').value;
-            if(countryCode !== "CUSTOM") { if(inputWa.startsWith("0")) inputWa = inputWa.slice(1); inputWa = countryCode + inputWa; }
-            const isCustomDate = document.getElementById('checkBackdate').checked; const selectedPkgId = document.getElementById('formPaket').value;
-            const pkg = masterPackages.find(p => p.id === selectedPkgId);
-            if(!pkg) { alert("Paket tidak valid!"); btn.innerText = originalText; btn.disabled = false; return; }
-
-            const jenisPembeli = document.getElementById('formJenis').value; const hargaJual = (jenisPembeli === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-            const payload = {
-                action: "addMember", resellerId: currentUser.userId, namaMember: document.getElementById('formNama').value, noWhatsapp: inputWa, email: document.getElementById('formEmail').value, perusahaanSumber: document.getElementById('formPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' [' + pkg.varian + ']' : ''), jenisPembeli: jenisPembeli, isCustomDate: isCustomDate, customTglDaftar: document.getElementById('customTglDaftar').value, customTglExpired: document.getElementById('customTglExpired').value, durasiHari: document.getElementById('formDurasiKustom').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual
-            };
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                if((await response.json()).status === "success") { alert("Data Pelanggan Berhasil Disimpan! 🚀"); openFormInputBaru(); await refreshMembersList(); switchTab('dashboard'); }
-            } catch (error) { alert("Terjadi kesalahan jaringan!"); } finally { btn.innerText = originalText; btn.disabled = false; }
-        }
-
-        async function refreshMembersList() {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getMembersData", resellerId: currentUser.userId, role: currentUser.role }) });
-            const res = await response.json(); 
-            if(res.status === "success") { 
-                membersData = res.data; 
-                if (document.getElementById('tab-dashboard').classList.contains('active')) { filterDashboard(currentDashboardFilterMode); } 
-                else { filterFinance(currentFinanceMode); }
-            }
-        }
-
-        function filterCompanyData(compName) { activeFilterCompany = compName; renderMembersTable(); switchTab('dashboard'); }
-        function searchMembers() { renderMembersTable(); }
 
         function filterDashboard(mode) {
-            currentDashboardFilterMode = mode;
-            document.querySelectorAll("#tab-dashboard button[id^='btn-dash-']").forEach(b => b.classList.remove('active-filter-btn'));
+            currentDashboardFilterMode = mode; document.querySelectorAll("#tab-dashboard button[id^='btn-dash-']").forEach(b => b.classList.remove('active-filter-btn'));
             const btn = document.getElementById('btn-dash-' + mode); if(btn) btn.classList.add('active-filter-btn');
             const skg = new Date(); let start, end;
             if(mode === 'today') { start = new Date(); start.setHours(0,0,0,0); end = new Date(); end.setHours(23,59,59,999); } 
@@ -838,10 +721,89 @@
             else if(mode === 'monthly') { start = new Date(skg.getFullYear(), skg.getMonth(), 1); end = new Date(skg.getFullYear(), skg.getMonth() + 1, 0, 23, 59, 59, 999); } 
             else if(mode === 'custom') { start = new Date(document.getElementById('dashStart').value); start.setHours(0,0,0,0); end = new Date(document.getElementById('dashEnd').value); end.setHours(23,59,59,999); } 
             else { start = new Date(2000, 0, 1); end = new Date(2100, 0, 1); }
-            
             filteredMembers = membersData.filter(m => { const t = parseJsonDate(m.timestamp); return t >= start && t <= end; });
             filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
             renderMembersTable();
+        }
+
+        // KOREKSI SANGAT UTAMA: SINKRONISASI FILTER SEARCH BAR DENGAN TOMBOL DOWNLOAD EXCEL & PDF EXPORT
+        function getCurrentlyDisplayedMembers() {
+            const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : "";
+            return filteredMembers.filter(m => {
+                if (activeFilterCompany !== "ALL" && m.perusahaan !== activeFilterCompany) return false;
+                if (query !== "") {
+                    const matchNama = m.namaMember ? m.namaMember.toLowerCase().includes(query) : false;
+                    const matchEmail = m.email ? m.email.toLowerCase().includes(query) : false;
+                    const matchWA = m.noWhatsapp ? m.noWhatsapp.toString().toLowerCase().includes(query) : false;
+                    return (matchNama || matchEmail || matchWA);
+                } return true;
+            });
+        }
+
+        function exportDashboardData(type) {
+            // MENGAMBIL HANYA MEMBER YANG SEDANG TAMPIL DI LAYAR HASIL SEARCH BAR (BUKAN SELURUH ISI SHEET!)
+            const exportTargetList = getCurrentlyDisplayedMembers();
+            if(exportTargetList.length === 0) { alert("Data member kosong, tidak ada yang bisa di-ekspor!"); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const noteText = `Laporan Hasil Filter Ekspor Pencarian Member Base`;
+                
+            if(type === 'excel') {
+                const rate = currencyRates[clientCurrency] || 1;
+                let content = exportTargetList.map(m => {
+                    let obj = {}; obj[lang.xlHeaderTimestamp] = m.timestamp; obj[lang.xlHeaderName] = m.namaMember; obj[lang.xlHeaderWA] = m.noWhatsapp; obj[lang.xlHeaderEmail] = m.email; obj[lang.xlHeaderPlatform] = m.perusahaan; obj[lang.xlHeaderPackage] = m.namaPaket; obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate); obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate); obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate); obj[lang.xlHeaderCurrency] = clientCurrency; obj[lang.xlHeaderExpired] = m.tglExpired; return obj;
+                });
+                const ws = XLSX.utils.json_to_sheet([]); XLSX.utils.sheet_add_aoa(ws, [[noteText], []], { origin: "A1" }); XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
+                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Filtered Base"); XLSX.writeFile(wb, `MILIOLAB_Filtered_Export.xlsx`);
+            } else {
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(13); doc.setFont("Helvetica", "bold");
+                doc.text(`LAPORAN MEMBER AKSES TERFILTER`, 14, 15); doc.setFontSize(8.5); doc.setFont("Helvetica", "normal"); doc.text(noteText, 14, 21); doc.setDrawColor(34, 197, 94); doc.line(14, 24, 195, 24);
+                let rows = exportTargetList.map(m => [parseJsonDate(m.timestamp).toISOString().split('T')[0], m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)]);
+                doc.autoTable({ startY: 27, head: [[lang.xlHeaderTimestamp, lang.xlHeaderName, lang.xlHeaderPlatform, lang.xlHeaderPackage, lang.xlHeaderProfit]], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
+                doc.save(`MILIOLAB_Filtered_Export.pdf`);
+            }
+        }
+
+        function renderMembersTable() {
+            const tbody = document.getElementById('memberTableBody'); if(!tbody) return; tbody.innerHTML = '';
+            let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date(); const lang = dictionary[clientLanguage] || dictionary.ID;
+            const hariIniStr = new Date().toISOString().split('T')[0];
+            
+            // Menggunakan hasil data pencarian search bar secara real-time
+            const displayList = getCurrentlyDisplayedMembers();
+            
+            displayList.forEach(m => {
+                const tTimestamp = parseJsonDate(m.timestamp); const tExpired = parseJsonDate(m.tglExpired);
+                const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24)); totalProfit += parseFloat(m.profit); 
+                let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
+                let cleanLastFu = ""; if (m.lastFuDate) { let pFu = parseJsonDate(m.lastFuDate); if (pFu.getFullYear() > 1970) { cleanLastFu = `${pFu.getFullYear()}-${String(pFu.getMonth() + 1).padStart(2, '0')}-${String(pFu.getDate()).padStart(2, '0')}`; } }
+                const sudahFuHariIni = (cleanLastFu === hariIniStr); const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
+                const isCompleted = (m.status !== "Aktif");
+
+                if (isCompleted) { textSisa = `<span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">${lang.statusSelesai}</span>`; rowStyle = "opacity-40 text-slate-500 bg-slate-950/10"; btnAction = `<div class="w-[76px]"></div>`; } 
+                else {
+                    if(diffDays < 0) {
+                        if (Math.abs(diffDays) <= 15) {
+                            let teksWaExpired = lang.txtWaExpired.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{BRAND}', currentUser.namaBisnis);
+                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${encodeURIComponent(teksWaExpired)}" target="_blank" class="animate-pulse bg-black text-red-500 border border-red-500 font-bold px-2 py-1.5 rounded-lg text-xs text-center block max-w-[85px]">${lang.btnChat}</a>`;
+                        } else { btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`; }
+                        textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
+                    } else {
+                        activeCount++;
+                        if(diffDays <= 3) {
+                            textSisa = `<span class="text-amber-400 font-bold">H-${diffDays} ⚠️</span>`; rowStyle = "bg-amber-950/10";
+                            let teksWaReminder = lang.txtWaReminder.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{DAYS}', diffDays).replace('{BRAND}', currentUser.namaBisnis);
+                            if (!sudahFuHariIni) { followCount++; btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${encodeURIComponent(teksWaReminder)}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="animate-pulse bg-red-600 text-white font-bold px-2 py-1.5 rounded-lg text-xs text-center block max-w-[85px]">${lang.btnFollow}</a>`; } else { btnAction = `<div class="w-[76px]"></div>`; }
+                        } else { textSisa = `<span class="text-green-400 font-mono">${diffDays} ${lang.statusHari} ✅</span>`; btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusAman}</span>`; }
+                    }
+                }
+                const tglDaftarClean = tTimestamp.getFullYear() > 1970 ? tTimestamp.toISOString().split('T')[0] : "-";
+                const tglExpiredClean = tExpired.getFullYear() > 1970 ? tExpired.toISOString().split('T')[0] : "-";
+                
+                tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40"><td class="${isReseller ? 'p-3 font-bold text-yellow-400':'p-3 font-semibold text-white'}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td><td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br><span class="text-slate-300">${m.namaPaket}</span></td><td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td><td class="p-3 font-mono text-xs">${tglDaftarClean}</td><td class="p-3 font-mono text-xs">${tglExpiredClean}</td><td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white"><i class="fa-solid fa-print"></i></button></td><td class="p-3"><div class="flex gap-1 items-center justify-center">${btnAction}<button onclick="openEditModal(${m.rowId})" class="bg-amber-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">✏️</button><button onclick="openRenewModal(${m.rowId})" class="bg-blue-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">🔄</button>${!isCompleted ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 px-2 py-1.5 rounded-lg text-xs font-bold">${lang.btnDone}</button>`:''}<button onclick="deleteMember(${m.rowId})" class="text-red-500 text-sm ml-1"><i class="fa-solid fa-trash-can"></i></button></div></td></tr>`;
+            });
+            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount; 
+            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount; 
+            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
         }
 
         function filterFinance(mode) {
@@ -855,104 +817,45 @@
             else { start = new Date(2000, 0, 1); end = new Date(2100, 0, 1); }
 
             filteredMembers = membersData.filter(m => { const t = parseJsonDate(m.timestamp); return t >= start && t <= end; });
-            filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
-            
-            let omset = 0, modal = 0, cuan = 0;
-            let chartLabels = []; let chartOmsetDataset = []; let chartCuanDataset = [];
-
-            filteredMembers.forEach(m => { 
-                omset += parseFloat(m.hargaJual) || 0; modal += parseFloat(m.hargaBeli) || 0; cuan += parseFloat(m.profit) || 0; 
-                chartLabels.push(m.namaMember.substring(0, 8)); chartOmsetDataset.push(m.hargaJual); chartCuanDataset.push(m.profit);
-            });
+            let omset = 0, modal = 0, cuan = 0; let labels = []; let oData = []; let pData = [];
+            filteredMembers.forEach(m => { omset += parseFloat(m.hargaJual); modal += parseFloat(m.hargaBeli); cuan += parseFloat(m.profit); labels.push(m.namaMember.substring(0,8)); oData.push(m.hargaJual); pData.push(m.profit); });
             
             if(document.getElementById('finOmset')) document.getElementById('finOmset').innerText = convertAndFormat(omset); 
             if(document.getElementById('finModal')) document.getElementById('finModal').innerText = convertAndFormat(modal); 
             if(document.getElementById('finCuan')) document.getElementById('finCuan').innerText = convertAndFormat(cuan);
-            
-            // RENDERING CORE CHART GRAPHICS (CHART.JS INTEGRATION)
-            const ctx = document.getElementById('canvasFinanceChart').getContext('2d');
-            if(financeChart) financeChart.destroy();
-            
-            const isLight = document.body.classList.contains('light-theme');
-            const gridColor = isLight ? '#e2e8f0' : '#1e293b';
-            const textColor = isLight ? '#0f172a' : '#94a3b8';
 
+            const ctx = document.getElementById('canvasFinanceChart').getContext('2d'); if(financeChart) financeChart.destroy();
+            const isLight = document.body.classList.contains('light-theme');
             financeChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: chartLabels.reverse().slice(-10), // Ambil 10 data transaksi terakhir agar rapi
-                    datasets: [
-                        { label: 'Gross Omset', data: chartOmsetDataset.reverse().slice(-10), backgroundColor: '#22c55e', borderRadius: 6 },
-                        { label: 'Net Profit', data: chartCuanDataset.reverse().slice(-10), backgroundColor: '#3b82f6', borderRadius: 6 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: textColor, font: { family: 'Urbanist', weight: 'bold' } } } },
-                    scales: {
-                        x: { grid: { color: gridColor }, ticks: { color: textColor } },
-                        y: { grid: { color: gridColor }, ticks: { color: textColor } }
-                    }
-                }
+                data: { labels: labels.reverse().slice(-10), datasets: [{ label: 'Gross Omset', data: oData.reverse().slice(-10), backgroundColor: '#22c55e' }, { label: 'Net Profit', data: pData.reverse().slice(-10), backgroundColor: '#3b82f6' }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: isLight ? '#0f172a':'#94a3b8' } }, y: { ticks: { color: isLight ? '#0f172a':'#94a3b8' } } } }
             });
             renderMembersTable();
         }
 
-        function renderMembersTable() {
-            const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
-            tbody.innerHTML = ''; let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date();
-            const lang = dictionary[clientLanguage] || dictionary.ID;
-            const localDate = new Date(); const yyyy = localDate.getFullYear(); const mm = String(localDate.getMonth() + 1).padStart(2, '0'); const dd = String(localDate.getDate()).padStart(2, '0');
-            const hariIniStr = `${yyyy}-${mm}-${dd}`; const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : "";
-            
-            filteredMembers.forEach(m => {
-                if (activeFilterCompany !== "ALL" && m.perusahaan !== activeFilterCompany) return;
-                if (query !== "") {
-                    const matchNama = m.namaMember ? m.namaMember.toLowerCase().includes(query) : false;
-                    const matchEmail = m.email ? m.email.toLowerCase().includes(query) : false;
-                    const matchWA = m.noWhatsapp ? m.noWhatsapp.toString().toLowerCase().includes(query) : false;
-                    if (!matchNama && !matchEmail && !matchWA) return; 
-                }
-                const tTimestamp = parseJsonDate(m.timestamp); const tExpired = parseJsonDate(m.tglExpired);
-                const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24)); totalProfit += parseFloat(m.profit); 
-                let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
-                let cleanLastFu = "";
-                if (m.lastFuDate) { let pFu = parseJsonDate(m.lastFuDate); if (pFu.getFullYear() > 1970) { cleanLastFu = `${pFu.getFullYear()}-${String(pFu.getMonth() + 1).padStart(2, '0')}-${String(pFu.getDate()).padStart(2, '0')}`; } }
-                const sudahFuHariIni = (cleanLastFu === hariIniStr); const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
-                const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
-                const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
-                const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
-                const isCompleted = (m.status !== "Aktif");
-
-                if (isCompleted) { textSisa = `<span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">${lang.statusSelesai}</span>`; rowStyle = "opacity-40 text-slate-500 bg-slate-950/10"; btnAction = `<div class="w-[76px]"></div>`; } 
-                else {
-                    if(diffDays < 0) {
-                        if (Math.abs(diffDays) <= 15) {
-                            let teksWaExpired = lang.txtWaExpired.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{BRAND}', currentUser.namaBisnis);
-                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${encodeURIComponent(teksWaExpired)}" target="_blank" class="animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg px-2.5 py-1.5 rounded-lg text-xs text-center block max-w-[85px]">${lang.btnChat}</a>`;
-                        } else { btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`; }
-                        textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
-                    } else {
-                        activeCount++;
-                        if(diffDays <= 3) {
-                            textSisa = `<span class="text-amber-400 font-bold">H-${diffDays} ⚠️</span>`; rowStyle = "bg-amber-950/10";
-                            let teksWaReminder = lang.txtWaReminder.replace('{NAME}', m.namaMember).replace('{PACKAGE}', m.namaPaket).replace('{EMAIL}', m.email).replace('{DAYS}', diffDays).replace('{BRAND}', currentUser.namaBisnis);
-                            if (!sudahFuHariIni) { followCount++; btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${encodeURIComponent(teksWaReminder)}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="animate-pulse bg-red-600 text-white font-bold shadow-lg px-2.5 py-1.5 rounded-lg text-xs text-center block max-w-[85px]">${lang.btnFollow}</a>`; } 
-                            else { btnAction = `<div class="w-[76px]"></div>`; }
-                        } else { textSisa = `<span class="text-green-400 font-mono">${diffDays} ${lang.statusHari} ✅</span>`; btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusAman}</span>`; }
-                    }
-                }
-                const tglDaftarClean = tTimestamp.getFullYear() > 1970 ? tTimestamp.toISOString().split('T')[0] : "-";
-                const tglExpiredClean = tExpired.getFullYear() > 1970 ? tExpired.toISOString().split('T')[0] : "-";
-                
-                tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40"><td class="${nameClass}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td><td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br><span class="text-slate-300">${m.namaPaket}</span><br><span class="${jenisClass} text-[10px] uppercase tracking-widest mt-1 block">${jenisLabel}</span></td><td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td><td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}</td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td><td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-print"></i></button></td><td class="p-3"><div class="flex gap-1 items-center justify-center">${btnAction}<button onclick="openEditModal(${m.rowId})" class="bg-amber-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">✏️</button><button onclick="openRenewModal(${m.rowId})" class="bg-blue-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">🔄</button>${!isCompleted ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 px-2 py-1.5 rounded-lg text-xs font-bold">${lang.btnDone}</button>` : ''}<button onclick="deleteMember(${m.rowId})" class="text-red-500 text-sm ml-1"><i class="fa-solid fa-trash-can"></i></button></div></td></tr>`;
-            });
-            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount; 
-            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount; 
-            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
+        async function loadInitData() {
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getFormInitData" }) });
+            const res = await response.json(); 
+            if(res.status === "success") { masterCompanies = res.companies; masterPackages = res.packages; localStorage.setItem('milio_cache_companies', JSON.stringify(res.companies)); localStorage.setItem('milio_cache_packages', JSON.stringify(res.packages)); renderCompanyMenus(); populateFormDropdowns(); applyGlobalLanguageUI(); }
         }
-
+        function renderCompanyMenus() {
+            const sideMenu = document.getElementById('companyMenuContainer'), formProdComp = document.getElementById('prodFormComp'); const translation = dictionary[clientLanguage] || dictionary.ID;
+            if(sideMenu) sideMenu.innerHTML = `<button onclick="filterCompanyData('ALL')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 text-xs font-semibold shrink-0">📁 ${translation.lblTampilkanSemua}</button>`;
+            if(formProdComp) { formProdComp.innerHTML = ''; masterCompanies.forEach(comp => { if(sideMenu) sideMenu.innerHTML += `<button onclick="filterCompanyData('${comp}')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 text-xs shrink-0"><span>Mitra: ${comp}</span></button>`; formProdComp.innerHTML += `<option value="${comp}">${comp}</option>`; }); }
+        }
+        function renderMasterCompanyList() {
+            const listContainer = document.getElementById('masterCompanyList'); if(!listContainer) return; listContainer.innerHTML = ''; const searchVal = document.getElementById('vendorSearchInput') ? document.getElementById('vendorSearchInput').value.toLowerCase().trim() : "";
+            masterCompanies.forEach(comp => { if(searchVal !== "" && !comp.toLowerCase().includes(searchVal)) return; listContainer.innerHTML += `<div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-900 text-xs gap-2"><span class="font-semibold text-slate-300 truncate">🏢 ${comp}</span><div class="flex gap-1 shrink-0"><button onclick="editCompanyName('${comp}')" class="bg-amber-600/20 text-amber-400 px-2 py-1 rounded-lg text-[10px]">Edit</button><button onclick="deleteCompany('${comp}')" class="bg-red-600/20 text-red-400 px-2 py-1 rounded-lg text-[10px]">Hapus</button></div></div>`; });
+        }
+        async function editCompanyName(oldName) { if(!validatePasswordSecurity()) return; const newName = prompt(`Ubah nama vendor:`, oldName); if(newName) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim() }) }); await refreshLiveServerData(); } }
+        async function deleteCompany(name) { if(!validatePasswordSecurity()) return; if(confirm(`Pindahkan vendor ${name} ke Recycle Bin?`)) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); await refreshLiveServerData(); } }
+        function populateFormDropdowns() { const formComp = document.getElementById('formPerusahaan'); if(formComp) { formComp.innerHTML = ''; masterCompanies.forEach(c => formComp.innerHTML += `<option value="${c}">${c}</option>`); filterPackageDropdown(); renderMasterProductTable(); } }
+        function filterPackageDropdown() { const selectedComp = document.getElementById('formPerusahaan').value; const formPkg = document.getElementById('formPaket'); if(formPkg) { formPkg.innerHTML = ''; masterPackages.filter(p => p.perusahaan === selectedComp).forEach(p => { formPkg.innerHTML += `<option value="${p.id}">${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']':''}</option>`; }); autoFillPrices(); } }
+        function autoFillPrices() { const selectedPkgId = document.getElementById('formPaket').value; const jenis = document.getElementById('formJenis').value; const pkg = masterPackages.find(p => p.id === selectedPkgId); if(pkg) { const rate = currencyRates[clientCurrency] || 1; document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(0); const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller; document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(0); document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli); } }
+        function filterCompanyData(compName) { activeFilterCompany = compName; renderMembersTable(); switchTab('dashboard'); }
         async function executeManualDone(rowId) { if (confirm((dictionary[clientLanguage] || dictionary.ID).confirmDone)) { try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateMemberStatus", rowId: rowId, status: "Selesai" }) }); await refreshMembersList(); } catch(e) { alert("Error database."); } } }
+        
         function openEditModal(rowId) {
             const m = membersData.find(x => x.rowId === rowId); if(!m) return;
             document.getElementById('editFormRowId').value = m.rowId; document.getElementById('editFormNama').value = m.namaMember; document.getElementById('editFormWA').value = m.noWhatsapp; document.getElementById('editFormEmail').value = m.email; document.getElementById('editFormJenis').value = m.jenisPembeli || "User Langsung"; document.getElementById('checkUpgradeMutation').checked = false; document.getElementById('boxEditDurasi').classList.remove('hidden');
@@ -977,18 +880,6 @@
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeEditModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
         }
 
-        function printInvoice(mRowId) {
-            const m = membersData.find(x => x.rowId == mRowId); const lang = dictionary[clientLanguage] || dictionary.ID; const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
-            const tglSkg = parseJsonDate(m.timestamp).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-            const tglExp = parseJsonDate(m.tglExpired).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-            doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(34, 197, 94); doc.text(currentUser.namaBisnis.toUpperCase(), 20, 25);
-            doc.setFont("Helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120); doc.text(lang.docInvoiceTitle, 20, 31); doc.line(20, 35, 190, 35);
-            doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(40); doc.text(lang.docCustomerInfo, 20, 44);
-            doc.setFont("Helvetica", "normal"); doc.text(`${lang.docCustName}  :  ${m.namaMember}`, 20, 50); doc.text(`${lang.docCustEmail}      :  ${m.email}`, 20, 55); doc.text(`${lang.docCustWA}   :  +${m.noWhatsapp}`, 20, 60);
-            doc.autoTable({ startY: 66, head: [[lang.docInvDesc, lang.docInvActive, lang.docInvTotal]], body: [[m.namaPaket + "\nPlatform: " + m.perusahaan, tglSkg + " s/d\n" + tglExp, convertAndFormat(m.hargaJual)]], theme: 'striped', headStyles: { fillColor: [7, 10, 19] } });
-            doc.setFont("Helvetica", "bold"); doc.text(lang.docPaidStatus, 20, doc.lastAutoTable.finalY + 12); doc.save(`Invoice_${m.namaMember}.pdf`);
-        }
-
         function handleExcelUpload(event) {
             const file = event.target.files[0]; if(!file) return;
             const reader = new FileReader(); reader.onload = function(e) {
@@ -1009,31 +900,26 @@
                 tbody.innerHTML += `<tr class="border-b border-slate-800 text-xs text-slate-300"><td class="p-2 font-mono text-slate-500">${p.id}</td><td class="p-2 font-bold text-green-400 truncate max-w-[100px]">${p.perusahaan}</td><td class="p-2 truncate max-w-[120px]">${p.namaPaket}</td><td class="p-2">${p.varian}</td><td class="p-2">${convertAndFormat(p.hargaBeli)}</td><td class="p-2">${convertAndFormat(p.hargaJualUser)}</td><td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td><td class="p-2 text-center"><div class="flex gap-2 justify-center"><button onclick="openEditProduct('${p.id}')" class="text-amber-400 font-bold">✏️</button><button onclick="deleteProduct('${p.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div></td></tr>`; 
             });
         }
-
         function openEditProduct(pkgId) {
             const p = masterPackages.find(x => x.id === pkgId); if(!p) return;
             document.getElementById('prodFormTarget').value = p.id; document.getElementById('prodFormComp').value = p.perusahaan; document.getElementById('prodFormNama').value = p.namaPaket; document.getElementById('prodFormVarian').value = p.varian; document.getElementById('prodFormDurasi').value = p.durasi; document.getElementById('prodFormModal').value = Math.round(p.hargaBeli); document.getElementById('prodFormUser').value = Math.round(p.hargaJualUser); document.getElementById('prodFormReseller').value = Math.round(p.hargaJualReseller);
             document.getElementById('btnSaveCatalog').innerText = "UPDATE KATALOG 🚀";
         }
-
         async function submitProductForm() {
-            const targetId = document.getElementById('prodFormTarget').value; const isEdit = (targetId !== "");
-            if(isEdit && !validatePasswordSecurity()) return;
+            const targetId = document.getElementById('prodFormTarget').value; const isEdit = (targetId !== ""); if(isEdit && !validatePasswordSecurity()) return;
             const payload = { action: isEdit ? "editProduct" : "addProduct", packageId: targetId, perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value, varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value, hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value };
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); document.getElementById('productForm').reset(); document.getElementById('prodFormTarget').value = ""; await loadInitData(); await refreshMembersList(); } catch (e) { alert("Error!"); }
         }
+        async function deleteProduct(id) { if(!validatePasswordSecurity()) return; if(confirm("Pindahkan katalog produk ke Recycle Bin?")) { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id }) }); await loadInitData(); await refreshMembersList(); } }
 
-        async function deleteProduct(id) { if(!validatePasswordSecurity()) return; try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id }) }); await loadInitData(); await refreshMembersList(); } catch (e) { alert("Error!"); } }
         function lockBroadcastText() { const txt = document.getElementById('broadcastTextArea').value.trim(); if(!txt) return; document.getElementById('broadcastTextArea').disabled = true; document.getElementById('btnLockBroadcast').classList.add('hidden'); document.getElementById('btnUnlockBroadcast').classList.remove('hidden'); const selectTarget = document.getElementById('broadcastTargetSelect'); selectTarget.innerHTML = `<option value="GLOBAL_ALL">📢 Semua Member (Global Broadcast)</option>`; masterPackages.forEach(p => { selectTarget.innerHTML += `<option value="${p.perusahaan}::${p.namaPaket}">📦 ${p.perusahaan} - ${p.namaPaket}</option>`; }); document.getElementById('broadcastTargetSection').classList.remove('hidden'); renderBroadcastMembers(); }
         function unlockBroadcastText() { document.getElementById('broadcastTextArea').disabled = false; document.getElementById('btnLockBroadcast').classList.remove('hidden'); document.getElementById('btnUnlockBroadcast').classList.add('hidden'); document.getElementById('broadcastTargetSection').classList.add('hidden'); }
         function renderBroadcastMembers() {
             const tbody = document.getElementById('broadcastMembersTableBody'); if(!tbody) return; tbody.innerHTML = ''; const selectedValue = document.getElementById('broadcastTargetSelect').value;
-            membersData.forEach(m => {
-                if (m.status !== "Aktif") return; if (selectedValue !== "GLOBAL_ALL") { const parts = selectedValue.split('::'); if (m.perusahaan !== parts[0] || !m.namaPaket.includes(parts[1])) return; }
-                tbody.innerHTML += `<tr class="border-b border-slate-900 text-slate-300"><td class="p-3 font-semibold text-white">${m.namaMember}</td><td class="p-3 text-slate-400">${m.noWhatsapp}</td><td class="p-3 text-xs">${m.namaPaket}</td><td class="p-3 text-center"><button onclick="executeIndividualBroadcastWA('${m.noWhatsapp}', this)" class="bg-green-600 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase">Kirim WA 📲</button></td></tr>`;
-            });
+            membersData.forEach(m => { if (m.status !== "Aktif") return; if (selectedValue !== "GLOBAL_ALL") { const parts = selectedValue.split('::'); if (m.perusahaan !== parts[0] || !m.namaPaket.includes(parts[1])) return; } tbody.innerHTML += `<tr class="border-b border-slate-900 text-slate-300"><td class="p-3 font-semibold text-white">${m.namaMember}</td><td class="p-3 text-slate-400">${m.noWhatsapp}</td><td class="p-3 text-xs">${m.namaPaket}</td><td class="p-3 text-center"><button onclick="executeIndividualBroadcastWA('${m.noWhatsapp}', this)" class="bg-green-600 text-slate-950 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase">Kirim WA 📲</button></td></tr>`; });
         }
         function executeIndividualBroadcastWA(phone, buttonEl) { window.open(`https://wa.me/${phone}?text=${encodeURIComponent(document.getElementById('broadcastTextArea').value)}`, '_blank'); buttonEl.parentElement.innerHTML = `<span class="text-[10px] text-green-400 font-bold uppercase">Sent ✔️</span>`; }
+
         function openRenewModal(rowId) {
             const m = membersData.find(x => x.rowId === rowId); if(!m) return;
             document.getElementById('renewFormOldRowId').value = m.rowId; document.getElementById('renewLabelNama').innerText = m.namaMember; document.getElementById('renewLabelKontak').innerText = `${m.noWhatsapp} / ${m.email}`; document.getElementById('renewFormJenis').value = m.jenisPembeli || "User Langsung"; document.getElementById('renewFormDurasi').value = "30";
@@ -1056,12 +942,9 @@
             const payload = { action: "renewMember", oldRowId: oldRowId, resellerId: currentUser.userId, namaMember: mOld.namaMember, noWhatsapp: mOld.noWhatsapp, email: mOld.email, perusahaanSumber: document.getElementById('renewFormPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), jenisPembeli: document.getElementById('renewFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual, durasiHari: document.getElementById('renewFormDurasi').value };
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
         }
-        async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
-        async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); }
+
+        async function submitCompany() { const name = document.getElementById('newCompanyName').value; if(!name) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
-        function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
-        function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId }) }).then(() => refreshMembersList()); }
-        function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
     </script>
 </body>
 </html>
