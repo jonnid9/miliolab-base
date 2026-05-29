@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -46,6 +47,31 @@
             } catch (e) {
                 console.error("Gagal sinkronisasi kurs live global, memakai backup internal.");
             }
+        }
+
+        // TAMBAHAN CORE UTILITY SAKTI: AMANKAN PARSING TANGGAL INDONESIA DD/MM/YYYY AGAR TIDAK JADI INVALID DATE
+        function parseJsonDate(dateVal) {
+            if (!dateVal) return new Date(0);
+            if (dateVal instanceof Date) return dateVal;
+            let str = dateVal.toString().trim();
+            if (str.includes('/')) {
+                let parts = str.split(' ');
+                let dateParts = parts[0].split('/');
+                if (dateParts.length === 3) {
+                    let day = parseInt(dateParts[0]);
+                    let month = parseInt(dateParts[1]) - 1;
+                    let year = parseInt(dateParts[2]);
+                    let hour = 0, min = 0, sec = 0;
+                    if (parts[1]) {
+                        let timeParts = parts[1].split(':');
+                        hour = parseInt(timeParts[0]) || 0;
+                        min = parseInt(timeParts[1]) || 0;
+                        sec = parseInt(timeParts[2]) || 0;
+                    }
+                    return new Date(year, month, day, hour, min, sec);
+                }
+            }
+            return new Date(str);
         }
 
         function convertAndFormat(amount, showPrefix = true) {
@@ -133,7 +159,6 @@
                 xlHeaderExpired: "Tanggal Expired",
                 docNoteFilter: "Berikut ini member yang terdaftar pada tanggal:",
                 
-                // DICTIONARY DIALOG PROTOKOL DONE MANUAL
                 btnDone: "✔️ Done",
                 statusSelesai: "Selesai 🏁",
                 confirmDone: "Apakah Om yakin ingin menyelesaikan misi pelayanan member ini secara manual? Tombol kedip-kedip akan langsung mati total."
@@ -983,11 +1008,11 @@
             }
             
             filteredMembers = membersData.filter(m => {
-                const t = new Date(m.timestamp);
+                const t = parseJsonDate(m.timestamp); // PERBAIKAN SAKTI SINKRONISASI TANGGAL SPREADSHEET
                 return t >= start && t <= end;
             });
             
-            filteredMembers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
             renderMembersTable();
         }
 
@@ -1055,10 +1080,10 @@
                 
                 let rows = filteredMembers.map(m => {
                     let tglTime = "-";
-                    if (m.timestamp && m.timestamp.includes('T')) tglTime = m.timestamp.split('T')[1].split('.')[0];
-                    else if (m.timestamp && m.timestamp.includes(' ')) tglTime = m.timestamp.split(' ')[1];
+                    const pDate = parseJsonDate(m.timestamp);
+                    tglTime = pDate.toTimeString().split(' ')[0];
                     return [
-                        m.timestamp.split('T')[0] + " " + tglTime,
+                        pDate.toISOString().split('T')[0] + " " + tglTime,
                         m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)
                     ];
                 });
@@ -1072,7 +1097,6 @@
             }
         }
 
-        // UPGRADE UTAMA CORE TABLE ENGINE: SINKRONISASI KONDISI STATUS JURUS ANTI-KEDIP-KEDIP
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
@@ -1091,7 +1115,9 @@
                     if (!matchNama && !matchEmail && !matchWA) return; 
                 }
                 
-                const diffDays = Math.ceil((new Date(m.tglExpired) - now) / (1000 * 60 * 60 * 24));
+                const tTimestamp = parseJsonDate(m.timestamp);
+                const tExpired = parseJsonDate(m.tglExpired);
+                const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
                 totalProfit += parseFloat(m.profit); 
                 
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
@@ -1101,16 +1127,13 @@
                 const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
                 const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
 
-                // INTERACTIVE LOGIC VALIDATOR PREFERENCES: CEK APAKAH BARIS INI STATUSNYA SUDAH SELESAI / DONE / MATI
                 const isCompleted = (m.status !== "Aktif");
 
                 if (isCompleted) {
-                    // JURUS AMAN FINANSIAL: TETAP DIHITUNG PROFITNYA, TAPI DI-MATIKAN KEDIP-KEDIP DAN TOMBOL CHAT/FU NYA!
                     textSisa = `<span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">${lang.statusSelesai}</span>`; 
                     rowStyle = "opacity-40 text-slate-500 bg-slate-950/10";
-                    btnAction = `<div class="w-[76px]"></div>`; // Kosongkan agar clean
+                    btnAction = `<div class="w-[76px]"></div>`; 
                 } else {
-                    // JALUR NORMAL: MEMBER STATUS MASIH AKTIF PEMBUKUAN JALAN TERUS
                     if(diffDays < 0) {
                         const batasMaxHangus = Math.abs(diffDays) <= 15;
                         textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
@@ -1144,10 +1167,10 @@
                     }
                 }
                 
-                const tglDaftarClean = m.timestamp ? m.timestamp.split('T')[0] : "-";
-                const tglExpiredClean = m.tglExpired ? m.tglExpired.split('T')[0] : "-";
+                const tglDaftarClean = tTimestamp.getFullYear() > 1970 ? tTimestamp.toISOString().split('T')[0] : "-";
+                const tglExpiredClean = tExpired.getFullYear() > 1970 ? tExpired.toISOString().split('T')[0] : "-";
+                const tglDaftarTime = tTimestamp.toTimeString().split(' ')[0];
 
-                // INJEKSI INTERAKTIF: SEMUA MEMBER AKTIF DISEDIAKAN TOMBOL DONE DI SEBELAH RENEW UNTUK MEMATIKAN BLINKER MANUAL
                 const doneButtonHtml = !isCompleted 
                     ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/40 px-2 py-1.5 rounded-lg text-xs font-bold transition">${lang.btnDone}</button>`
                     : ``;
@@ -1175,7 +1198,6 @@
             if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
         }
 
-        // ACTION FUNCTION: EKSEKUSI MANIPULASI TOMBOL DONE KE CLOUD DATABASE SECARA LIVE
         async function executeManualDone(rowId) {
             const translation = dictionary[clientLanguage] || dictionary.ID;
             if (confirm(translation.confirmDone)) {
@@ -1206,8 +1228,8 @@
                 start = new Date(2000, 0, 1); end = new Date(2100, 0, 1); 
             }
 
-            filteredMembers = membersData.filter(m => { const t = new Date(m.timestamp); return t >= start && t <= end; });
-            filteredMembers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            filteredMembers = membersData.filter(m => { const t = parseJsonDate(m.timestamp); return t >= start && t <= end; });
+            filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
             
             let omset = 0, modal = 0, cuan = 0;
             filteredMembers.forEach(m => { omset += parseFloat(m.hargaJual) || 0; modal += parseFloat(m.hargaBeli) || 0; cuan += parseFloat(m.profit) || 0; });
@@ -1223,14 +1245,14 @@
             document.getElementById('editFormNama').value = m.namaMember;
             document.getElementById('editFormWA').value = m.noWhatsapp;
             document.getElementById('editFormEmail').value = m.email;
-            document.getElementById('editFormFocusJenis').value = m.jenisPembeli || "User Langsung";
+            document.getElementById('editFormJenis').value = m.jenisPembeli || "User Langsung";
             document.getElementById('checkUpgradeMutation').checked = false;
             document.getElementById('boxEditDurasi').classList.remove('hidden');
 
             const formComp = document.getElementById('editFormPerusahaan'); formComp.innerHTML = '';
             masterCompanies.forEach(c => { const sel = (c === m.perusahaan) ? "selected" : ""; formComp.innerHTML += `<option value="${c}" ${sel}>${c}</option>`; });
 
-            const targetDate = new Date(m.tglExpired); targetDate.setHours(0,0,0,0);
+            const targetDate = parseJsonDate(m.tglExpired); targetDate.setHours(0,0,0,0);
             const currentDate = new Date(); currentDate.setHours(0,0,0,0);
             const diffTime = targetDate.getTime() - currentDate.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
