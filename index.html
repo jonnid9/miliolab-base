@@ -26,7 +26,7 @@
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.6; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         
-        /* RESPONSIVITAS TOTAL ANTI TERPOTONG DI MOBILE ATAU MAC */
+        /* STANDAR ANTI-POTONG TEKS UNTUK MOBILES, MAC, ATAU TABLET */
         th, td, span, h1, h2, h3, p, button { text-wrap: wrap !important; word-break: break-word !important; }
         
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -34,15 +34,15 @@
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 99px; }
         ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
 
-        /* KOREKSI TOTAL WARNA LIGHT MODE: ELEGAN, KONTRAS SANGAT TAJAM, EKSKLUSIF */
+        /* KOREKSI TOTAL WARNA TEMA TERANG: TAJAM, KONTRAS TINGGI, SANGAT JELAS DILIHAT */
         body.light-theme { background-color: #f8fafc; color: #0f172a; }
         body.light-theme #globalLoader { background-color: rgba(255, 255, 255, 0.9); }
-        body.light-theme .bg-slate-900, body.light-theme .bg-slate-900\/50, body.light-theme .bg-slate-900\/40 { background-color: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.08); }
+        body.light-theme .bg-slate-900, body.light-theme .bg-slate-900\/50, body.light-theme .bg-slate-900\/40 { background-color: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
         body.light-theme .bg-slate-950, body.light-theme .bg-slate-950\/50 { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
         body.light-theme input, body.light-theme select, body.light-theme textarea { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #94a3b8 !important; }
         body.light-theme .text-white, body.light-theme td.text-white, body.light-theme h1, body.light-theme h2, body.light-theme h3 { color: #0f172a !important; font-weight: 700; }
         body.light-theme .text-slate-200, body.light-theme .text-slate-300, body.light-theme .text-slate-400 { color: #334155 !important; }
-        body.light-theme .text-slate-500 { color: #64748b !important; }
+        body.light-theme .text-slate-500 { color: #475569 !important; }
         body.light-theme input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); }
         body.light-theme thead tr { background-color: #e2e8f0 !important; border-bottom: 2px solid #cbd5e1; }
         body.light-theme thead tr th { color: #1e293b !important; font-weight: 700; }
@@ -56,7 +56,7 @@
     </div>
 
     <script>
-        // SERVICE WORKER AUTOMATIC UNTUK INSTALASI LAYAR HP (PWA READY)
+        // INIT SERVICE WORKER UNTUK KELENGKAPAN PROTOKOL INSTALASI PWA HP
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('data:application/javascript,self.addEventListener("fetch",function(e){});').catch(function(e){}); }
 
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
@@ -71,11 +71,11 @@
             try {
                 const response = await fetch("https://open.er-api.com/v6/latest/IDR");
                 const data = await response.json();
-                if (data && data.rates) { currencyRates = data.rates; console.log("Exchange Core connected!"); }
-            } catch (e) { console.error("Gagal sinkronisasi kurs live global, memakai backup internal."); }
+                if (data && data.rates) { currencyRates = data.rates; }
+            } catch (e) { console.error("Sinkronisasi kurs live gagal, memakai internal backup."); }
         }
 
-        // AMBIL HISTORI CACHE LOCAL (ANTI-LEMUT DAN INSTAN SAAT PINDAH TAB)
+        // MEMUAT DATA INSTAN DARI CACHE LOKAL HP (PERFORMA MAKSIMAL & HEMAT SERVER)
         function loadCachedLocalStorageData() {
             const cacheMembers = localStorage.getItem('milio_cache_members');
             const cacheComp = localStorage.getItem('milio_cache_companies');
@@ -88,6 +88,7 @@
             if(cacheRes) masterResellers = JSON.parse(cacheRes);
         }
 
+        // PERBAIKAN TOMBOL TEMA: REPOSISI KE BARIS PALING BAWAH SIDEBAR (TIDAK TABRAKAN DG BRAND)
         function toggleThemeMode() {
             const body = document.body; body.classList.toggle('light-theme');
             const currentMode = body.classList.contains('light-theme') ? 'light' : 'dark';
@@ -97,7 +98,7 @@
             if(financeChart) { filterFinance(currentFinanceMode); } 
         }
 
-        // AKOMODASI JALAN PINTAS KEYBOARD (SHORTCUTS ACTIVE)
+        // PINTASAN KEYBOARD BERFUNGSI AKTIF KEMBALI
         window.addEventListener('keydown', function(e) {
             if (e.altKey && e.key.toLowerCase() === 'n') { e.preventDefault(); openFormInputBaru(); }
             if (e.ctrlKey && e.key.toLowerCase() === 'f') {
@@ -292,7 +293,7 @@
             </div>
             <div class="border-t border-slate-900 pt-3 mt-4 space-y-2 flex flex-col">
                 <button onclick="toggleThemeMode()" class="w-full bg-slate-900 hover:bg-slate-800 p-2 rounded-xl flex items-center justify-center gap-2 border border-slate-800 text-xs font-semibold">
-                    <i id="themeIconBtn" class="fa-solid fa-sun text-amber-400"></i> Ubah Tema
+                    <i id="themeIconBtn" class="fa-solid fa-sun text-amber-400"></i> Mode Tampilan
                 </button>
                 <button id="sideExit" onclick="handleLogout()" class="w-full text-red-500 hover:bg-red-950/20 p-2 rounded-xl flex items-center justify-center gap-2 font-bold text-xs"></button>
             </div>
@@ -312,7 +313,7 @@
                         <h3 id="h3-sub" class="text-base md:text-lg font-bold text-white"></h3>
                         <div class="flex gap-2 w-full lg:w-auto">
                             <input type="text" id="searchInput" oninput="searchMembers()" placeholder="Cari nama, email, wa..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none w-full lg:w-64">
-                            <button onclick="refreshLiveServerData()" class="bg-slate-800 hover:bg-slate-700 text-green-400 border border-slate-700 font-bold px-3 py-2 rounded-xl text-xs uppercase transition shrink-0" title="Sinkronisasi Cloud"><i class="fa-solid fa-arrows-rotate"></i> Sync Live</button>
+                            <button onclick="refreshLiveServerData()" class="bg-slate-800 hover:bg-slate-700 text-green-400 border border-slate-700 font-bold px-3 py-2 rounded-xl text-xs uppercase transition shrink-0" title="Sinkronisasi Manual Cloud"><i class="fa-solid fa-arrows-rotate"></i> Sync Live</button>
                         </div>
                     </div>
                     <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-slate-950/50 p-4 rounded-2xl border border-slate-800 text-xs">
@@ -607,14 +608,14 @@
     </div>
 
     <script>
-        // KOREKSI LOGIN: ENKRIPSI PASSWORD ENCODE BASE64 SEBELUM DIKIRIM KE GOOGLE SCRIPTS API
+        // KOREKSI LOGIN: ENKRIPSI PASSWORD ENCODE BASE64 SEBELUM DIKIRIM KE GOOGLE SCRIPT WEB API
         async function handleLogin(isAutoLogin = false) {
             const u = document.getElementById('usernameInput').value.trim();
             const p = document.getElementById('passwordInput').value.trim();
             const btn = document.getElementById('btnLogin'); const err = document.getElementById('loginError');
             if(!u || !p) return; btn.disabled = true; btn.innerHTML = 'Memverifikasi...'; err.classList.add('hidden');
             
-            // Mengubah plain text password menjadi Base64 demi keamanan USERS sheet
+            // Proses Konversi Plain Text ke Base64 (Standard Security Layer Frontend)
             const securedPassword = btoa(p);
             
             try {
@@ -628,13 +629,13 @@
                     localStorage.setItem('milio_lang', clientLanguage); localStorage.setItem('milio_currency', clientCurrency);
                     document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
                     
-                    loadCachedLocalStorageData(); // Memuat data cache local instan
+                    loadCachedLocalStorageData(); // Memuat memori local cache kilat HP
                     await loadInitData(); await fetchResellersDatabase(); await refreshMembersList();
                 } else { err.innerText = res.message; err.classList.remove('hidden'); if(isAutoLogin) handleLogout(); }
             } catch (e) { err.innerText = "Koneksi Gagal! Periksa API URL Anda."; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.innerHTML = 'MASUK KE DASHBOARD'; }
         }
 
-        // KOREKSI UTAMA: REAKTIVASI SELESAI FUNGSI INPUT MEMBER BARU AGAR TIDAK MACET BENTROK
+        // KOREKSI AMAN: FUNGSI INPUT MEMBER BARU DIATUR ULANG SUPAYA ANTRIAN DROPDOWN FLUID & TANPA MACET BENTROK
         function openFormInputBaru() {
             document.getElementById('memberForm').reset();
             document.getElementById('formDurasiKustom').value = "30";
@@ -650,7 +651,7 @@
             const res = await response.json(); 
             if(res.status === "success") { 
                 membersData = res.data; 
-                localStorage.setItem('milio_cache_members', JSON.stringify(res.data)); // Set data cache terbaru
+                localStorage.setItem('milio_cache_members', JSON.stringify(res.data)); // Mengunci cache local
                 if (document.getElementById('tab-dashboard').classList.contains('active')) { filterDashboard(currentDashboardFilterMode); } 
                 else { filterFinance(currentFinanceMode); }
             }
@@ -660,7 +661,7 @@
             document.getElementById('globalLoader').classList.remove('hidden');
             await loadInitData(); await fetchResellersDatabase(); await refreshMembersList();
             document.getElementById('globalLoader').classList.add('hidden');
-            alert("Database Cloud Google Sheets Berhasil Disinkronkan Terbaru! 🌪️");
+            alert("Seluruh Database Cloud Google Sheets Berhasil Disinkronkan Terbaru! 🌪️");
         }
 
         async function fetchResellersDatabase() {
@@ -668,14 +669,14 @@
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getResellers", userId: currentUser.userId }) });
                 const res = await r.json();
                 if(res.status === "success") { masterResellers = res.data; localStorage.setItem('milio_cache_resellers', JSON.stringify(res.data)); populateResellerDropdown(); }
-            } catch (e) { console.error("Gagal sinkron database reseller"); }
+            } catch (e) { console.error("Error load database reseller"); }
         }
 
         function openAddResellerModal() { document.getElementById('resellerDbName').value = ""; document.getElementById('resellerDbWa').value = ""; document.getElementById('addResellerModal').classList.remove('hidden'); }
         function closeAddResellerModal() { document.getElementById('addResellerModal').classList.add('hidden'); }
         async function submitResellerDatabase() {
             const name = document.getElementById('resellerDbName').value.trim(); const country = document.getElementById('resellerDbCountry').value; let wa = document.getElementById('resellerDbWa').value.trim();
-            if(!name || !wa) { alert("Semua wajib diisi!"); return; } if(wa.startsWith("0")) wa = wa.slice(1);
+            if(!name || !wa) { alert("Wajib diisi!"); return; } if(wa.startsWith("0")) wa = wa.slice(1);
             closeAddResellerModal(); document.getElementById('globalLoader').classList.remove('hidden');
             await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addReseller", userId: currentUser.userId, name: name, wa: wa, country: country }) });
             await fetchResellersDatabase(); document.getElementById('globalLoader').classList.add('hidden');
@@ -684,7 +685,7 @@
         function handleJenisPembeliChange() {
             const j = document.getElementById('formJenis').value; const wrap = document.getElementById('wrapperSelectResellerDb');
             if(j === "Reseller") { wrap.classList.remove('hidden'); populateResellerDropdown(); } 
-            else { wrap.classList.add('hidden'); document.getElementById('memberForm').reset(); document.getElementById('formJenis').value = "User Langsung"; document.getElementById('formDurasiKustom').value = "30"; }
+            else { wrap.classList.add('hidden'); document.getElementById('formNama').value = ""; document.getElementById('formWA').value = ""; }
             autoFillPrices();
         }
         function populateResellerDropdown() {
@@ -695,6 +696,43 @@
         function autoFillResellerData() {
             const idx = document.getElementById('formSelectResellerDb').value; if(idx === "") return;
             const res = masterResellers[parseInt(idx)]; if(res) { document.getElementById('formNama').value = res.name; document.getElementById('formCountryCode').value = res.country; document.getElementById('formWA').value = res.wa; }
+        }
+
+        // KOREKSI INTEGRASI EKSPOR: MENYARING DATA YANG SEDANG TAMPIL DI LAYAR AKIBAT INPUT BOX SEARCH BAR
+        function getCurrentlyDisplayedMembers() {
+            const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : "";
+            return filteredMembers.filter(m => {
+                if (activeFilterCompany !== "ALL" && m.perusahaan !== activeFilterCompany) return false;
+                if (query !== "") {
+                    const matchNama = m.namaMember ? m.namaMember.toLowerCase().includes(query) : false;
+                    const matchEmail = m.email ? m.email.toLowerCase().includes(query) : false;
+                    const matchWA = m.noWhatsapp ? m.noWhatsapp.toString().toLowerCase().includes(query) : false;
+                    return (matchNama || matchEmail || matchWA);
+                } return true;
+            });
+        }
+
+        function exportDashboardData(type) {
+            // Mengunci array data terfilter di layar (Hanya data di monitor pencarian saja yang terunduh!)
+            const exportTargetList = getCurrentlyDisplayedMembers();
+            if(exportTargetList.length === 0) { alert("Tidak ada data member yang tampil untuk di-ekspor!"); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const noteText = `Laporan Khusus Hasil Filter Pencarian Member Base`;
+                
+            if(type === 'excel') {
+                const rate = currencyRates[clientCurrency] || 1;
+                let content = exportTargetList.map(m => {
+                    let obj = {}; obj[lang.xlHeaderTimestamp] = m.timestamp; obj[lang.xlHeaderName] = m.namaMember; obj[lang.xlHeaderWA] = m.noWhatsapp; obj[lang.xlHeaderEmail] = m.email; obj[lang.xlHeaderPlatform] = m.perusahaan; obj[lang.xlHeaderPackage] = m.namaPaket; obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate); obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate); obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate); obj[lang.xlHeaderCurrency] = clientCurrency; obj[lang.xlHeaderExpired] = m.tglExpired; return obj;
+                });
+                const ws = XLSX.utils.json_to_sheet([]); XLSX.utils.sheet_add_aoa(ws, [[noteText], []], { origin: "A1" }); XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
+                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Filtered Base"); XLSX.writeFile(wb, `MILIOLAB_Filtered_Search.xlsx`);
+            } else {
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(13); doc.setFont("Helvetica", "bold");
+                doc.text(`LAPORAN MEMBER AKSES TERFILTER`, 14, 15); doc.setFontSize(8.5); doc.setFont("Helvetica", "normal"); doc.text(noteText, 14, 21); doc.setDrawColor(34, 197, 94); doc.line(14, 24, 195, 24);
+                let rows = exportTargetList.map(m => [parseJsonDate(m.timestamp).toISOString().split('T')[0], m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)]);
+                doc.autoTable({ startY: 27, head: [[lang.xlHeaderTimestamp, lang.xlHeaderName, lang.xlHeaderPlatform, lang.xlHeaderPackage, lang.xlHeaderProfit]], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
+                doc.save(`MILIOLAB_Filtered_Search.pdf`);
+            }
         }
 
         function switchTab(tabId) {
@@ -726,49 +764,12 @@
             renderMembersTable();
         }
 
-        // KOREKSI SANGAT UTAMA: SINKRONISASI FILTER SEARCH BAR DENGAN TOMBOL DOWNLOAD EXCEL & PDF EXPORT
-        function getCurrentlyDisplayedMembers() {
-            const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase().trim() : "";
-            return filteredMembers.filter(m => {
-                if (activeFilterCompany !== "ALL" && m.perusahaan !== activeFilterCompany) return false;
-                if (query !== "") {
-                    const matchNama = m.namaMember ? m.namaMember.toLowerCase().includes(query) : false;
-                    const matchEmail = m.email ? m.email.toLowerCase().includes(query) : false;
-                    const matchWA = m.noWhatsapp ? m.noWhatsapp.toString().toLowerCase().includes(query) : false;
-                    return (matchNama || matchEmail || matchWA);
-                } return true;
-            });
-        }
-
-        function exportDashboardData(type) {
-            // MENGAMBIL HANYA MEMBER YANG SEDANG TAMPIL DI LAYAR HASIL SEARCH BAR (BUKAN SELURUH ISI SHEET!)
-            const exportTargetList = getCurrentlyDisplayedMembers();
-            if(exportTargetList.length === 0) { alert("Data member kosong, tidak ada yang bisa di-ekspor!"); return; }
-            const lang = dictionary[clientLanguage] || dictionary.ID;
-            const noteText = `Laporan Hasil Filter Ekspor Pencarian Member Base`;
-                
-            if(type === 'excel') {
-                const rate = currencyRates[clientCurrency] || 1;
-                let content = exportTargetList.map(m => {
-                    let obj = {}; obj[lang.xlHeaderTimestamp] = m.timestamp; obj[lang.xlHeaderName] = m.namaMember; obj[lang.xlHeaderWA] = m.noWhatsapp; obj[lang.xlHeaderEmail] = m.email; obj[lang.xlHeaderPlatform] = m.perusahaan; obj[lang.xlHeaderPackage] = m.namaPaket; obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate); obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate); obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate); obj[lang.xlHeaderCurrency] = clientCurrency; obj[lang.xlHeaderExpired] = m.tglExpired; return obj;
-                });
-                const ws = XLSX.utils.json_to_sheet([]); XLSX.utils.sheet_add_aoa(ws, [[noteText], []], { origin: "A1" }); XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
-                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Filtered Base"); XLSX.writeFile(wb, `MILIOLAB_Filtered_Export.xlsx`);
-            } else {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.setFontSize(13); doc.setFont("Helvetica", "bold");
-                doc.text(`LAPORAN MEMBER AKSES TERFILTER`, 14, 15); doc.setFontSize(8.5); doc.setFont("Helvetica", "normal"); doc.text(noteText, 14, 21); doc.setDrawColor(34, 197, 94); doc.line(14, 24, 195, 24);
-                let rows = exportTargetList.map(m => [parseJsonDate(m.timestamp).toISOString().split('T')[0], m.namaMember, m.perusahaan, m.namaPaket, convertAndFormat(m.profit)]);
-                doc.autoTable({ startY: 27, head: [[lang.xlHeaderTimestamp, lang.xlHeaderName, lang.xlHeaderPlatform, lang.xlHeaderPackage, lang.xlHeaderProfit]], body: rows, theme: 'grid', headStyles: { fillColor: [34, 197, 94] } });
-                doc.save(`MILIOLAB_Filtered_Export.pdf`);
-            }
-        }
-
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return; tbody.innerHTML = '';
             let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date(); const lang = dictionary[clientLanguage] || dictionary.ID;
             const hariIniStr = new Date().toISOString().split('T')[0];
             
-            // Menggunakan hasil data pencarian search bar secara real-time
+            // Render ditarik langsung dari baris filter search bar realtime
             const displayList = getCurrentlyDisplayedMembers();
             
             displayList.forEach(m => {
@@ -777,6 +778,9 @@
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
                 let cleanLastFu = ""; if (m.lastFuDate) { let pFu = parseJsonDate(m.lastFuDate); if (pFu.getFullYear() > 1970) { cleanLastFu = `${pFu.getFullYear()}-${String(pFu.getMonth() + 1).padStart(2, '0')}-${String(pFu.getDate()).padStart(2, '0')}`; } }
                 const sudahFuHariIni = (cleanLastFu === hariIniStr); const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
+                const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
+                const jenisClass = isReseller ? "text-yellow-400 font-bold" : "text-slate-500 font-normal";
+                const nameClass = isReseller ? "p-3 font-bold text-yellow-400 tracking-wide" : "p-3 font-semibold text-white";
                 const isCompleted = (m.status !== "Aktif");
 
                 if (isCompleted) { textSisa = `<span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">${lang.statusSelesai}</span>`; rowStyle = "opacity-40 text-slate-500 bg-slate-950/10"; btnAction = `<div class="w-[76px]"></div>`; } 
@@ -799,7 +803,7 @@
                 const tglDaftarClean = tTimestamp.getFullYear() > 1970 ? tTimestamp.toISOString().split('T')[0] : "-";
                 const tglExpiredClean = tExpired.getFullYear() > 1970 ? tExpired.toISOString().split('T')[0] : "-";
                 
-                tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40"><td class="${isReseller ? 'p-3 font-bold text-yellow-400':'p-3 font-semibold text-white'}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td><td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br><span class="text-slate-300">${m.namaPaket}</span></td><td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td><td class="p-3 font-mono text-xs">${tglDaftarClean}</td><td class="p-3 font-mono text-xs">${tglExpiredClean}</td><td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white"><i class="fa-solid fa-print"></i></button></td><td class="p-3"><div class="flex gap-1 items-center justify-center">${btnAction}<button onclick="openEditModal(${m.rowId})" class="bg-amber-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">✏️</button><button onclick="openRenewModal(${m.rowId})" class="bg-blue-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">🔄</button>${!isCompleted ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 px-2 py-1.5 rounded-lg text-xs font-bold">${lang.btnDone}</button>`:''}<button onclick="deleteMember(${m.rowId})" class="text-red-500 text-sm ml-1"><i class="fa-solid fa-trash-can"></i></button></div></td></tr>`;
+                tbody.innerHTML += `<tr class="${rowStyle} border-b border-slate-800/40"><td class="${nameClass}">${m.namaMember}</td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td><td class="p-3 text-xs"><span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br><span class="text-slate-300">${m.namaPaket}</span><br><span class="${jenisClass} text-[10px] uppercase tracking-widest mt-1 block">${jenisLabel}</span></td><td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td><td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}</td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td><td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white"><i class="fa-solid fa-print"></i></button></td><td class="p-3"><div class="flex gap-1 items-center justify-center">${btnAction}<button onclick="openEditModal(${m.rowId})" class="bg-amber-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">✏️</button><button onclick="openRenewModal(${m.rowId})" class="bg-blue-600 px-2 py-1.5 rounded-lg text-xs font-bold text-white">🔄</button>${!isCompleted ? `<button onclick="executeManualDone(${m.rowId})" class="bg-slate-900 border border-slate-800 text-slate-400 px-2 py-1.5 rounded-lg text-xs font-bold">${lang.btnDone}</button>`:''}<button onclick="deleteMember(${m.rowId})" class="text-red-500 text-sm ml-1"><i class="fa-solid fa-trash-can"></i></button></div></td></tr>`;
             });
             if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount; 
             if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount; 
@@ -853,7 +857,6 @@
         function populateFormDropdowns() { const formComp = document.getElementById('formPerusahaan'); if(formComp) { formComp.innerHTML = ''; masterCompanies.forEach(c => formComp.innerHTML += `<option value="${c}">${c}</option>`); filterPackageDropdown(); renderMasterProductTable(); } }
         function filterPackageDropdown() { const selectedComp = document.getElementById('formPerusahaan').value; const formPkg = document.getElementById('formPaket'); if(formPkg) { formPkg.innerHTML = ''; masterPackages.filter(p => p.perusahaan === selectedComp).forEach(p => { formPkg.innerHTML += `<option value="${p.id}">${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']':''}</option>`; }); autoFillPrices(); } }
         function autoFillPrices() { const selectedPkgId = document.getElementById('formPaket').value; const jenis = document.getElementById('formJenis').value; const pkg = masterPackages.find(p => p.id === selectedPkgId); if(pkg) { const rate = currencyRates[clientCurrency] || 1; document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(0); const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller; document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(0); document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli); } }
-        function filterCompanyData(compName) { activeFilterCompany = compName; renderMembersTable(); switchTab('dashboard'); }
         async function executeManualDone(rowId) { if (confirm((dictionary[clientLanguage] || dictionary.ID).confirmDone)) { try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateMemberStatus", rowId: rowId, status: "Selesai" }) }); await refreshMembersList(); } catch(e) { alert("Error database."); } } }
         
         function openEditModal(rowId) {
@@ -945,6 +948,7 @@
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; if(!name) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
+        async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); alert("Data sukses diamankan ke Recycle Bin! 🗑️"); }
     </script>
 </body>
 </html>
