@@ -361,7 +361,7 @@
             if(document.getElementById('prodFormNama')) document.getElementById('prodFormNama').placeholder = translation.phNamaPaket;
             if(document.getElementById('prodFormVarian')) document.getElementById('prodFormVarian').placeholder = translation.phVarian;
             if(document.getElementById('prodFormModal')) document.getElementById('prodFormModal').placeholder = translation.phModal;
-
+            
             if(document.getElementById('bcTitle')) document.getElementById('bcTitle').innerHTML = `<i class="fa-solid fa-bullhorn text-green-400"></i> ` + translation.bcTitle;
             if(document.getElementById('broadcastTextArea')) document.getElementById('broadcastTextArea').placeholder = translation.bcPlaceholder;
             if(document.getElementById('btnLockBroadcast')) document.getElementById('btnLockBroadcast').innerText = translation.bcLockBtn;
@@ -587,7 +587,7 @@
                         <div id="masterCompanyList" class="space-y-2 max-h-48 overflow-y-auto pr-1 flex-1 mt-2"></div>
                     </div>
                     
-                    <div class="bg-slate-900/50 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl"><h3 id="mstProdTitle" class="text-lg md:text-xl font-bold text-white mb-4">📦 Tambah Varian / Produk</h3><form id="productForm" onsubmit="event.preventDefault(); submitProductForm();" class="space-y-3 text-xs md:text-sm"><select id="prodFormComp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white cursor-pointer"></select><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input type="text" id="prodFormTarget" class="hidden"><input type="text" id="prodFormNama" required placeholder="Nama Paket" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="text" id="prodFormVarian" placeholder="Varian" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2"><input type="number" id="prodFormDurasi" required value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormModal" required placeholder="Modal" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormUser" required placeholder="User" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormReseller" required placeholder="Reseller" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><button id="btnSaveCatalog" type="submit" class="w-full bg-green-500 text-slate-950 p-2.5 rounded-xl font-bold tracking-wide transition uppercase text-xs">SIMPAN KATALOG</button></form></div>
+                    <div class="bg-slate-900/50 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl"><h3 id="mstProdTitle" class="text-lg md:text-xl font-bold text-white mb-4">📦 Tambah Varian / Produk</h3><form id="productForm" onsubmit="event.preventDefault(); submitProductForm();" class="space-y-3 text-sm"><select id="prodFormComp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white cursor-pointer"></select><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input type="text" id="prodFormTarget" class="hidden"><input type="text" id="prodFormNama" required placeholder="Nama Paket" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="text" id="prodFormVarian" placeholder="Varian" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2"><input type="number" id="prodFormDurasi" required value="30" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormModal" required placeholder="Modal" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormUser" required placeholder="User" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"><input type="number" id="prodFormReseller" required placeholder="Reseller" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white outline-none"></div><button id="btnSaveCatalog" type="submit" class="w-full bg-green-500 text-slate-950 p-2.5 rounded-xl font-bold tracking-wide transition uppercase text-xs">SIMPAN KATALOG</button></form></div>
                 </div>
 
                 <div class="bg-slate-900/50 border border-slate-800 p-5 md:p-6 rounded-2xl shadow-xl space-y-4">
@@ -622,7 +622,7 @@
                                 <th id="thMstId" class="p-2">ID</th><th id="thMstMitra" class="p-2">Mitra</th><th id="thMstPaket" class="p-2">Nama Paket</th><th id="thMstVarian" class="p-2">Varian</th><th id="thMstModal" class="p-2">Modal</th><th id="thMstUser" class="p-2">User</th><th id="thMstReseller" class="p-2">Reseller</th><th id="thMstAksi" class="p-2 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="masterProductTableBody" class="divide-y divide-slate-800/40"></tbody>
+                        <tbody id="masterProductTableBody" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
@@ -687,7 +687,7 @@
     <div id="editFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-5 md:p-6 shadow-2xl space-y-4 my-auto">
             <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-gear"></i> Ralat Koreksi / Upgrade Selisih Paket</h3>
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
                 <label id="lblCheckUpgradeMutation" class="flex items-center gap-2 text-slate-400 uppercase font-bold cursor-pointer">
                     <input type="checkbox" id="checkUpgradeMutation" onchange="toggleUpgradeMutationMode()" class="w-4 h-4 text-amber-500"> Aktifkan Mode Upgrade Paket (Hitung Selisih Uang)
                 </label>
@@ -741,7 +741,7 @@
     </div>
 
     <script>
-        // SINKRONISASI CORES: PERBAIKAN UTUH NAMA PARAMETER BIAR DETAIL PRODUK TIDAK TERHAPUS/NGILANG SAAT DIEDIT
+        // SINKRONISASI CORES UTAMA PERBAIKAN TOTAL SAKTI
         async function submitEditForm() {
             const rowId = document.getElementById('editFormRowId').value;
             const targetPkgId = document.getElementById('editFormPaket').value; 
@@ -769,10 +769,10 @@
                 closeEditModal(); 
                 await refreshMembersList(); 
                 alert("Sukses Memperbarui Data Pembukuan Member!");
-            } catch (e) { alert("Gagal memperbarui pembukuan!"); } { stopLoadingIndicator(); }
+            } catch (e) { alert("Gagal memperbarui pembukuan!"); } finally { stopLoadingIndicator(); }
         }
 
-        // FIX SAKTI RENEW MEMBER: KALIBRASI TOTAL VARIABEL INPUT AGAR PROSES PERPANJANG MEMBER LAMA TIDAK CRASH LAGI
+        // FIX RENEW PROTOCOL: DEKLARASIKAN HARGAJUAL DAN TARGETMEMBER DENGAN AKURAT SEHINGGA RENEW DATA LAMA BERJALAN JOS
         async function submitRenewForm() {
             const oldRowId = document.getElementById('renewFormOldRowId').value;
             const pkgId = document.getElementById('renewFormPaket').value;
@@ -784,31 +784,12 @@
             const targetMember = membersData.find(x => x.rowId == oldRowId);
             if(!targetMember) { alert("Data member lama tidak ditemukan!"); return; }
 
-            const payload = { 
-                action: "renewMember", 
-                oldRowId: oldRowId, 
-                resellerId: currentUser.userId, 
-                namaMember: targetMember.namaMember, 
-                noWhatsapp: targetMember.noWhatsapp, 
-                email: targetMember.email, 
-                perusahaanSumber: document.getElementById('renewFormPerusahaan').value, 
-                namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), 
-                jenisPembeli: jenis, 
-                hargaBeli: pkg.hargaBeli, 
-                hargaJual: hargaJual, 
-                durasiHari: document.getElementById('renewFormDurasi').value 
-            };
-
+            const payload = { action: "renewMember", oldRowId: oldRowId, resellerId: currentUser.userId, namaMember: targetMember.namaMember, noWhatsapp: targetMember.noWhatsapp, email: targetMember.email, perusahaanSumber: document.getElementById('renewFormPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), jenisPembeli: jenis, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual, durasiHari: document.getElementById('renewFormDurasi').value };
             startLoadingIndicator();
-            try { 
-                await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); 
-                closeRenewModal(); 
-                await refreshMembersList(); 
-                alert("Masa aktif member lama sukses diperpanjang!");
-            } catch (e) { alert("Gagal!"); } finally { stopLoadingIndicator(); }
+            try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); alert("Sukses Perpanjang!"); } catch (e) { alert("Gagal!"); } finally { stopLoadingIndicator(); }
         }
 
-        // AMANKAN DAN INPUT DATA MEMBER MANUALLY BARU ATAU BACKDATE SECARA AKURAT KE DATABASE
+        // FIX SAKTI TAMBAH MEMBER: PERBAIKAN VARIABEL pkgId & PENGISIAN MEMBER BARU/LAMA BERJALAN LANCAR JAYA MULTI-PLATFORM
         async function submitMemberForm() {
             const pkgId = document.getElementById('formPaket').value;
             const pkg = masterPackages.find(p => p.id === pkgId);
@@ -838,15 +819,15 @@
                 isCustomDate: isBackdate, customTglDaftar: document.getElementById('customTglDaftar').value, customTglExpired: document.getElementById('customTglExpired').value
             };
 
-            const btn = document.getElementById('btnSubmitMember'); // SAKTI FIX: DEKLARE VARIABEL BUTTON AGAR TIDAK UNDEFINED DAN REKREASI INPUT MEMBER LANCAR
-            btn.disabled = true; 
+            const btn = document.getElementById('btnSubmitMember');
+            if (btn) btn.disabled = true; 
             startLoadingIndicator();
             try { 
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); 
                 await refreshMembersList(); 
                 switchTab('dashboard'); 
-                alert("Sukses Menyimpan Pelanggan Baru ke Cloud Database!"); 
-            } catch (e) { alert("Error!"); } finally { btn.disabled = false; stopLoadingIndicator(); }
+                alert("Sukses Menyimpan Pelanggan Baru!"); 
+            } catch (e) { alert("Error!"); } finally { if(btn) btn.disabled = false; stopLoadingIndicator(); }
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; startLoadingIndicator(); try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); } finally { stopLoadingIndicator(); } }
