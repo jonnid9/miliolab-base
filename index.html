@@ -361,32 +361,6 @@
             if(document.getElementById('prodFormNama')) document.getElementById('prodFormNama').placeholder = translation.phNamaPaket;
             if(document.getElementById('prodFormVarian')) document.getElementById('prodFormVarian').placeholder = translation.phVarian;
             if(document.getElementById('prodFormModal')) document.getElementById('prodFormModal').placeholder = translation.phModal;
-            
-            const isEditingPkg = document.getElementById('prodFormTarget') && document.getElementById('prodFormTarget').value !== "";
-            if(document.getElementById('btnSaveCatalog')) {
-                document.getElementById('btnSaveCatalog').innerText = isEditingPkg 
-                    ? (clientLanguage === "ID" ? "UPDATE KATALOG 🚀" : "UPDATE CATALOG 🚀")
-                    : translation.btnSaveCatalog;
-            }
-            
-            if(document.getElementById('thMstId')) document.getElementById('thMstId').innerText = translation.thMstId;
-            if(document.getElementById('thMstMitra')) document.getElementById('thMstMitra').innerText = translation.thMstMitra;
-            if(document.getElementById('thMstPaket')) document.getElementById('thMstPaket').innerText = translation.thMstPaket;
-            if(document.getElementById('thMstVarian')) document.getElementById('thMstVarian').innerText = translation.thMstVarian;
-            if(document.getElementById('thMstModal')) document.getElementById('thMstModal').innerText = translation.thMstModal;
-            if(document.getElementById('thMstUser')) document.getElementById('thMstUser').innerText = translation.thMstUser;
-            if(document.getElementById('thMstReseller')) document.getElementById('thMstReseller').innerText = translation.thMstReseller;
-            if(document.getElementById('thMstAksi')) document.getElementById('thMstAksi').innerText = translation.thMstAksi;
-
-            if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = translation.phSearchMember;
-            if(document.getElementById('vendorSearchInput')) document.getElementById('vendorSearchInput').placeholder = translation.phSearchVendor;
-
-            if(document.getElementById('btn-dash-all')) document.getElementById('btn-dash-all').innerText = translation.lblSemua;
-            if(document.getElementById('btn-dash-today')) document.getElementById('btn-dash-today').innerText = translation.finDaily;
-            if(document.getElementById('btn-dash-3days')) document.getElementById('btn-dash-3days').innerText = clientLanguage === "ID" ? "3 Hari" : "3 Days";
-            if(document.getElementById('btn-dash-7days')) document.getElementById('btn-dash-7days').innerText = clientLanguage === "ID" ? "7 Hari" : "7 Days";
-            if(document.getElementById('btn-dash-monthly')) document.getElementById('btn-dash-monthly').innerText = clientLanguage === "ID" ? "1 Bulan" : "1 Month";
-            if(document.getElementById('btnDashApply')) document.getElementById('btnDashApply').innerText = clientLanguage === "ID" ? "Terapkan" : "Apply";
 
             if(document.getElementById('bcTitle')) document.getElementById('bcTitle').innerHTML = `<i class="fa-solid fa-bullhorn text-green-400"></i> ` + translation.bcTitle;
             if(document.getElementById('broadcastTextArea')) document.getElementById('broadcastTextArea').placeholder = translation.bcPlaceholder;
@@ -487,8 +461,8 @@
                             <input type="date" id="dashEnd" class="bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white outline-none">
                             <button id="btnDashApply" onclick="filterDashboard('custom')" class="bg-green-600 px-3 py-1.5 rounded-lg font-bold text-slate-950 hover:bg-green-500 transition">Terapkan</button>
                             <div class="flex gap-1.5 border-t border-slate-800 lg:border-t-0 pt-2 lg:pt-0 w-full lg:w-auto lg:border-l lg:pl-2">
-                                <button id="btnDashExcel" onclick="exportDashboardData('excel')" class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-1 uppercase text-[10px] tracking-wider"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                                <button id="btnDashPdf" onclick="exportDashboardData('pdf')" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-1 uppercase text-[10px] tracking-wider"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                                <button id="btnDashExcel" onclick="exportDashboardData('excel')" class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 uppercase text-[10px] tracking-wider"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                                <button id="btnDashPdf" onclick="exportDashboardData('pdf')" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 uppercase text-[10px] tracking-wider"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                             </div>
                         </div>
                     </div>
@@ -532,7 +506,7 @@
                 </div>
                 
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-6 space-y-4">
-                    <h3 id="titExportSec" class="text-base md:text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-export text-green-400"></i> Generator Ekspor Dokumen Resmi</h3>
+                    <h3 id="titExportSec" class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-export text-green-400"></i> Generator Ekspor Dokumen Resmi</h3>
                     <div class="flex flex-wrap gap-2">
                         <button id="btnExpExcel" onclick="exportProData('excel')" class="flex-1 sm:flex-none bg-green-600 hover:bg-green-500 text-slate-950 text-xs px-6 py-3 rounded-xl font-bold transition uppercase tracking-wider">📥 Export Excel Terfilter</button>
                         <button id="btnExpPdf" onclick="exportProData('pdf')" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white text-xs px-6 py-3 rounded-xl font-bold transition uppercase tracking-wider">📄 Laporan PDF Resmi + Grafik</button>
@@ -737,7 +711,7 @@
                 <div>Profit:<span id="editFormProfitLabel" class="text-green-400 font-bold block mt-1">IDR 0</span></div>
             </div>
             <input type="hidden" id="editFormRowId">
-            <div class="flex gap-2 pt-2 text-sm"><button onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button><button onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold">Simpan Mutasi Pembukuan</button></div>
+            <div class="flex gap-2 pt-2 text-sm"><button onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold transition">Batal</button><button onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold transition">Simpan Mutasi Pembukuan</button></div>
         </div>
     </div>
 
@@ -767,12 +741,7 @@
     </div>
 
     <script>
-        // CORE INTEGRATED LOGIC RE-ALIGNMENT
-        function refreshDashboard(mode) {
-            filterDashboard(mode);
-        }
-
-        // FIX SAKTI SINKRONISASI CORES: PERBAIKAN LOGIC EDIT MEMBER AGAR MENGGUNAKAN namaPaket YANG BENAR SEHINGGA DATA PRODUK KATALOG TIDAK HILANG SAAT DISIMPAN
+        // SINKRONISASI CORES: PERBAIKAN UTUH NAMA PARAMETER BIAR DETAIL PRODUK TIDAK TERHAPUS/NGILANG SAAT DIEDIT
         async function submitEditForm() {
             const rowId = document.getElementById('editFormRowId').value;
             const targetPkgId = document.getElementById('editFormPaket').value; 
@@ -800,7 +769,7 @@
                 closeEditModal(); 
                 await refreshMembersList(); 
                 alert("Sukses Memperbarui Data Pembukuan Member!");
-            } catch (e) { alert("Gagal memperbarui pembukuan!"); } finally { stopLoadingIndicator(); }
+            } catch (e) { alert("Gagal memperbarui pembukuan!"); } { stopLoadingIndicator(); }
         }
 
         // FIX SAKTI RENEW MEMBER: KALIBRASI TOTAL VARIABEL INPUT AGAR PROSES PERPANJANG MEMBER LAMA TIDAK CRASH LAGI
@@ -869,7 +838,7 @@
                 isCustomDate: isBackdate, customTglDaftar: document.getElementById('customTglDaftar').value, customTglExpired: document.getElementById('customTglExpired').value
             };
 
-            const btn = document.getElementById('btnSubmitMember');
+            const btn = document.getElementById('btnSubmitMember'); // SAKTI FIX: DEKLARE VARIABEL BUTTON AGAR TIDAK UNDEFINED DAN REKREASI INPUT MEMBER LANCAR
             btn.disabled = true; 
             startLoadingIndicator();
             try { 
