@@ -144,7 +144,6 @@
                 docInvTotal: "Total Terbayar",
                 docPaidStatus: "STATUS PEMBAYARAN: PAID / LUNAS",
                 docThankYou: "\"Terima kasih banyak telah berlangganan! Kepuasan Anda adalah prioritas kami.\"",
-                docThankYou: "\"Terima kasih banyak telah berlangganan! Kepuasan Anda adalah prioritas kami.\"",
                 docReportTitle: "LAPORAN KEUANGAN OFFICIAL",
                 docBarGross: "[Bar Hijau] Tren Gross Omset",
                 docBarModal: "[Bar Merah] Pengeluaran Modal",
@@ -413,12 +412,12 @@
         <div class="w-full md:w-64 bg-slate-950 p-4 md:p-6 border-b md:border-r border-slate-900 flex flex-col justify-between shadow-xl shrink-0 md:h-screen md:sticky md:top-0">
             <div>
                 <div class="mb-4 md:mb-8 flex items-center justify-between md:justify-start gap-3">
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 w-full min-w-0">
                         <img id="appLogo" src="" class="w-10 h-10 rounded-xl border border-slate-800 object-cover hidden">
-                        <div id="defaultLogoIcon" class="w-10 h-10 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center"><i class="fa-solid fa-cubes text-green-400 text-xl"></i></div>
-                        <div><h2 id="brandName" class="text-white font-bold text-sm md:text-base truncate max-w-[120px]">MILIOLAB</h2><span id="userRole" class="text-[9px] text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full font-bold">OWNER</span></div>
+                        <div id="defaultLogoIcon" class="w-10 h-10 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center shrink-0"><i class="fa-solid fa-cubes text-green-400 text-xl"></i></div>
+                        <div class="min-w-0 flex-1"><h2 id="brandName" class="text-white font-bold text-sm md:text-base whitespace-normal break-words leading-tight">MILIOLAB</h2><span id="userRole" class="text-[9px] text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full font-bold">OWNER</span></div>
                     </div>
-                    <button onclick="document.getElementById('mobileNavContainer').classList.toggle('hidden')" class="md:hidden text-slate-400 hover:text-white text-lg p-1"><i class="fa-solid fa-bars"></i></button>
+                    <button onclick="document.getElementById('mobileNavContainer').classList.toggle('hidden')" class="md:hidden text-slate-400 hover:text-white text-lg p-1 shrink-0"><i class="fa-solid fa-bars"></i></button>
                 </div>
                 
                 <nav id="mobileNavContainer" class="hidden md:block space-y-1 mt-3 md:mt-0 transition-all duration-300">
@@ -435,10 +434,8 @@
         </div>
 
         <div class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto">
-            
             <div id="tab-dashboard" class="tab-content active space-y-6">
                 <h1 id="h1-title" class="text-2xl md:text-3xl font-bold tracking-tight">Monitor Pelanggan</h1>
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-aktif" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Member Penjualan Aktif</p><div id="cardAktif" class="text-2xl md:text-3xl font-bold text-green-400 mt-1">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-follow" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Butuh Followup</p><div id="cardFollow" class="text-2xl md:text-3xl font-bold text-red-400 mt-1">0</div></div>
@@ -507,13 +504,13 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center launcher-card"><p id="lblFinOmset" class="text-slate-500 font-bold uppercase text-xs mb-2">Total Omset Terfilter (Gross)</p><div id="finOmset" class="text-2xl md:text-3xl font-bold text-white font-mono">IDR 0</div></div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center launcher-card"><p id="lblFinModal" class="text-slate-500 font-bold uppercase text-xs mb-2">Total Pengeluaran Modal</p><div id="finModal" class="text-2xl md:text-3xl font-bold text-red-400 font-mono">IDR 0</div></div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center launcher-card border-green-500/30"><p id="lblFinCuan" class="text-slate-500 font-bold uppercase text-xs mb-2">Cuan Bersih (Net Profit)</p><div id="finCuan" class="text-3xl md:text-4xl font-bold text-green-400 font-mono">IDR 0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl text-center launcher-card"><p id="lblFinOmset" class="text-slate-500 font-bold uppercase text-xs mb-2">Total Omset Terfilter (Gross)</p><div id="finOmset" class="text-2xl md:text-3xl font-bold text-white font-mono">IDR 0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl text-center launcher-card"><p id="lblFinModal" class="text-slate-500 font-bold uppercase text-xs mb-2">Total Pengeluaran Modal</p><div id="finModal" class="text-2xl md:text-3xl font-bold text-red-400 font-mono">IDR 0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl text-center launcher-card border-green-500/30"><p id="lblFinCuan" class="text-slate-500 font-bold uppercase text-xs mb-2">Cuan Bersih (Net Profit)</p><div id="finCuan" class="text-3xl md:text-4xl font-bold text-green-400 font-mono">IDR 0</div></div>
                 </div>
                 
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-6 space-y-4">
-                    <h3 id="titExportSec" class="text-base md:text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-export text-green-400"></i> Generator Ekspor Dokumen Resmi</h3>
+                    <h3 id="titExportSec" class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-export text-green-400"></i> Generator Ekspor Dokumen Resmi</h3>
                     <div class="flex flex-wrap gap-2">
                         <button id="btnExpExcel" onclick="exportProData('excel')" class="flex-1 sm:flex-none bg-green-600 hover:bg-green-500 text-slate-950 text-xs px-6 py-3 rounded-xl font-bold transition uppercase tracking-wider">📥 Export Excel Terfilter</button>
                         <button id="btnExpPdf" onclick="exportProData('pdf')" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white text-xs px-6 py-3 rounded-xl font-bold transition uppercase tracking-wider">📄 Laporan PDF Resmi + Grafik</button>
@@ -636,7 +633,7 @@
 
             <div id="tab-settings" class="tab-content max-w-2xl bg-slate-900/50 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
                 <div>
-                    <h3 id="mstWhitelabelTitle" class="text-lg font-bold text-white mb-2">Whitelabel Identity</h3>
+                    <h3 id="mstWhitelabelTitle" class="text-xl font-bold text-white mb-2">Whitelabel Identity</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"><input type="text" id="setBrandName" placeholder="Nama Brand" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-xs outline-none"><input type="text" id="setLogoUrl" placeholder="URL Logo Link" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-xs outline-none"></div>
                     <button id="btnSaveBrand" onclick="saveBrandSettings()" class="w-full bg-green-500 text-slate-950 font-bold p-2.5 rounded-xl text-xs uppercase tracking-wide">Simpan Brand</button>
                 </div>
@@ -679,21 +676,21 @@
 
     <div id="editFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-5 md:p-6 shadow-2xl space-y-4 my-auto">
-            <h3 class="text-lg md:text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-gear"></i> Ralat Koreksi / Upgrade Selisih Paket</h3>
-            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
+            <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-gear"></i> Ralat Koreksi / Upgrade Selisih Paket</h3>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
                 <label id="lblCheckUpgradeMutation" class="flex items-center gap-2 text-slate-400 uppercase font-bold cursor-pointer">
                     <input type="checkbox" id="checkUpgradeMutation" onchange="toggleUpgradeMutationMode()" class="w-4 h-4 text-amber-500"> Aktifkan Mode Upgrade Paket (Hitung Selisih Uang)
                 </label>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
+            <div class="grid grid-cols-2 gap-3 text-sm">
                 <div><label class="text-xs text-slate-500 block mb-1">Nama</label><input type="text" id="editFormNama" class="w-full bg-slate-950 p-3 rounded-xl text-white outline-none"></div>
                 <div><label class="text-xs text-slate-500 block mb-1">WhatsApp</label><input type="text" id="editFormWA" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
+            <div class="grid grid-cols-2 gap-3 text-sm">
                 <div><label class="text-xs text-slate-500 block mb-1">Email Akses</label><input type="email" id="editFormEmail" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
                 <div><label class="text-xs text-slate-500 block mb-1">Jenis Pembeli</label><select id="editFormJenis" onchange="autoFillEditPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select></div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs md:text-sm">
+            <div class="grid grid-cols-3 gap-3 text-sm">
                 <div><label class="text-xs text-slate-500 block mb-1">Mitra</label><select id="editFormPerusahaan" onchange="filterEditPackageDropdown()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
                 <div><label class="text-xs text-slate-400 block mb-1">Paket Akun</label><select id="editFormPaket" onchange="autoFillEditPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
                 <div id="boxEditDurasi"><label class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
@@ -704,24 +701,24 @@
                 <div>Profit:<span id="editFormProfitLabel" class="text-green-400 font-bold block mt-1">IDR 0</span></div>
             </div>
             <input type="hidden" id="editFormRowId">
-            <div class="flex gap-2 pt-2 text-xs md:text-sm"><button onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold transition">Batal</button><button onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold transition">Simpan Mutasi</button></div>
+            <div class="flex gap-2 pt-2 text-sm"><button onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button><button onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold">Simpan Mutasi Pembukuan</button></div>
         </div>
     </div>
 
     <div id="renewFormModalModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl p-5 md:p-6 shadow-2xl space-y-4 my-auto">
-            <h3 class="text-lg md:text-xl font-bold text-blue-400 flex items-center gap-2"><i class="fa-solid fa-arrows-spin"></i> Perpanjang / Member Upgrade</h3>
+            <h3 class="text-xl font-bold text-blue-400 flex items-center gap-2"><i class="fa-solid fa-arrows-spin"></i> Perpanjang / Mutasi Upgrade Member</h3>
             <div id="renewMemberIdentityBox" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-1 text-slate-400">
                 <p>Nama Pelanggan: <b id="renewLabelNama" class="text-white text-sm"></b></p>
                 <p>WhatsApp / Email: <span id="renewLabelKontak" class="text-slate-300"></span></p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
-                <div><label class="text-xs text-slate-500 block mb-1">Tipe Pembeli</label><select id="renewFormJenis" onchange="autoFillRenewPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select></div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <div><label class="text-xs text-slate-500 block mb-1">Tipe Pembeli</label><select id="renewFormJenis" onchange="autoFillRenewPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select></div>
                 <div><label class="text-xs text-slate-500 block mb-1">Durasi Hari Baru</label><input type="number" id="renewFormDurasi" value="30" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
-                <div><label class="text-xs text-slate-500 block mb-1">Pilih Mitra Vendor</label><select id="renewFormPerusahaan" onchange="filterRenewPackageDropdown()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
-                <div><label class="text-xs text-slate-400 block mb-1">Pilih Paket / Varian Baru</label><select id="renewFormPaket" onchange="autoFillRenewPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <div><label class="text-xs text-slate-500 block mb-1">Pilih Mitra Vendor</label><select id="renewFormPerusahaan" onchange="filterRenewPackageDropdown()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"></select></div>
+                <div><label class="text-xs text-slate-400 block mb-1">Pilih Paket / Varian Baru</label><select id="renewFormPaket" onchange="autoFillRenewPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"></select></div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
                 <div>Modal Beli Baru: <input type="number" id="renewFormHargaBeli" class="w-full bg-transparent font-bold text-slate-400 outline-none mt-0.5" readonly></div>
@@ -729,12 +726,11 @@
                 <div>Profit Bersih: <span id="renewFormProfitLabel" class="text-green-400 font-bold block mt-1">IDR 0</span></div>
             </div>
             <input type="hidden" id="renewFormOldRowId">
-            <div class="flex gap-2 pt-2 text-xs md:text-sm"><button onclick="closeRenewModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold transition">Batal</button><button onclick="submitRenewForm()" class="flex-1 bg-blue-500 text-white p-2.5 rounded-xl font-bold transition">Proses Perpanjang 🚀</button></div>
+            <div class="flex gap-2 pt-2 text-sm"><button onclick="closeRenewModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold transition">Batal</button><button onclick="submitRenewForm()" class="flex-1 bg-blue-500 text-white p-2.5 rounded-xl font-bold transition">Proses Perpanjang/Upgrade 🚀</button></div>
         </div>
     </div>
 
     <script>
-        // CORE JS LAYOUT RESPONSIVE & ENGINE COMPILER
         function toggleBackdateFields() {
             const chk = document.getElementById('checkBackdate').checked;
             document.getElementById('backdateFields').classList.toggle('hidden', !chk);
@@ -776,9 +772,7 @@
         }
 
         function switchTab(tabId) {
-            // Hapus Nav Blocker & Sembunyikan Nav Menu di LayAR HP Pas Tab Diklik
             if(window.innerWidth < 768) { document.getElementById('mobileNavContainer').classList.add('hidden'); }
-
             document.querySelectorAll('.tab-content').forEach(el => el.className = 'tab-content hidden'); 
             document.getElementById('tab-' + tabId).className = 'tab-content active space-y-6';
             document.querySelectorAll('.sidebar-btn').forEach(btn => btn.classList.remove('active-sidebar-menu'));
@@ -1117,6 +1111,7 @@
                 
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Filtered Members");
+                XLSX.utils.sheet_add_json(ws, content, { origin: "A3" });
                 XLSX.writeFile(wb, `MILIOLAB_Export_${clientCurrency}.xlsx`);
             } else {
                 const { jsPDF } = window.jspdf;
@@ -1211,7 +1206,7 @@
                         if (batasMaxHangus) {
                             const pulseStyle = "animate-pulse bg-black text-red-500 border border-red-500 font-bold shadow-lg shadow-red-500/20";
                             // JURUS CHAT MEMBER EXPIRED: TIDAK AKAN HILANG SETELAH DIKLIK KECUALI DI DONE MANUALLY
-                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" class="${pulseStyle} px-2 py-1.5 rounded-lg text-xs text-center block">${lang.btnChat}</a>`;
+                            btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block text-wrap max-w-[85px]">${lang.btnChat}</a>`;
                         } else {
                             btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
                         }
@@ -1227,7 +1222,7 @@
                                 followCount++; 
                                 const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
                                 // JURUS FOLLOW UP BERKALA: KLIK LANGSUNG HILANG HARI INI, BARU BANGUN LAGI BESOK JAM 00:00 AM
-                                btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2 py-1.5 rounded-lg text-xs text-center block">${lang.btnFollow}</a>`;
+                                btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block text-wrap max-w-[85px]">${lang.btnFollow}</a>`;
                             } else {
                                 btnAction = `<div class="w-[76px]"></div>`; 
                             }
@@ -1528,6 +1523,7 @@
             } catch (e) { alert("Error Delete Product!"); }
         }
 
+        // BROADCAST ENGINE CORE CONTROLLER
         function lockBroadcastText() {
             const txt = document.getElementById('broadcastTextArea').value.trim();
             if(!txt) { alert(clientLanguage === "ID" ? "Teks broadcast tidak boleh kosong!" : "Broadcast message cannot be empty!"); return; }
@@ -1616,36 +1612,9 @@
         function closeRenewModal() { document.getElementById('renewFormModalModal').classList.add('hidden'); }
         
         async function submitRenewForm() {
-            const oldRowId = document.getElementById('renewFormOldRowId').value, pkgId = document.getElementById('renewFormPaket').value, pkg = masterPackages.find(p => p.id === pkgId), hargaJual = (document.getElementById('renewFormJenis').value === "User Langsung" ? pkg.hargaJualUser : pkg.hargaJualReseller), targetMember = membersData.find(x => x.rowId == oldRowId);
+            const oldRowId = document.getElementById('renewFormOldRowId').value, pkgId = document.getElementById('renewFormPaket').value, pkg = masterPackages.find(p => p.id === targetPkgId);
             const payload = { action: "renewMember", oldRowId: oldRowId, resellerId: currentUser.userId, namaMember: targetMember.namaMember, noWhatsapp: targetMember.noWhatsapp, email: targetMember.email, perusahaanSumber: document.getElementById('renewFormPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), jenisPembeli: document.getElementById('renewFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual, durasiHari: document.getElementById('renewFormDurasi').value };
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
-        }
-
-        async function submitMemberForm() {
-            const btn = document.getElementById('btnSubmitMember'), pkgId = document.getElementById('formPaket').value, pkg = masterPackages.find(p => p.id === pkgId), hargaJual = (document.getElementById('formJenis').value === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-            const isBackdate = document.getElementById('checkBackdate').checked;
-            
-            const countryChoice = document.getElementById('formCountryCode').value;
-            let nomorRaw = document.getElementById('formWA').value.trim();
-            let nomorWaFin = "";
-            
-            if (countryChoice === "62") {
-                if(nomorRaw.startsWith("08")) { nomorWaFin = "628" + nomorRaw.slice(2); }
-                else if(nomorRaw.startsWith("628")) { nomorWaFin = nomorRaw; }
-                else { nomorWaFin = "62" + nomorRaw; }
-            } else if (countryChoice === "CUSTOM") {
-                nomorWaFin = nomorRaw; 
-            } else {
-                if(nomorRaw.startsWith("0")) { nomorRaw = nomorRaw.slice(1); }
-                nomorWaFin = countryChoice + nomorRaw;
-            }
-            if(nomorWaFin.startsWith("+")) { nomorWaFin = nomorWaFin.replace("+", ""); }
-
-            const payload = { 
-                action: "addMember", resellerId: currentUser.userId, namaMember: document.getElementById('formNama').value, noWhatsapp: nomorWaFin, email: document.getElementById('formEmail').value, perusahaanSumber: document.getElementById('formPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), durasiHari: document.getElementById('formDurasiKustom').value, jenisPembeli: document.getElementById('formJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual,
-                isCustomDate: isBackdate, customTglDaftar: document.getElementById('customTglDaftar').value, customTglExpired: document.getElementById('customTglExpired').value
-            };
-            btn.disabled = true; try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); await refreshMembersList(); switchTab('dashboard'); alert("Sukses Menyimpan Pelanggan Baru!"); } catch (e) { alert("Error!"); } finally { btn.disabled = false; }
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
