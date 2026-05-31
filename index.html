@@ -61,6 +61,47 @@
         body.milio-light-mode .shadow-xl,
         body.milio-light-mode .shadow-2xl { box-shadow:0 10px 30px rgba(15,23,42,.08) !important; }
         body.milio-light-mode #milioThemeToggle { background:#0f172a !important; color:#ffffff !important; }
+
+        /* V9 Light Mode polish - only active in mode terang */
+        body.milio-light-mode { background:#f8fafc !important; color:#0b1220 !important; }
+        body.milio-light-mode #mainApp { background:#f8fafc !important; }
+        body.milio-light-mode .bg-slate-950,
+        body.milio-light-mode .bg-slate-950\/20,
+        body.milio-light-mode .bg-slate-950\/40,
+        body.milio-light-mode .bg-slate-950\/50,
+        body.milio-light-mode .bg-slate-950\/70,
+        body.milio-light-mode .bg-slate-950\/80,
+        body.milio-light-mode .bg-slate-900,
+        body.milio-light-mode .bg-slate-900\/20,
+        body.milio-light-mode .bg-slate-900\/30,
+        body.milio-light-mode .bg-slate-900\/40,
+        body.milio-light-mode .bg-slate-900\/50,
+        body.milio-light-mode .bg-slate-900\/60,
+        body.milio-light-mode .bg-slate-900\/70 { background:#ffffff !important; color:#0f172a !important; }
+        body.milio-light-mode .border-slate-900,
+        body.milio-light-mode .border-slate-800,
+        body.milio-light-mode .border-slate-800\/40,
+        body.milio-light-mode .border-slate-800\/50,
+        body.milio-light-mode .border-slate-800\/60,
+        body.milio-light-mode .border-slate-800\/80 { border-color:#cbd5e1 !important; }
+        body.milio-light-mode .text-white,
+        body.milio-light-mode .text-slate-100,
+        body.milio-light-mode .text-slate-200,
+        body.milio-light-mode .text-slate-300 { color:#0f172a !important; }
+        body.milio-light-mode .text-slate-400 { color:#334155 !important; }
+        body.milio-light-mode .text-slate-500 { color:#475569 !important; }
+        body.milio-light-mode input,
+        body.milio-light-mode select,
+        body.milio-light-mode textarea { background:#ffffff !important; color:#0f172a !important; border-color:#cbd5e1 !important; }
+        body.milio-light-mode input::placeholder,
+        body.milio-light-mode textarea::placeholder { color:#64748b !important; }
+        body.milio-light-mode table thead tr { background:#e2e8f0 !important; color:#1e293b !important; }
+        body.milio-light-mode table tbody tr,
+        body.milio-light-mode tbody { background:#ffffff !important; color:#0f172a !important; }
+        body.milio-light-mode .active-sidebar-menu { background:#fef3c7 !important; color:#92400e !important; }
+        body.milio-light-mode .active-filter-btn { background:#16a34a !important; color:#ffffff !important; }
+        body.milio-light-mode .font-mono { color:inherit; }
+        body.milio-light-mode #milioThemeToggle { background:#0f172a !important; color:#ffffff !important; border-color:#334155 !important; }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen">
@@ -84,7 +125,9 @@
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
 
-        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 }; 
+        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 };
+
+        function milioB64Transport(v) { try { return "B64:" + btoa(unescape(encodeURIComponent(v || ""))); } catch(e) { return v || ""; } } 
 
         async function fetchLiveGlobalRates() {
             try {
@@ -904,7 +947,7 @@
             const btn = document.getElementById('btnLogin'); const err = document.getElementById('loginError');
             if(!u || !p) return; btn.disabled = true; btn.innerHTML = 'Memverifikasi...'; err.classList.add('hidden');
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: milioB64Transport(u), password: milioB64Transport(p) }) });
                 const res = await response.json();
                 if(res.status === "success") {
                     localStorage.setItem('milio_user', u); localStorage.setItem('milio_pass', p);
@@ -978,7 +1021,7 @@
         }
 
         async function loadInitData() {
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getFormInitData" }) });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getFormInitData", userId: currentUser ? currentUser.userId : "", role: currentUser ? currentUser.role : "" }) });
             const res = await response.json(); 
             if(res.status === "success") { 
                 masterCompanies = res.companies; masterPackages = res.packages; 
@@ -1743,7 +1786,8 @@
                 action: isEdit ? "editProduct" : "addProduct", packageId: targetId,
                 perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value,
                 varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value,
-                hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value
+                hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value,
+                userId: currentUser ? currentUser.userId : ""
             };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -1861,7 +1905,7 @@
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
         }
 
-        async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
+        async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); await loadInitData(); }
         async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
