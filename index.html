@@ -526,8 +526,10 @@
         <div class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto">
             <div id="tab-dashboard" class="tab-content active space-y-6">
                 <h1 id="h1-title" class="text-2xl md:text-3xl font-bold tracking-tight">Monitor Pelanggan</h1>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-total" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Data Member</p><div id="cardTotalMember" class="text-2xl md:text-3xl font-bold text-blue-400 mt-1">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-aktif" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Member Penjualan Aktif</p><div id="cardAktif" class="text-2xl md:text-3xl font-bold text-green-400 mt-1">0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-expired" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Member Expired</p><div id="cardExpiredMember" class="text-2xl md:text-3xl font-bold text-orange-400 mt-1">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-follow" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Butuh Followup</p><div id="cardFollow" class="text-2xl md:text-3xl font-bold text-red-400 mt-1">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl"><p id="p-profit" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Untung Terfilter</p><div id="cardProfit" class="text-2xl md:text-3xl font-bold text-emerald-400 font-mono mt-1">IDR 0</div></div>
                 </div>
@@ -889,9 +891,9 @@
         async function triggerAdvancedReset() {
             const type = document.getElementById('resetTypeSelect').value;
             const scope = document.getElementById('resetScopeSelect').value;
-            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Action ini permanen!")) {
+            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
                 if(validatePasswordSecurity()) {
-                    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope }) });
+                    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "" }) });
                     window.location.reload();
                 }
             }
@@ -1076,7 +1078,7 @@
             if(newName === null || newName.trim() === "" || newName.trim() === oldName) return;
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim() }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim(), userId: currentUser ? currentUser.userId : "" }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1088,12 +1090,12 @@
         async function deleteCompany(name) { 
             if(!validatePasswordSecurity()) return; 
             const msgConfirm = clientLanguage === "ID" 
-                ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan MENGHAPUS PERMANEN seluruh Paket Produk & Member Pelanggan yang terikat dengan vendor ini di database Google Sheets!\n\nApakah Om Yakin Ingin Eksekusi?`
-                : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will AUTOMATICALLY WIPE & PERMANENTLY DELETE all associated Packages and Customer Members inside Google Sheets!\n\nAre you absolutely sure you want to execute?`;
+                ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan menghapus vendor & produk hanya di akun ini, dan member terkait akan diarsipkan aman.\n\nApakah Om Yakin Ingin Eksekusi?`
+                : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will delete vendor & packages only in this account, and related members will be archived safely.\n\nAre you absolutely sure you want to execute?`;
             if(!confirm(msgConfirm)) return;
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name }) }); 
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); 
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1250,6 +1252,7 @@
 
             const payload = {
                 action: "addMember",
+                userId: currentUser ? currentUser.userId : "",
                 resellerId: currentUser.userId,
                 namaMember: document.getElementById('formNama').value,
                 noWhatsapp: inputWa,
@@ -1438,7 +1441,7 @@
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
-            let activeCount = 0, followCount = 0, totalProfit = 0; const now = new Date();
+            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0; const now = new Date();
             const lang = dictionary[clientLanguage] || dictionary.ID;
             
             const localDate = new Date();
@@ -1459,6 +1462,7 @@
                     if (!matchNama && !matchEmail && !matchWA) return; 
                 }
                 
+                totalMemberCount++;
                 const tTimestamp = parseJsonDate(m.timestamp);
                 const tExpired = parseJsonDate(m.tglExpired);
                 const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
@@ -1488,6 +1492,7 @@
                     btnAction = `<div class="w-[76px]"></div>`; 
                 } else {
                     if(diffDays < 0) {
+                        expiredCount++;
                         const batasMaxHangus = Math.abs(diffDays) <= 15;
                         textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
                         
@@ -1548,8 +1553,10 @@
                         <button onclick="deleteMember(${m.rowId})" class="text-red-500 hover:text-red-400 text-sm ml-1 select-none"><i class="fa-solid fa-trash-can"></i></button>
                     </div></td></tr>`;
             });
-            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount; 
-            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount; 
+            if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
+            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
+            if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
+            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
             if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
         }
 
@@ -1557,7 +1564,7 @@
             const translation = dictionary[clientLanguage] || dictionary.ID;
             if (confirm(translation.confirmDone)) {
                 try {
-                    const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateMemberStatus", rowId: rowId, status: "Selesai" }) });
+                    const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateMemberStatus", rowId: rowId, status: "Selesai", userId: currentUser ? currentUser.userId : "" }) });
                     const res = await response.json();
                     if(res && res.status === "success") {
                         await refreshMembersList();
@@ -1654,7 +1661,7 @@
             if(inputWa.startsWith("+")) { inputWa = inputWa.replace("+", ""); }
 
             const payload = {
-                action: "editMember", rowId: rowId, isMutation: isMutation,
+                action: "editMember", rowId: rowId, isMutation: isMutation, userId: currentUser ? currentUser.userId : "",
                 namaMember: document.getElementById('editFormNama').value, noWhatsapp: inputWa, email: document.getElementById('editFormEmail').value,
                 perusahaanSumber: document.getElementById('editFormPerusahaan').value, 
                 namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), 
@@ -1733,7 +1740,7 @@
                     };
                 });
                 if(confirm("Import " + rows.length + " member sekaligus?")) {
-                    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "bulkAddMembers", resellerId: currentUser.userId, rows: rows }) }).then(() => { refreshMembersList(); switchTab('dashboard'); });
+                    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "bulkAddMembers", userId: currentUser ? currentUser.userId : "", resellerId: currentUser.userId, rows: rows }) }).then(() => { refreshMembersList(); switchTab('dashboard'); });
                 }
             }; reader.readAsArrayBuffer(file);
         }
@@ -1803,7 +1810,7 @@
         async function deleteProduct(id) {
             if(!validatePasswordSecurity()) return;
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id, userId: currentUser ? currentUser.userId : "" }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1901,15 +1908,15 @@
         
         async function submitRenewForm() {
             const oldRowId = document.getElementById('renewFormOldRowId').value, pkgId = document.getElementById('renewFormPaket').value, pkg = masterPackages.find(p => p.id === targetPkgId);
-            const payload = { action: "renewMember", oldRowId: oldRowId, resellerId: currentUser.userId, namaMember: targetMember.namaMember, noWhatsapp: targetMember.noWhatsapp, email: targetMember.email, perusahaanSumber: document.getElementById('renewFormPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), jenisPembeli: document.getElementById('renewFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual, durasiHari: document.getElementById('renewFormDurasi').value };
+            const payload = { action: "renewMember", oldRowId: oldRowId, userId: currentUser ? currentUser.userId : "", resellerId: currentUser.userId, namaMember: targetMember.namaMember, noWhatsapp: targetMember.noWhatsapp, email: targetMember.email, perusahaanSumber: document.getElementById('renewFormPerusahaan').value, namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), jenisPembeli: document.getElementById('renewFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual, durasiHari: document.getElementById('renewFormDurasi').value };
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); await loadInitData(); }
-        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
+        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
-        function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId }) }).then(() => refreshMembersList()); }
+        function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
 
 
