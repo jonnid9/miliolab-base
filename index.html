@@ -1092,7 +1092,8 @@
         }
 
         async function deleteCompany(name) { 
-            if(!validatePasswordSecurity()) return; 
+            // V16: user tenant bebas kelola vendor miliknya sendiri; cukup confirm, tidak perlu prompt password tambahan.
+            
             const msgConfirm = clientLanguage === "ID" 
                 ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan menghapus vendor & produk hanya di akun ini, dan member terkait akan diarsipkan aman.\n\nApakah Om Yakin Ingin Eksekusi?`
                 : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will delete vendor & packages only in this account, and related members will be archived safely.\n\nAre you absolutely sure you want to execute?`;
