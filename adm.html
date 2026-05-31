@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v14</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v15</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,7 +35,7 @@
     <div id="controlCenterScreen" class="hidden max-w-6xl mx-auto space-y-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/60 p-6 rounded-3xl border border-purple-900/30 gap-4 shadow-2xl">
             <div>
-                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v14</span></h1>
+                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v15</span></h1>
                 <p class="text-slate-400 text-xs mt-1 uppercase font-bold tracking-widest">Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot</p>
             </div>
             <div class="flex gap-2 w-full md:w-auto">
@@ -120,7 +120,7 @@
                     document.getElementById('controlCenterScreen').classList.remove('hidden');
                     await loadTenants();
                 } else { 
-                    alert("Akses Ditolak! Akun Anda wajib bertipe 'Owner' di Sheets.");
+                    alert((res && res.message) ? res.message : "Akses Ditolak! Akun Anda wajib bertipe Owner di Sheets.");
                     if (isAutoLogin) { handleOwnerLogout(); }
                 }
             } catch (e) { alert("Koneksi Error! Cek URL Script Anda."); } finally { btn.disabled = false; btn.innerHTML = 'Buka Command Center 🔓'; }
@@ -198,11 +198,11 @@
             if(userId === 'USER01') { alert('Akun pusat MILIOLAB-BASE tidak boleh direset dari tombol ini.'); return; }
             const t = tenantsList.find(x => x.userId === userId);
             const name = t ? t.namaBisnis : userId;
-            if(!confirm('⚠️ RESET DATA TENANT AMAN:
-Reset hanya akan mengosongkan data workspace milik ' + name + ' saja.
+            if(!confirm(`⚠️ RESET DATA TENANT AMAN:
+Reset hanya akan mengosongkan data workspace milik ${name} saja.
 Tenant lain dan MILIOLAB-BASE tidak akan tersentuh.
 
-Lanjutkan?')) return;
+Lanjutkan?`)) return;
             const pin = prompt('🔐 Masukkan password owner untuk konfirmasi reset tenant:');
             if(pin === null) return;
             if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Reset dibatalkan.'); return; }
