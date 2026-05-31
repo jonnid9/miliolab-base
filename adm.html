@@ -18,7 +18,8 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let tenantsList = []; 
-        let ownerSessionPass = ""; 
+        let ownerSessionPass = "";
+        function milioB64Transport(v) { try { return "B64:" + btoa(unescape(encodeURIComponent(v || ""))); } catch(e) { return v || ""; } } 
     </script>
 
     <div id="gatekeeperScreen" class="flex flex-col items-center justify-center min-h-screen">
@@ -109,7 +110,7 @@
             if(!u || !p) { alert("Username dan Password wajib diisi!"); return; }
             btn.disabled = true; btn.innerHTML = 'Memverifikasi Keamanan...';
             try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
+                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: milioB64Transport(u), password: milioB64Transport(p) }) });
                 const res = await r.json();
                 if(res.status === "success" && (res.user.role === "Owner" || res.user.role === "OWNER")) {
                     localStorage.setItem('milio_owner_user', u);
@@ -150,7 +151,7 @@
                     <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
                     <td class="p-4 text-center flex gap-2 justify-center mt-1">
                         <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-purple-600 hover:text-white">⚙️ Kelola Akun</button>
-                        <button onclick="deleteTenant('${t.userId}')" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        ${(t.userId === 'USER01' || (t.namaBisnis || '').toUpperCase() === 'MILIOLAB-BASE') ? '' : `<button onclick="deleteTenant('${t.userId}')" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
                     </td></tr>`;
             });
         }
