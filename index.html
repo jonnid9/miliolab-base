@@ -1040,8 +1040,10 @@
             if(sideMenu) sideMenu.innerHTML = `<button onclick="filterCompanyData('ALL')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 hover:bg-slate-900 text-xs font-semibold cursor-pointer shrink-0">📁 ${translation.lblTampilkanSemua}</button>`;
             if(formProdComp) {
                 formProdComp.innerHTML = '';
-                masterCompanies.forEach(comp => {
-                    if(sideMenu) sideMenu.innerHTML += `<button onclick="filterCompanyData('${comp}')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 hover:bg-slate-900 text-xs shrink-0"><span>Mitra: ${comp}</span></button>`;
+                const uniqCompanies = [...new Set((masterCompanies || []).map(c => String(c || '').trim()).filter(Boolean))];
+                masterCompanies = uniqCompanies;
+                uniqCompanies.forEach(comp => {
+                    if(sideMenu) sideMenu.innerHTML += `<button onclick="filterCompanyData('${comp.replace(/'/g, "\\'")}')" class="bg-slate-900 md:bg-transparent border border-slate-800 md:border-0 rounded-lg text-left p-2 text-slate-400 hover:text-green-400 hover:bg-slate-900 text-xs shrink-0"><span>Mitra: ${comp}</span></button>`;
                     formProdComp.innerHTML += `<option value="${comp}">${comp}</option>`;
                 });
             }
@@ -1053,7 +1055,9 @@
             const searchVal = document.getElementById('vendorSearchInput') ? document.getElementById('vendorSearchInput').value.toLowerCase().trim() : "";
             const translation = dictionary[clientLanguage] || dictionary.ID;
 
-            masterCompanies.forEach(comp => {
+            const uniqMasterList = [...new Set((masterCompanies || []).map(c => String(c || '').trim()).filter(Boolean))];
+            masterCompanies = uniqMasterList;
+            uniqMasterList.forEach(comp => {
                 if(searchVal !== "" && !comp.toLowerCase().includes(searchVal)) return;
 
                 listContainer.innerHTML += `
@@ -1099,7 +1103,7 @@
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
-                    alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dan seluruh data terkait bersih terhapus." : "🗑️ Success! Vendor and all related data completely deleted.");
+                    alert(clientLanguage === "ID" ? "🗑️ Sukses! Vendor dihapus untuk akun ini saja." : "🗑️ Success! Vendor and all related data completely deleted.");
                 } else { alert("Failed: " + res.message); }
             } catch (e) { alert("Error Delete Vendor!"); }
         }
@@ -1912,7 +1916,16 @@
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); closeRenewModal(); await refreshMembersList(); } catch (e) { alert("Gagal!"); }
         }
 
-        async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); await loadInitData(); }
+        async function submitCompany() {
+            const input = document.getElementById('newCompanyName');
+            const name = input.value.trim();
+            if(!name) { alert(clientLanguage === "ID" ? "Nama perusahaan wajib diisi." : "Company name is required."); return; }
+            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) });
+            const res = await r.json();
+            input.value = '';
+            await loadInitData();
+            alert(res.message || 'Selesai');
+        }
         async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
