@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v7.2</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v14</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,11 +35,12 @@
     <div id="controlCenterScreen" class="hidden max-w-6xl mx-auto space-y-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/60 p-6 rounded-3xl border border-purple-900/30 gap-4 shadow-2xl">
             <div>
-                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v7.2</span></h1>
+                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v14</span></h1>
                 <p class="text-slate-400 text-xs mt-1 uppercase font-bold tracking-widest">Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot</p>
             </div>
             <div class="flex gap-2 w-full md:w-auto">
                 <button onclick="openAddTenantModal()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-plus-circle mr-2"></i> Daftarkan Pembeli Baru</button>
+                <button onclick="cleanupDuplicates()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-broom"></i> Bersihkan Duplikat</button>
                 <button onclick="handleOwnerLogout()" class="bg-red-950/40 border border-red-500/30 text-red-400 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-power-off"></i> Keluar</button>
             </div>
         </div>
@@ -211,6 +212,14 @@ Lanjutkan?')) return;
                 alert(res.message || 'Reset selesai.');
                 await loadTenants();
             } catch(e) { alert('Gagal koneksi ke database.'); }
+        }
+
+        async function cleanupDuplicates() {
+            if(!confirm('Bersihkan duplikat company seperti USER-ADMIN dobel di semua tenant?')) return;
+            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "cleanupTenantDuplicates" }) });
+            const res = await r.json();
+            alert(res.message || 'Selesai');
+            await loadTenants();
         }
 
         function handleOwnerLogout() { localStorage.removeItem('milio_owner_user'); localStorage.removeItem('milio_owner_pass'); location.reload(); }
