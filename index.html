@@ -38,6 +38,7 @@
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let currentUser = null; let currentPasswordPlain = ""; 
         let masterCompanies = []; let masterPackages = []; let membersData = []; let filteredMembers = [];
+        let resellerDatabase = [];
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
@@ -528,6 +529,32 @@
                     <h2 id="inpTitle" class="text-xl md:text-2xl font-bold text-white">Input Member Baru</h2>
                     <p id="inpSubtitle" class="text-[10px] text-slate-500 mt-0.5 uppercase tracking-wider">Mendukung Pencatatan Member Baru atau Data Member Lama (Backdate)</p>
                 </div>
+                <div id="resellerDatabaseBox" class="bg-slate-950/70 border border-green-500/20 rounded-2xl p-4 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-bold text-green-400 flex items-center gap-2"><i class="fa-solid fa-address-book"></i> Database Reseller</h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Simpan data reseller, lalu pilih untuk isi otomatis Nama + WhatsApp.</p>
+                        </div>
+                        <button type="button" onclick="loadResellerDB()" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-3 py-2 rounded-xl text-[10px] font-bold uppercase">Refresh</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                        <input type="text" id="resellerNamaInput" placeholder="Nama Reseller" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
+                        <select id="resellerNegaraInput" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
+                            <option value="ID">ID (+62)</option>
+                            <option value="MY">MY (+60)</option>
+                            <option value="SG">SG (+65)</option>
+                            <option value="US">US (+1)</option>
+                        </select>
+                        <input type="text" id="resellerWaInput" placeholder="Nomor WA" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
+                        <button type="button" onclick="saveResellerDB()" class="bg-green-500 hover:bg-green-400 text-slate-950 font-bold rounded-xl text-xs uppercase">Simpan</button>
+                    </div>
+                    <div id="resellerChooserWrap" class="hidden grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 items-center">
+                        <select id="resellerChooser" onchange="applySelectedReseller()" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
+                            <option value="">-- Pilih Reseller Tersimpan --</option>
+                        </select>
+                        <button type="button" onclick="deleteSelectedReseller()" class="bg-red-950/40 border border-red-500/30 text-red-400 font-bold rounded-xl px-4 py-3 text-[10px] uppercase">Arsipkan</button>
+                    </div>
+                </div>
                 <form id="memberForm" onsubmit="event.preventDefault(); submitMemberForm();" class="space-y-4 text-sm">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" id="formNama" placeholder="Nama Member" required class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
@@ -540,7 +567,7 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="email" id="formEmail" placeholder="Email" required class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
-                        <select id="formJenis" onchange="autoFillPrices()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select>
+                        <select id="formJenis" onchange="autoFillPrices(); toggleResellerChooser();" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <select id="formPerusahaan" onchange="filterPackageDropdown()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"></select>
@@ -801,7 +828,7 @@
             }, 250);
         }
         
-        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); switchTab('input'); }
+        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
         
         function validatePasswordSecurity() { 
             const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN OWNER:\nMasukkan Password Akun Om untuk mengonfirmasi:" : "🔐 OWNER SECURITY VALIDATION:\nEnter Your Account Password to Confirm:";
@@ -905,7 +932,9 @@
             if(res.status === "success") { 
                 masterCompanies = res.companies; masterPackages = res.packages; 
                 renderCompanyMenus(); populateFormDropdowns();
-                applyGlobalLanguageUI(); 
+                applyGlobalLanguageUI();
+                await loadResellerDB();
+                toggleResellerChooser(); 
             }
         }
 
@@ -1013,6 +1042,88 @@
                     if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
                     if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
                 }
+            }
+        }
+
+
+        function resellerPost(payload) {
+            return fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
+        }
+
+        async function loadResellerDB() {
+            if (!currentUser) return;
+            try {
+                const res = await resellerPost({ action: "getResellers", userId: currentUser.userId, role: currentUser.role });
+                resellerDatabase = (res && res.data) ? res.data : [];
+                renderResellerChooser();
+            } catch(e) {
+                console.log("Gagal memuat database reseller", e);
+            }
+        }
+
+        function renderResellerChooser() {
+            const select = document.getElementById('resellerChooser');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Pilih Reseller Tersimpan --</option>';
+            resellerDatabase.forEach((r, i) => {
+                select.innerHTML += `<option value="${i}">${r.nama} - ${r.wa}</option>`;
+            });
+            toggleResellerChooser();
+        }
+
+        function toggleResellerChooser() {
+            const jenisEl = document.getElementById('formJenis');
+            const wrap = document.getElementById('resellerChooserWrap');
+            if (!jenisEl || !wrap) return;
+            if (jenisEl.value === 'Reseller') wrap.classList.remove('hidden');
+            else wrap.classList.add('hidden');
+        }
+
+        async function saveResellerDB() {
+            if (!currentUser) { alert('Silakan login ulang.'); return; }
+            const nama = document.getElementById('resellerNamaInput').value.trim();
+            const wa = document.getElementById('resellerWaInput').value.trim();
+            const negara = document.getElementById('resellerNegaraInput').value;
+            if (!nama || !wa) { alert('Nama reseller dan nomor WA wajib diisi.'); return; }
+            try {
+                const res = await resellerPost({ action: 'addReseller', userId: currentUser.userId, nama: nama, wa: wa, negara: negara });
+                alert(res.message || 'Data reseller berhasil disimpan!');
+                document.getElementById('resellerNamaInput').value = '';
+                document.getElementById('resellerWaInput').value = '';
+                await loadResellerDB();
+            } catch(e) {
+                alert('Gagal menyimpan reseller. Pastikan code.gs sudah diupdate dan deploy ulang.');
+            }
+        }
+
+        function applySelectedReseller() {
+            const select = document.getElementById('resellerChooser');
+            if (!select || select.value === '') return;
+            const r = resellerDatabase[parseInt(select.value)];
+            if (!r) return;
+            document.getElementById('formNama').value = r.nama || '';
+            let wa = String(r.wa || '').replace(/\D/g, '');
+            const negaraMap = { ID: '62', MY: '60', SG: '65', US: '1' };
+            const kode = negaraMap[r.negara] || '62';
+            document.getElementById('formCountryCode').value = kode;
+            if (wa.indexOf(kode) === 0) wa = wa.substring(kode.length);
+            document.getElementById('formWA').value = wa;
+            document.getElementById('formJenis').value = 'Reseller';
+            autoFillPrices();
+        }
+
+        async function deleteSelectedReseller() {
+            const select = document.getElementById('resellerChooser');
+            if (!select || select.value === '') { alert('Pilih reseller dulu.'); return; }
+            const r = resellerDatabase[parseInt(select.value)];
+            if (!r) return;
+            if (!confirm('Arsipkan reseller: ' + r.nama + '?')) return;
+            try {
+                const res = await resellerPost({ action: 'deleteReseller', rowId: r.rowId });
+                alert(res.message || 'Reseller diarsipkan.');
+                await loadResellerDB();
+            } catch(e) {
+                alert('Gagal arsipkan reseller.');
             }
         }
 
