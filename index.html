@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Urbanist', sans-serif; background-color: #070a13; }
         .tab-content { display: none; } .tab-content.active { display: block; }
@@ -25,6 +26,41 @@
         ::-webkit-scrollbar-track { background: #070a13; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 99px; }
         ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
+
+
+        /* MILIOLAB V8 LIGHT MODE PATCH - dark mode bawaan tidak diubah */
+        body.milio-light-mode { background:#f4f7fb !important; color:#0f172a !important; }
+        body.milio-light-mode .bg-slate-950,
+        body.milio-light-mode .bg-slate-950\/50,
+        body.milio-light-mode .bg-slate-950\/70,
+        body.milio-light-mode .bg-slate-950\/80,
+        body.milio-light-mode .bg-slate-900,
+        body.milio-light-mode .bg-slate-900\/30,
+        body.milio-light-mode .bg-slate-900\/40,
+        body.milio-light-mode .bg-slate-900\/50,
+        body.milio-light-mode .bg-slate-900\/60,
+        body.milio-light-mode .bg-slate-900\/70 { background:#ffffff !important; color:#0f172a !important; }
+        body.milio-light-mode .border-slate-900,
+        body.milio-light-mode .border-slate-800,
+        body.milio-light-mode .border-slate-800\/40,
+        body.milio-light-mode .border-slate-800\/50,
+        body.milio-light-mode .border-slate-800\/60,
+        body.milio-light-mode .border-slate-800\/80 { border-color:#d6dee9 !important; }
+        body.milio-light-mode .text-white { color:#0f172a !important; }
+        body.milio-light-mode .text-slate-200,
+        body.milio-light-mode .text-slate-300,
+        body.milio-light-mode .text-slate-400 { color:#334155 !important; }
+        body.milio-light-mode .text-slate-500 { color:#64748b !important; }
+        body.milio-light-mode input,
+        body.milio-light-mode select,
+        body.milio-light-mode textarea { background:#ffffff !important; color:#0f172a !important; border-color:#cbd5e1 !important; }
+        body.milio-light-mode input::placeholder,
+        body.milio-light-mode textarea::placeholder { color:#64748b !important; }
+        body.milio-light-mode table thead tr { background:#eef2f7 !important; }
+        body.milio-light-mode table tbody tr { background:#ffffff !important; }
+        body.milio-light-mode .shadow-xl,
+        body.milio-light-mode .shadow-2xl { box-shadow:0 10px 30px rgba(15,23,42,.08) !important; }
+        body.milio-light-mode #milioThemeToggle { background:#0f172a !important; color:#ffffff !important; }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen">
@@ -34,11 +70,16 @@
         <div class="text-green-400 font-bold tracking-widest text-sm animate-pulse">MEMUAT DATA...</div>
     </div>
 
+    <button id="milioThemeToggle" onclick="toggleMilioTheme()" class="fixed top-4 right-4 z-[9998] bg-amber-400 hover:bg-amber-300 text-slate-950 border border-amber-200 shadow-xl rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+        <i class="fa-solid fa-sun"></i><span id="milioThemeLabel">Mode Terang</span>
+    </button>
+
     <script>
         let WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let currentUser = null; let currentPasswordPlain = ""; 
         let masterCompanies = []; let masterPackages = []; let membersData = []; let filteredMembers = [];
         let resellerDatabase = [];
+        let milioFinanceChartInstance = null;
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
@@ -515,6 +556,16 @@
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl text-center launcher-card border-green-500/30"><p id="lblFinCuan" class="text-slate-500 font-bold uppercase text-xs mb-2">Cuan Bersih (Net Profit)</p><div id="finCuan" class="text-3xl md:text-4xl font-bold text-green-400 font-mono">IDR 0</div></div>
                 </div>
                 
+
+                <div id="milioFinanceChartBox" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-6 space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-chart-line text-green-400"></i> Mini Chart 7 Hari</h3>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Omset vs Profit</span>
+                    </div>
+                    <div class="bg-slate-950/50 border border-slate-800 rounded-2xl p-3">
+                        <canvas id="milioFinanceChartCanvas" height="95"></canvas>
+                    </div>
+                </div>
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 md:p-6 space-y-4">
                     <h3 id="titExportSec" class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-export text-green-400"></i> Generator Ekspor Dokumen Resmi</h3>
                     <div class="flex flex-wrap gap-2">
@@ -1200,11 +1251,13 @@
             const res = await response.json(); 
             if(res.status === "success") { 
                 membersData = res.data; 
+                saveMilioMembersCache();
                 if (document.getElementById('tab-dashboard').classList.contains('active')) {
                     filterDashboard(currentDashboardFilterMode);
                 } else {
                     filterFinance(currentFinanceMode); 
                 }
+                renderMilioFinanceChart();
             }
         }
 
@@ -1495,6 +1548,7 @@
             if(document.getElementById('finOmset')) document.getElementById('finOmset').innerText = convertAndFormat(omset); 
             if(document.getElementById('finModal')) document.getElementById('finModal').innerText = convertAndFormat(modal); 
             if(document.getElementById('finCuan')) document.getElementById('finCuan').innerText = convertAndFormat(cuan);
+            renderMilioFinanceChart();
             renderMembersTable();
         }
 
@@ -1808,11 +1862,135 @@
         }
 
         async function submitCompany() { const name = document.getElementById('newCompanyName').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addCompany", companyName: name }) }); await loadInitData(); }
-        async function deleteMember(rowId) { if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); }
+        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
         async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
         function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
+
+
+        // ====================================================================
+        // MILIOLAB V8 PREMIUM LIGHT PATCH - THEME + CHART + CACHE + SHORTCUT
+        // ====================================================================
+        function toggleMilioTheme() {
+            const isLight = document.body.classList.toggle('milio-light-mode');
+            localStorage.setItem('milio_theme_mode', isLight ? 'light' : 'dark');
+            updateMilioThemeButton();
+            setTimeout(renderMilioFinanceChart, 150);
+        }
+
+        function updateMilioThemeButton() {
+            const isLight = document.body.classList.contains('milio-light-mode');
+            const label = document.getElementById('milioThemeLabel');
+            const btn = document.getElementById('milioThemeToggle');
+            if (label) label.innerText = isLight ? 'Mode Gelap' : 'Mode Terang';
+            if (btn) btn.innerHTML = isLight ? '<i class="fa-solid fa-moon"></i><span id="milioThemeLabel">Mode Gelap</span>' : '<i class="fa-solid fa-sun"></i><span id="milioThemeLabel">Mode Terang</span>';
+        }
+
+        function initMilioTheme() {
+            const saved = localStorage.getItem('milio_theme_mode') || 'dark';
+            if (saved === 'light') document.body.classList.add('milio-light-mode');
+            updateMilioThemeButton();
+        }
+
+        function saveMilioMembersCache() {
+            try {
+                localStorage.setItem('milio_members_cache_v8', JSON.stringify({ time: Date.now(), data: membersData || [] }));
+            } catch(e) {}
+        }
+
+        function loadMilioMembersCache() {
+            try {
+                const raw = localStorage.getItem('milio_members_cache_v8');
+                if (!raw || !currentUser) return;
+                const cache = JSON.parse(raw);
+                if (!cache || !Array.isArray(cache.data)) return;
+                if (Date.now() - cache.time > 1000 * 60 * 10) return;
+                if (!Array.isArray(membersData) || membersData.length === 0) {
+                    membersData = cache.data;
+                    filteredMembers = cache.data;
+                    if (typeof filterDashboard === 'function') filterDashboard(currentDashboardFilterMode || 'all');
+                }
+            } catch(e) {}
+        }
+
+        function renderMilioFinanceChart() {
+            const canvas = document.getElementById('milioFinanceChartCanvas');
+            if (!canvas || !window.Chart || !Array.isArray(membersData)) return;
+
+            const labels = [];
+            const omset = [];
+            const profit = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                d.setHours(0,0,0,0);
+                const next = new Date(d); next.setDate(next.getDate() + 1);
+                labels.push(d.toLocaleDateString('id-ID', { day:'2-digit', month:'short' }));
+                let totalOmset = 0, totalProfit = 0;
+                membersData.forEach(m => {
+                    const t = parseJsonDate(m.timestamp);
+                    if (t >= d && t < next) {
+                        totalOmset += parseFloat(m.hargaJual) || 0;
+                        totalProfit += parseFloat(m.profit) || 0;
+                    }
+                });
+                omset.push(totalOmset);
+                profit.push(totalProfit);
+            }
+
+            const isLight = document.body.classList.contains('milio-light-mode');
+            const gridColor = isLight ? 'rgba(15,23,42,.10)' : 'rgba(148,163,184,.13)';
+            const textColor = isLight ? '#0f172a' : '#94a3b8';
+            if (milioFinanceChartInstance) milioFinanceChartInstance.destroy();
+            milioFinanceChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Omset', data: omset, borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,.10)', tension: .35, fill: true },
+                        { label: 'Profit', data: profit, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,.10)', tension: .35, fill: true }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: textColor, font: { size: 11, weight: 'bold' } } } },
+                    scales: {
+                        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+                        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } }
+                    }
+                }
+            });
+        }
+
+        function initMilioShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey && e.key.toLowerCase() === 'n') {
+                    e.preventDefault();
+                    if (typeof openFormInputBaru === 'function') openFormInputBaru();
+                }
+                if (e.ctrlKey && e.key.toLowerCase() === 'f') {
+                    const search = document.getElementById('searchInput');
+                    if (search) { e.preventDefault(); switchTab('dashboard'); setTimeout(() => search.focus(), 300); }
+                }
+                if (e.altKey && e.key.toLowerCase() === 'd') {
+                    e.preventDefault();
+                    if (typeof switchTab === 'function') switchTab('dashboard');
+                }
+                if (e.altKey && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    toggleMilioTheme();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initMilioTheme();
+            initMilioShortcuts();
+            setTimeout(loadMilioMembersCache, 900);
+            setTimeout(renderMilioFinanceChart, 1400);
+        });
     </script>
 </body>
 </html>
