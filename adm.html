@@ -35,11 +35,12 @@
     <div id="controlCenterScreen" class="hidden max-w-6xl mx-auto space-y-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/60 p-6 rounded-3xl border border-purple-900/30 gap-4 shadow-2xl">
             <div>
-                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v15</span></h1>
+                <h1 class="text-3xl font-bold text-white tracking-wider flex items-center gap-3">MILIOLAB <span class="text-purple-400">SaaS Center v16</span></h1>
                 <p class="text-slate-400 text-xs mt-1 uppercase font-bold tracking-widest">Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot</p>
             </div>
             <div class="flex gap-2 w-full md:w-auto">
                 <button onclick="openAddTenantModal()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-plus-circle mr-2"></i> Daftarkan Pembeli Baru</button>
+                <button onclick="repairTenantSystem()" class="bg-green-500 hover:bg-green-400 text-slate-950 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-shield-halved"></i> Repair Tenant</button>
                 <button onclick="cleanupDuplicates()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-broom"></i> Bersihkan Duplikat</button>
                 <button onclick="handleOwnerLogout()" class="bg-red-950/40 border border-red-500/30 text-red-400 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider"><i class="fa-solid fa-power-off"></i> Keluar</button>
             </div>
@@ -212,6 +213,15 @@ Lanjutkan?`)) return;
                 alert(res.message || 'Reset selesai.');
                 await loadTenants();
             } catch(e) { alert('Gagal koneksi ke database.'); }
+        }
+
+
+        async function repairTenantSystem() {
+            if(!confirm('Jalankan repair tenant isolation? Ini akan sinkronkan User_ID dan Owner_User_ID agar data tidak lompat akun.')) return;
+            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "repairTenantSystem" }) });
+            const res = await r.json();
+            alert(res.message || 'Repair selesai');
+            await loadTenants();
         }
 
         async function cleanupDuplicates() {
