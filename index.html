@@ -891,9 +891,13 @@
         async function triggerAdvancedReset() {
             const type = document.getElementById('resetTypeSelect').value;
             const scope = document.getElementById('resetScopeSelect').value;
-            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
-                if(validatePasswordSecurity()) {
-                    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "" }) });
+            if(confirm("⚠️ CRITICAL ACTION:
+Apakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
+                const authPassword = requestPasswordSecurity();
+                if(authPassword !== null) {
+                    const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "", authPassword }) });
+                    const res = await r.json();
+                    alert(res.message || 'Selesai');
                     window.location.reload();
                 }
             }
@@ -926,10 +930,20 @@
         
         function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
         
-        function validatePasswordSecurity() { 
-            const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN OWNER:\nMasukkan Password Akun Om untuk mengonfirmasi:" : "🔐 OWNER SECURITY VALIDATION:\nEnter Your Account Password to Confirm:";
+        function requestPasswordSecurity() { 
+            const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN:
+Masukkan Password Akun untuk mengonfirmasi:" : "🔐 SECURITY VALIDATION:
+Enter account password to confirm:";
             const pin = prompt(msg); 
-            return (pin === currentPasswordPlain); 
+            if (pin === null) return null;
+            if (pin !== currentPasswordPlain) {
+                alert(clientLanguage === "ID" ? "❌ Password salah. Aksi dibatalkan." : "❌ Wrong password. Action cancelled.");
+                return null;
+            }
+            return pin;
+        }
+        function validatePasswordSecurity() { 
+            return requestPasswordSecurity() !== null; 
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -996,7 +1010,7 @@
         }
 
         async function executePrefsCloudSave(currencyVal, languageVal) {
-            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal };
+            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal, authPassword: currentPasswordPlain };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const res = await r.json();
@@ -1073,16 +1087,14 @@
         }
 
         async function editCompanyName(oldName) {
-            if(!validatePasswordSecurity()) {
-                alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
-                return;
-            }
+            const authPassword = requestPasswordSecurity();
+            if(authPassword === null) return;
             const msg = clientLanguage === "ID" ? `✏️ EDIT NAMA VENDOR:\nUbah nama "${oldName}" menjadi:` : `✏️ EDIT VENDOR NAME:\nChange name "${oldName}" into:`;
             const newName = prompt(msg, oldName);
             if(newName === null || newName.trim() === "" || newName.trim() === oldName) return;
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim(), userId: currentUser ? currentUser.userId : "" }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim(), userId: currentUser ? currentUser.userId : "", authPassword }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1092,15 +1104,15 @@
         }
 
         async function deleteCompany(name) { 
-            // V16: user tenant bebas kelola vendor miliknya sendiri; cukup confirm, tidak perlu prompt password tambahan.
-            
+            const authPassword = requestPasswordSecurity();
+            if(authPassword === null) return;
             const msgConfirm = clientLanguage === "ID" 
                 ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan menghapus vendor & produk hanya di akun ini, dan member terkait akan diarsipkan aman.\n\nApakah Om Yakin Ingin Eksekusi?`
                 : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will delete vendor & packages only in this account, and related members will be archived safely.\n\nAre you absolutely sure you want to execute?`;
             if(!confirm(msgConfirm)) return;
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); 
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name, userId: currentUser ? currentUser.userId : "", authPassword }) }); 
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1220,7 +1232,9 @@
             if (!r) return;
             if (!confirm('Arsipkan reseller: ' + r.nama + '?')) return;
             try {
-                const res = await resellerPost({ action: 'deleteReseller', rowId: r.rowId });
+                const authPassword = requestPasswordSecurity();
+                if(authPassword === null) return;
+                const res = await resellerPost({ action: 'deleteReseller', rowId: r.rowId, userId: currentUser ? currentUser.userId : '', authPassword });
                 alert(res.message || 'Reseller diarsipkan.');
                 await loadResellerDB();
             } catch(e) {
@@ -1790,16 +1804,18 @@
         async function submitProductForm() {
             const targetId = document.getElementById('prodFormTarget').value;
             const isEdit = (targetId !== "");
-            if(isEdit && !validatePasswordSecurity()) {
-                alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
-                return;
+            let authPassword = "";
+            if(isEdit) {
+                authPassword = requestPasswordSecurity();
+                if(authPassword === null) return;
             }
             const payload = {
                 action: isEdit ? "editProduct" : "addProduct", packageId: targetId,
                 perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value,
                 varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value,
                 hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value,
-                userId: currentUser ? currentUser.userId : ""
+                userId: currentUser ? currentUser.userId : "",
+                authPassword
             };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -1813,9 +1829,10 @@
         }
 
         async function deleteProduct(id) {
-            if(!validatePasswordSecurity()) return;
+            const authPassword = requestPasswordSecurity();
+            if(authPassword === null) return;
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id, userId: currentUser ? currentUser.userId : "" }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id, userId: currentUser ? currentUser.userId : "", authPassword }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1927,8 +1944,8 @@
             await loadInitData();
             alert(res.message || 'Selesai');
         }
-        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
-        async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
+        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; const authPassword = requestPasswordSecurity(); if(authPassword === null) return; const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "", authPassword }) }); const res = await r.json(); alert(res.message || 'Selesai'); await refreshMembersList(); }
+        async function saveBrandSettings() { const authPassword = requestPasswordSecurity(); if(authPassword === null) return; const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo, authPassword }) }); const res = await r.json(); alert(res.message || 'Selesai'); if(res.status === 'success'){ currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); } }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
         function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
