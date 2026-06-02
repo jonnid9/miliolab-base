@@ -121,6 +121,8 @@
         let masterCompanies = []; let masterPackages = []; let membersData = []; let filteredMembers = [];
         let resellerDatabase = [];
         let milioFinanceChartInstance = null;
+        let memberDisplayLimit = 10;
+        let followUpOnlyMode = false;
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let clientCurrency = "IDR"; 
         let clientLanguage = "ID"; 
@@ -541,6 +543,23 @@
                             <input type="text" id="searchInput" oninput="searchMembers()" placeholder="Cari nama, email, wa..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none w-full lg:w-64">
                             <button onclick="searchMembers()" class="bg-green-500 hover:bg-green-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs uppercase transition shrink-0"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-950/40 p-3 rounded-2xl border border-slate-800 text-xs">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-slate-500 font-bold uppercase tracking-wider">Tampilkan</span>
+                            <select id="memberDisplayLimitSelect" onchange="setMemberDisplayLimit(this.value)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold outline-none">
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="ALL">SEMUA</option>
+                            </select>
+                            <span id="memberDisplayInfo" class="text-[10px] text-slate-500 font-bold">Default 10 data agar ringan</span>
+                        </div>
+                        <button id="btnFollowUpCenter" onclick="toggleFollowUpCenter()" class="bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i> PUSAT FOLLOW UP (<span id="followUpCenterCount">0</span>)
+                        </button>
                     </div>
 
                     <div class="flex flex-col lg:flex-row lg:items-center gap-3 bg-slate-950/50 p-4 rounded-2xl border border-slate-800 text-xs">
@@ -1372,6 +1391,55 @@
             renderMembersTable();
         }
 
+        function setMemberDisplayLimit(value) {
+            memberDisplayLimit = value === "ALL" ? "ALL" : parseInt(value || "10", 10);
+            renderMembersTable();
+        }
+
+        function toggleFollowUpCenter() {
+            followUpOnlyMode = !followUpOnlyMode;
+            if (followUpOnlyMode && memberDisplayLimit !== "ALL") {
+                memberDisplayLimit = "ALL";
+                const sel = document.getElementById('memberDisplayLimitSelect');
+                if (sel) sel.value = "ALL";
+            }
+            renderMembersTable();
+        }
+
+        function normalizeFuDate_(value) {
+            if (!value) return "";
+            const d = parseJsonDate(value);
+            if (!d || d.getFullYear() <= 1970) return "";
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        function isFollowUpTargetMember(m, now, todayStr) {
+            if (!m || (m.status && m.status !== "Aktif")) return false;
+            const tExpired = parseJsonDate(m.tglExpired);
+            if (!tExpired || tExpired.getFullYear() <= 1970) return false;
+            const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
+            const alreadyFuToday = normalizeFuDate_(m.lastFuDate) === todayStr;
+            if (diffDays >= 0 && diffDays <= 3) return !alreadyFuToday;
+            if (diffDays < 0 && Math.abs(diffDays) <= 15) return true;
+            return false;
+        }
+
+        function updateFollowUpCenterButton(count) {
+            const btn = document.getElementById('btnFollowUpCenter');
+            const span = document.getElementById('followUpCenterCount');
+            const info = document.getElementById('memberDisplayInfo');
+            if (span) span.innerText = count;
+            if (info) info.innerText = followUpOnlyMode ? "Mode Pusat Follow Up aktif" : (memberDisplayLimit === "ALL" ? "Menampilkan semua data" : `Menampilkan maksimal ${memberDisplayLimit} data`);
+            if (!btn) return;
+            btn.classList.remove('bg-red-600','hover:bg-red-500','border-red-400','animate-pulse','bg-slate-700','hover:bg-slate-600','border-slate-600','ring-2','ring-red-400/40');
+            if (count > 0) {
+                btn.classList.add('bg-red-600','hover:bg-red-500','border-red-400','animate-pulse');
+            } else {
+                btn.classList.add('bg-slate-700','hover:bg-slate-600','border-slate-600');
+            }
+            if (followUpOnlyMode) btn.classList.add('ring-2','ring-red-400/40');
+        }
+
         function filterDashboard(mode) {
             currentDashboardFilterMode = mode;
             document.querySelectorAll("#tab-dashboard button[id^='btn-dash-']").forEach(b => b.classList.remove('active-filter-btn'));
@@ -1494,7 +1562,8 @@
         function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
-            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0; const now = new Date();
+            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0, renderedRowCount = 0;
+            const now = new Date();
             const lang = dictionary[clientLanguage] || dictionary.ID;
             
             const localDate = new Date();
@@ -1531,6 +1600,11 @@
                     }
                 }
                 const sudahFuHariIni = (cleanLastFu === hariIniStr);
+                const isFollowTarget = isFollowUpTargetMember(m, now, hariIniStr);
+                if (isFollowTarget) followCount++;
+                if (followUpOnlyMode && !isFollowTarget) return;
+                if (memberDisplayLimit !== "ALL" && renderedRowCount >= memberDisplayLimit) return;
+                renderedRowCount++;
                 
                 const isReseller = (m.jenisPembeli === "Reseller" || m.jenisPembeli === "RESELLER");
                 const jenisLabel = isReseller ? lang.optReseller : lang.optUserLangsung;
@@ -1567,7 +1641,6 @@
                             const msg = encodeURIComponent(teksWaReminder);
                             
                             if (!sudahFuHariIni) {
-                                followCount++; 
                                 const pulseStyle = "animate-pulse bg-red-600 text-white font-bold shadow-lg shadow-red-600/30";
                                 btnAction = `<a href="https://wa.me/${m.noWhatsapp}?text=${msg}" target="_blank" onclick="registerFuClick(${m.rowId}); this.classList.add('hidden');" class="${pulseStyle} px-2.5 py-1.5 rounded-lg text-xs text-center block text-wrap max-w-[85px]">${lang.btnFollow}</a>`;
                             } else {
@@ -1611,6 +1684,7 @@
             if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
             if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
             if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
+            updateFollowUpCenterButton(followCount);
         }
 
         async function executeManualDone(rowId) {
