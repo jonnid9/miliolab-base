@@ -483,7 +483,7 @@
 
     <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
-            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v15 Tenant Stable</p></div>
+            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v21 DISKON + TENANT SAFE</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
             
             <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
@@ -681,9 +681,17 @@
                         </div>
                     </div>
 
+                    <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/30 space-y-3 text-xs">
+                        <label class="flex items-center gap-2 font-bold text-amber-300 uppercase cursor-pointer">
+                            <input type="checkbox" id="checkDiskonManual" onchange="toggleDiskonManual()" class="rounded bg-slate-900 border-slate-700 text-amber-500 w-4 h-4">
+                            Gunakan Diskon / Harga Manual
+                        </label>
+                        <p class="text-slate-500 text-[10px] uppercase tracking-wider">Jika dicentang, harga jual bisa diedit manual untuk User Langsung atau Reseller. Profit otomatis ikut berubah.</p>
+                    </div>
+
                     <div class="grid grid-cols-3 gap-2 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
                         <div><span id="lblInpHargaBeli">Modal Beli:</span> <input type="number" id="formHargaBeli" readonly class="bg-transparent text-slate-400 block font-bold text-sm outline-none mt-1"></div>
-                        <div><span id="lblInpHargaJual">Harga Jual:</span> <input type="number" id="formHargaJual" readonly class="bg-transparent text-white block font-bold text-sm outline-none mt-1"></div>
+                        <div><span id="lblInpHargaJual">Harga Jual:</span> <input type="number" id="formHargaJual" readonly oninput="recalculateManualProfit()" class="bg-transparent text-white block font-bold text-sm outline-none mt-1"></div>
                         <div>Profit: <span id="formProfitLabel" class="text-green-400 font-bold block text-sm mt-2">IDR 0</span></div>
                     </div>
                     <button type="submit" id="btnSubmitMember" class="w-full bg-green-500 text-slate-950 font-bold p-3 rounded-xl uppercase text-xs md:text-sm tracking-wide">Simpan Data Pelanggan 🚀</button>
@@ -891,13 +899,9 @@
         async function triggerAdvancedReset() {
             const type = document.getElementById('resetTypeSelect').value;
             const scope = document.getElementById('resetScopeSelect').value;
-            if(confirm("⚠️ CRITICAL ACTION:
-Apakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
-                const authPassword = requestPasswordSecurity();
-                if(authPassword !== null) {
-                    const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "", authPassword }) });
-                    const res = await r.json();
-                    alert(res.message || 'Selesai');
+            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
+                if(validatePasswordSecurity()) {
+                    await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "" }) });
                     window.location.reload();
                 }
             }
@@ -928,22 +932,12 @@ Apakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya ber
             }, 250);
         }
         
-        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
+        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; if(document.getElementById('checkDiskonManual')) document.getElementById('checkDiskonManual').checked = false; if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').readOnly = true; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
         
-        function requestPasswordSecurity() { 
-            const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN:
-Masukkan Password Akun untuk mengonfirmasi:" : "🔐 SECURITY VALIDATION:
-Enter account password to confirm:";
-            const pin = prompt(msg); 
-            if (pin === null) return null;
-            if (pin !== currentPasswordPlain) {
-                alert(clientLanguage === "ID" ? "❌ Password salah. Aksi dibatalkan." : "❌ Wrong password. Action cancelled.");
-                return null;
-            }
-            return pin;
-        }
         function validatePasswordSecurity() { 
-            return requestPasswordSecurity() !== null; 
+            const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN OWNER:\nMasukkan Password Akun Om untuk mengonfirmasi:" : "🔐 OWNER SECURITY VALIDATION:\nEnter Your Account Password to Confirm:";
+            const pin = prompt(msg); 
+            return (pin === currentPasswordPlain); 
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1010,7 +1004,7 @@ Enter account password to confirm:";
         }
 
         async function executePrefsCloudSave(currencyVal, languageVal) {
-            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal, authPassword: currentPasswordPlain };
+            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const res = await r.json();
@@ -1087,14 +1081,16 @@ Enter account password to confirm:";
         }
 
         async function editCompanyName(oldName) {
-            const authPassword = requestPasswordSecurity();
-            if(authPassword === null) return;
+            if(!validatePasswordSecurity()) {
+                alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
+                return;
+            }
             const msg = clientLanguage === "ID" ? `✏️ EDIT NAMA VENDOR:\nUbah nama "${oldName}" menjadi:` : `✏️ EDIT VENDOR NAME:\nChange name "${oldName}" into:`;
             const newName = prompt(msg, oldName);
             if(newName === null || newName.trim() === "" || newName.trim() === oldName) return;
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim(), userId: currentUser ? currentUser.userId : "", authPassword }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "editCompany", oldCompanyName: oldName, newCompanyName: newName.trim(), userId: currentUser ? currentUser.userId : "" }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1104,15 +1100,16 @@ Enter account password to confirm:";
         }
 
         async function deleteCompany(name) { 
-            const authPassword = requestPasswordSecurity();
-            if(authPassword === null) return;
+            // V16: user tenant bebas kelola vendor miliknya sendiri; cukup confirm, tidak perlu prompt password tambahan.
+            
             const msgConfirm = clientLanguage === "ID" 
                 ? `⚠️ PERINGATAN CRITICAL VENDOR:\nMenghapus vendor "${name}" otomatis akan MEMUTUS dan menghapus vendor & produk hanya di akun ini, dan member terkait akan diarsipkan aman.\n\nApakah Om Yakin Ingin Eksekusi?`
                 : `⚠️ CRITICAL VENDOR WARNING:\nDeleting vendor "${name}" will delete vendor & packages only in this account, and related members will be archived safely.\n\nAre you absolutely sure you want to execute?`;
             if(!confirm(msgConfirm)) return;
+            if(!validatePasswordSecurity()) { alert(clientLanguage === 'ID' ? '❌ Akses Ditolak: Password Salah!' : '❌ Access Denied: Incorrect Password!'); return; }
 
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name, userId: currentUser ? currentUser.userId : "", authPassword }) }); 
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteCompany", companyName: name, userId: currentUser ? currentUser.userId : "" }) }); 
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1152,12 +1149,40 @@ Enter account password to confirm:";
                     const rate = currencyRates[clientCurrency] || 1;
                     if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
                     const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-                    if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                    if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
+                    const manualOn = document.getElementById('checkDiskonManual') && document.getElementById('checkDiskonManual').checked;
+                    if(document.getElementById('formHargaJual') && !manualOn) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                    if(manualOn) recalculateManualProfit(); else if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
                 }
             }
         }
 
+
+        function getSelectedPackageBasePrices() {
+            const selectedPkgId = document.getElementById('formPaket') ? document.getElementById('formPaket').value : '';
+            const jenis = document.getElementById('formJenis') ? document.getElementById('formJenis').value : 'User Langsung';
+            const pkg = masterPackages.find(p => p.id === selectedPkgId);
+            if(!pkg) return {pkg:null, hargaBeli:0, hargaNormal:0};
+            const hargaNormal = (jenis === "User Langsung") ? (parseFloat(pkg.hargaJualUser)||0) : (parseFloat(pkg.hargaJualReseller)||0);
+            return {pkg:pkg, hargaBeli:parseFloat(pkg.hargaBeli)||0, hargaNormal:hargaNormal};
+        }
+
+        function toggleDiskonManual() {
+            const chk = document.getElementById('checkDiskonManual');
+            const hargaJualInput = document.getElementById('formHargaJual');
+            if(!chk || !hargaJualInput) return;
+            hargaJualInput.readOnly = !chk.checked;
+            hargaJualInput.classList.toggle('text-amber-300', chk.checked);
+            hargaJualInput.classList.toggle('text-white', !chk.checked);
+            if(!chk.checked) autoFillPrices(); else recalculateManualProfit();
+        }
+
+        function recalculateManualProfit() {
+            const base = getSelectedPackageBasePrices();
+            const rate = currencyRates[clientCurrency] || 1;
+            const jualDisplay = parseFloat(document.getElementById('formHargaJual') ? document.getElementById('formHargaJual').value : 0) || 0;
+            const jualIDR = jualDisplay / rate;
+            if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(jualIDR - base.hargaBeli);
+        }
 
         function resellerPost(payload) {
             return fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json());
@@ -1232,9 +1257,7 @@ Enter account password to confirm:";
             if (!r) return;
             if (!confirm('Arsipkan reseller: ' + r.nama + '?')) return;
             try {
-                const authPassword = requestPasswordSecurity();
-                if(authPassword === null) return;
-                const res = await resellerPost({ action: 'deleteReseller', rowId: r.rowId, userId: currentUser ? currentUser.userId : '', authPassword });
+                const res = await resellerPost({ action: 'deleteReseller', rowId: r.rowId });
                 alert(res.message || 'Reseller diarsipkan.');
                 await loadResellerDB();
             } catch(e) {
@@ -1267,7 +1290,14 @@ Enter account password to confirm:";
             }
 
             const jenisPembeli = document.getElementById('formJenis').value;
-            const hargaJual = (jenisPembeli === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+            const hargaNormal = (jenisPembeli === "User Langsung") ? (parseFloat(pkg.hargaJualUser)||0) : (parseFloat(pkg.hargaJualReseller)||0);
+            const isDiskon = document.getElementById('checkDiskonManual') && document.getElementById('checkDiskonManual').checked;
+            const rate = currencyRates[clientCurrency] || 1;
+            let hargaJual = hargaNormal;
+            if(isDiskon) {
+                hargaJual = (parseFloat(document.getElementById('formHargaJual').value) || 0) / rate;
+                if(hargaJual <= 0) { alert('Harga jual diskon wajib lebih dari 0.'); btn.innerText = originalText; btn.disabled = false; return; }
+            }
 
             const payload = {
                 action: "addMember",
@@ -1284,7 +1314,9 @@ Enter account password to confirm:";
                 customTglExpired: document.getElementById('customTglExpired').value,
                 durasiHari: document.getElementById('formDurasiKustom').value,
                 hargaBeli: pkg.hargaBeli,
-                hargaJual: hargaJual
+                hargaJual: hargaJual,
+                hargaNormal: hargaNormal,
+                isDiskon: isDiskon
             };
 
             try {
@@ -1294,6 +1326,8 @@ Enter account password to confirm:";
                     alert("Data Pelanggan Berhasil Disimpan! 🚀");
                     
                     document.getElementById('memberForm').reset();
+                    if(document.getElementById('checkDiskonManual')) document.getElementById('checkDiskonManual').checked = false;
+                    if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').readOnly = true;
                     document.getElementById('checkBackdate').checked = false;
                     document.getElementById('backdateFields').classList.add('hidden');
                     populateFormDropdowns();
@@ -1804,18 +1838,16 @@ Enter account password to confirm:";
         async function submitProductForm() {
             const targetId = document.getElementById('prodFormTarget').value;
             const isEdit = (targetId !== "");
-            let authPassword = "";
-            if(isEdit) {
-                authPassword = requestPasswordSecurity();
-                if(authPassword === null) return;
+            if(isEdit && !validatePasswordSecurity()) {
+                alert(clientLanguage === "ID" ? "❌ Akses Ditolak: Password Salah!" : "❌ Access Denied: Incorrect Password!");
+                return;
             }
             const payload = {
                 action: isEdit ? "editProduct" : "addProduct", packageId: targetId,
                 perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value,
                 varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value,
                 hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value,
-                userId: currentUser ? currentUser.userId : "",
-                authPassword
+                userId: currentUser ? currentUser.userId : ""
             };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -1829,10 +1861,10 @@ Enter account password to confirm:";
         }
 
         async function deleteProduct(id) {
-            const authPassword = requestPasswordSecurity();
-            if(authPassword === null) return;
+            if(!confirm(clientLanguage === 'ID' ? 'Hapus produk ini dari katalog akun ini?' : 'Delete this product from this account catalog?')) return;
+            if(!validatePasswordSecurity()) return;
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id, userId: currentUser ? currentUser.userId : "", authPassword }) });
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteProduct", packageId: id, userId: currentUser ? currentUser.userId : "" }) });
                 const res = await response.json();
                 if(res && res.status === "success") {
                     await loadInitData(); await refreshMembersList();
@@ -1944,8 +1976,8 @@ Enter account password to confirm:";
             await loadInitData();
             alert(res.message || 'Selesai');
         }
-        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; const authPassword = requestPasswordSecurity(); if(authPassword === null) return; const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "", authPassword }) }); const res = await r.json(); alert(res.message || 'Selesai'); await refreshMembersList(); }
-        async function saveBrandSettings() { const authPassword = requestPasswordSecurity(); if(authPassword === null) return; const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo, authPassword }) }); const res = await r.json(); alert(res.message || 'Selesai'); if(res.status === 'success'){ currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); } }
+        async function deleteMember(rowId) { if(!confirm('Arsipkan member ini? Data tidak akan hilang permanen.')) return; if(!validatePasswordSecurity()) return; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteMember", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }); await refreshMembersList(); alert('Member berhasil diarsipkan aman.'); }
+        async function saveBrandSettings() { const name = document.getElementById('setBrandName').value, logo = document.getElementById('setLogoUrl').value; await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "updateBrand", userId: currentUser.userId, namaBisnis: name, logoUrl: logo }) }); currentUser.namaBisnis = name; currentUser.logoUrl = logo; applyBrandIdentity(name, logo, currentUser.role); }
         function handleLogout() { localStorage.removeItem('milio_user'); localStorage.removeItem('milio_pass'); location.reload(); }
         function registerFuClick(rowId) { fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "logFollowUp", rowId: rowId, userId: currentUser ? currentUser.userId : "" }) }).then(() => refreshMembersList()); }
         function togglePasswordVisibility() { const pInput = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon'); if(pInput.type === 'password') { pInput.type = 'text'; eye.className = 'fa-solid fa-eye-slash'; } else { pInput.type = 'password'; eye.className = 'fa-solid fa-eye'; } }
