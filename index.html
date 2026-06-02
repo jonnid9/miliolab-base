@@ -483,7 +483,7 @@
 
     <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
-            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v20 Diskon Manual Stable</p></div>
+            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v15 Tenant Stable</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
             
             <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
@@ -681,14 +681,10 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
+                    <div class="grid grid-cols-3 gap-2 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs">
                         <div><span id="lblInpHargaBeli">Modal Beli:</span> <input type="number" id="formHargaBeli" readonly class="bg-transparent text-slate-400 block font-bold text-sm outline-none mt-1"></div>
-                        <div><span id="lblInpHargaJual">Harga Jual:</span> <input type="number" id="formHargaJual" readonly oninput="recalcManualProfit()" class="bg-transparent text-white block font-bold text-sm outline-none mt-1"></div>
+                        <div><span id="lblInpHargaJual">Harga Jual:</span> <input type="number" id="formHargaJual" readonly class="bg-transparent text-white block font-bold text-sm outline-none mt-1"></div>
                         <div>Profit: <span id="formProfitLabel" class="text-green-400 font-bold block text-sm mt-2">IDR 0</span></div>
-                        <label class="flex items-center gap-2 text-amber-300 font-bold uppercase cursor-pointer select-none bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
-                            <input type="checkbox" id="checkDiskonManual" onchange="toggleManualDiscount()" class="w-4 h-4 accent-amber-400">
-                            <span>Diskon / Harga Manual</span>
-                        </label>
                     </div>
                     <button type="submit" id="btnSubmitMember" class="w-full bg-green-500 text-slate-950 font-bold p-3 rounded-xl uppercase text-xs md:text-sm tracking-wide">Simpan Data Pelanggan 🚀</button>
                 </form>
@@ -932,7 +928,7 @@ Apakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya ber
             }, 250);
         }
         
-        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleManualDiscount(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
+        function openFormInputBaru() { document.getElementById('memberForm').reset(); document.getElementById('formDurasiKustom').value = "30"; document.getElementById('checkBackdate').checked = false; document.getElementById('backdateFields').classList.add('hidden'); populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); }
         
         function requestPasswordSecurity() { 
             const msg = clientLanguage === "ID" ? "🔐 VALIDASI KEAMANAN:
@@ -1145,52 +1141,21 @@ Enter account password to confirm:";
             }
         }
 
-        function getSelectedPackagePriceInfo() {
+        function autoFillPrices() {
             const formPkg = document.getElementById('formPaket');
             const formJenis = document.getElementById('formJenis');
-            if(!formPkg || !formJenis) return null;
-            const pkg = masterPackages.find(p => p.id === formPkg.value);
-            if(!pkg) return null;
-            const jenis = formJenis.value;
-            const hargaNormal = (jenis === "User Langsung") ? parseFloat(pkg.hargaJualUser || 0) : parseFloat(pkg.hargaJualReseller || 0);
-            return { pkg, jenis, hargaNormal, hargaBeli: parseFloat(pkg.hargaBeli || 0) };
-        }
-
-        function autoFillPrices() {
-            const info = getSelectedPackagePriceInfo();
-            if(!info) return;
-            const rate = currencyRates[clientCurrency] || 1;
-            const decimals = clientCurrency === 'IDR' ? 0 : 2;
-            const hargaBeliEl = document.getElementById('formHargaBeli');
-            const hargaJualEl = document.getElementById('formHargaJual');
-            const diskonEl = document.getElementById('checkDiskonManual');
-            if(hargaBeliEl) hargaBeliEl.value = (info.hargaBeli * rate).toFixed(decimals);
-            if(hargaJualEl && !(diskonEl && diskonEl.checked)) hargaJualEl.value = (info.hargaNormal * rate).toFixed(decimals);
-            recalcManualProfit();
-        }
-
-        function toggleManualDiscount() {
-            const hargaJualEl = document.getElementById('formHargaJual');
-            const diskonEl = document.getElementById('checkDiskonManual');
-            if(!hargaJualEl || !diskonEl) return;
-            hargaJualEl.readOnly = !diskonEl.checked;
-            hargaJualEl.classList.toggle('text-amber-300', diskonEl.checked);
-            hargaJualEl.classList.toggle('text-white', !diskonEl.checked);
-            hargaJualEl.classList.toggle('border', diskonEl.checked);
-            hargaJualEl.classList.toggle('border-amber-500/40', diskonEl.checked);
-            hargaJualEl.classList.toggle('rounded-lg', diskonEl.checked);
-            hargaJualEl.classList.toggle('px-2', diskonEl.checked);
-            if(!diskonEl.checked) autoFillPrices();
-            else recalcManualProfit();
-        }
-
-        function recalcManualProfit() {
-            const info = getSelectedPackagePriceInfo();
-            if(!info) return;
-            const rate = currencyRates[clientCurrency] || 1;
-            const hargaJualDisplayed = parseFloat(document.getElementById('formHargaJual')?.value || 0) || 0;
-            const hargaJualBase = rate ? (hargaJualDisplayed / rate) : hargaJualDisplayed;
-            if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJualBase - info.hargaBeli);
+            if(formPkg && formJenis) {
+                const selectedPkgId = formPkg.value;
+                const jenis = formJenis.value;
+                const pkg = masterPackages.find(p => p.id === selectedPkgId);
+                if(pkg) {
+                    const rate = currencyRates[clientCurrency] || 1;
+                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                    const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+                    if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                    if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
+                }
+            }
         }
 
 
@@ -1302,12 +1267,7 @@ Enter account password to confirm:";
             }
 
             const jenisPembeli = document.getElementById('formJenis').value;
-            const hargaNormal = (jenisPembeli === "User Langsung") ? parseFloat(pkg.hargaJualUser || 0) : parseFloat(pkg.hargaJualReseller || 0);
-            const isDiskon = document.getElementById('checkDiskonManual') ? document.getElementById('checkDiskonManual').checked : false;
-            const rate = currencyRates[clientCurrency] || 1;
-            const hargaManualDisplay = parseFloat(document.getElementById('formHargaJual')?.value || 0) || 0;
-            const hargaManualBase = rate ? (hargaManualDisplay / rate) : hargaManualDisplay;
-            const hargaJual = isDiskon ? hargaManualBase : hargaNormal;
+            const hargaJual = (jenisPembeli === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
 
             const payload = {
                 action: "addMember",
