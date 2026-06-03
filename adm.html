@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v18</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -89,6 +89,26 @@
                     <div><label class="text-xs text-slate-400 block mb-1">Tanggal Mulai</label><input type="date" id="tenantTglMulai" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
                     <div><label class="text-xs text-slate-400 block mb-1">Tanggal Expired</label><input type="date" id="tenantTglExpired" required class="w-full bg-slate-950 border border-purple-900 p-3 rounded-xl text-white outline-none"></div>
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Mata Uang Input Utama</label>
+                        <select id="tenantBaseCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none">
+                            <option value="IDR">IDR - Rupiah</option>
+                            <option value="MYR">MYR - Ringgit</option>
+                            <option value="USD">USD - Dollar</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Mata Uang Tampilan</label>
+                        <select id="tenantDisplayCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none">
+                            <option value="IDR">IDR - Rupiah</option>
+                            <option value="MYR">MYR - Ringgit</option>
+                            <option value="USD">USD - Dollar</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="statusContainer" class="hidden">
                     <label class="text-xs text-slate-400 block mb-1">Status Lisensi Pembeli</label>
                     <select id="tenantStatusSaaS" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white"><option value="Aktif">Aktif (Berikan Akses Penuh)</option><option value="Suspended">Suspended (Blokir Sementara)</option></select>
@@ -153,7 +173,7 @@
                         <div class="w-9 h-9 bg-purple-500/10 border border-purple-500/30 rounded-xl flex items-center justify-center font-bold text-purple-400"><i class="fa-solid fa-shop"></i></div>
                         <div><div class="font-bold text-white">${t.namaBisnis}</div><div class="text-[10px] text-slate-500">${t.userId}</div></div>
                     </td>
-                    <td class="p-4 font-mono text-xs">User: <b>${t.username}</b><br>Pass: <b>${t.password}</b></td>
+                    <td class="p-4 font-mono text-xs">User: <b>${t.username}</b><br>Pass: <b>${t.password}</b><br><span class="text-[10px] text-emerald-400">Base: ${t.baseCurrency || t.currency || 'IDR'} / View: ${t.displayCurrency || t.currency || 'IDR'}</span></td>
                     <td class="p-4 text-center text-xs font-semibold text-indigo-300">${t.tglMulai} <span class="text-slate-500">s/d</span><br><span class="text-red-400">${t.tglExpired}</span></td>
                     <td class="p-4 text-center text-yellow-400 font-bold font-mono text-xs">${textSisaHari} aktif</td>
                     <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
@@ -168,7 +188,10 @@
         function openAddTenantModal() {
             document.getElementById('tenantForm').reset(); document.getElementById('tenantUserId').value = "";
             document.getElementById('modalTitle').innerText = "Daftarkan Pembeli App Baru"; document.getElementById('statusContainer').classList.add('hidden');
-            document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0]; document.getElementById('tenantModal').classList.remove('hidden');
+            document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0];
+            if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = "IDR";
+            if(document.getElementById('tenantDisplayCurrency')) document.getElementById('tenantDisplayCurrency').value = "IDR";
+            document.getElementById('tenantModal').classList.remove('hidden');
         }
 
         function openEditTenantModal(userId) {
@@ -177,14 +200,29 @@
             document.getElementById('tenantLogoUrl').value = t.logoUrl; document.getElementById('tenantUsername').value = t.username;
             document.getElementById('tenantPassword').value = t.password; document.getElementById('tenantTglMulai').value = t.tglMulai;
             document.getElementById('tenantTglExpired').value = t.tglExpired; document.getElementById('tenantStatusSaaS').value = t.statusSaaS;
+            if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = t.baseCurrency || t.currency || "IDR";
+            if(document.getElementById('tenantDisplayCurrency')) document.getElementById('tenantDisplayCurrency').value = t.displayCurrency || t.currency || "IDR";
             document.getElementById('modalTitle').innerText = `Kelola Lisensi Klien: ${t.namaBisnis}`;
             document.getElementById('statusContainer').classList.remove('hidden'); document.getElementById('tenantModal').classList.remove('hidden');
         }
         function closeTenantModal() { document.getElementById('tenantModal').classList.add('hidden'); }
 
-        async function submitTenantForm() {
+        async async function submitTenantForm() {
             const id = document.getElementById('tenantUserId').value;
-            const payload = { action: id ? "editTenant" : "addTenant", userId: id, namaBisnis: document.getElementById('tenantNamaBisnis').value, logoUrl: document.getElementById('tenantLogoUrl').value, username: document.getElementById('tenantUsername').value, password: document.getElementById('tenantPassword').value, tglMulai: document.getElementById('tenantTglMulai').value, tglExpired: document.getElementById('tenantTglExpired').value, statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif" };
+            const payload = { 
+                action: id ? "editTenant" : "addTenant", 
+                userId: id, 
+                namaBisnis: document.getElementById('tenantNamaBisnis').value, 
+                logoUrl: document.getElementById('tenantLogoUrl').value, 
+                username: document.getElementById('tenantUsername').value, 
+                password: document.getElementById('tenantPassword').value, 
+                tglMulai: document.getElementById('tenantTglMulai').value, 
+                tglExpired: document.getElementById('tenantTglExpired').value, 
+                statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif",
+                baseCurrency: document.getElementById('tenantBaseCurrency') ? document.getElementById('tenantBaseCurrency').value : "IDR",
+                displayCurrency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR",
+                currency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR"
+            };
             const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             const res = await r.json(); alert(res.message); closeTenantModal(); await loadTenants();
         }
