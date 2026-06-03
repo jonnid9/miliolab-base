@@ -3,12 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.3 Reset System Stable</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.4.1 Language Font Sync Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Urbanist', sans-serif; background-color: #0c0714; }
+        /* MILIOLAB V21.4.1 INTERNATIONAL FONT SYNC */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+        body.milio-lang-ZH { font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC','Urbanist',sans-serif !important; }
+        body.milio-lang-JA { font-family:'Noto Sans JP','Yu Gothic','Hiragino Sans','Urbanist',sans-serif !important; }
+        body.milio-lang-KO { font-family:'Noto Sans KR','Malgun Gothic','Urbanist',sans-serif !important; }
+        body.milio-lang-AR { font-family:'Noto Naskh Arabic','Tahoma','Arial',sans-serif !important; }
+        body.milio-lang-TH { font-family:'Noto Sans Thai','Tahoma','Urbanist',sans-serif !important; }
+        body.milio-lang-HI { font-family:'Noto Sans Devanagari','Nirmala UI','Urbanist',sans-serif !important; }
+        body.milio-lang-VI, body.milio-lang-MS, body.milio-lang-FIL, body.milio-lang-ES, body.milio-lang-FR, body.milio-lang-PT, body.milio-lang-DE, body.milio-lang-TR, body.milio-lang-EN, body.milio-lang-ID { font-family:'Noto Sans','Urbanist',sans-serif !important; }
+        body.milio-rtl { direction: rtl; }
+        body.milio-rtl .md\:border-r { border-right-width:0 !important; border-left-width:1px !important; }
+        body.milio-rtl table { direction: rtl; }
+
         button { transition: all 0.1s ease-in-out; cursor: pointer; }
         button:active { transform: scale(0.95); }
     </style>
@@ -18,7 +31,33 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
         let tenantsList = []; 
-        let ownerSessionPass = ""; 
+        let ownerSessionPass = "";
+        const MILIO_CURRENCY_OPTIONS = [
+            {code:"IDR", label:"Indonesia (IDR)"}, {code:"MYR", label:"Malaysia (MYR)"}, {code:"SGD", label:"Singapore (SGD)"}, {code:"USD", label:"United States (USD)"},
+            {code:"PHP", label:"Philippines (PHP)"}, {code:"THB", label:"Thailand (THB)"}, {code:"VND", label:"Vietnam (VND)"}, {code:"INR", label:"India (INR)"},
+            {code:"AED", label:"United Arab Emirates (AED)"}, {code:"SAR", label:"Saudi Arabia (SAR)"}, {code:"EUR", label:"European Union (EUR)"}, {code:"GBP", label:"United Kingdom (GBP)"},
+            {code:"AUD", label:"Australia (AUD)"}, {code:"CAD", label:"Canada (CAD)"}, {code:"JPY", label:"Japan (JPY)"}, {code:"KRW", label:"South Korea (KRW)"},
+            {code:"CNY", label:"China (CNY)"}, {code:"HKD", label:"Hong Kong (HKD)"}, {code:"TWD", label:"Taiwan (TWD)"}, {code:"BRL", label:"Brazil (BRL)"},
+            {code:"MXN", label:"Mexico (MXN)"}, {code:"TRY", label:"Turkey (TRY)"}, {code:"NZD", label:"New Zealand (NZD)"}, {code:"CHF", label:"Switzerland (CHF)"}
+        ];
+        const MILIO_LANGUAGE_OPTIONS = [
+            {code:"ID", label:"Bahasa Indonesia (ID)"}, {code:"EN", label:"English (EN)"}, {code:"MS", label:"Malay / Bahasa Melayu (MS)"}, {code:"FIL", label:"Filipino / Tagalog (FIL)"},
+            {code:"TH", label:"Thai (TH)"}, {code:"VI", label:"Vietnamese (VI)"}, {code:"HI", label:"Hindi (HI)"}, {code:"AR", label:"Arabic (AR)"},
+            {code:"ES", label:"Spanish (ES)"}, {code:"FR", label:"French (FR)"}, {code:"PT", label:"Portuguese (PT)"}, {code:"DE", label:"German (DE)"},
+            {code:"TR", label:"Turkish (TR)"}, {code:"JA", label:"Japanese (JA)"}, {code:"KO", label:"Korean (KO)"}, {code:"ZH", label:"Chinese (ZH)"}
+        ];
+        function fillAdmSelectOptions(id, options) {
+            const el = document.getElementById(id);
+            if(!el) return;
+            const old = el.value;
+            el.innerHTML = options.map(o => `<option value="${o.code}">${o.label}</option>`).join("");
+            if(old && Array.from(el.options).some(op => op.value === old)) el.value = old;
+        }
+        function populateAdmInternationalSelectors() {
+            fillAdmSelectOptions("tenantBaseCurrency", MILIO_CURRENCY_OPTIONS);
+            fillAdmSelectOptions("tenantDisplayCurrency", MILIO_CURRENCY_OPTIONS);
+        }
+ 
     </script>
 
     <div id="gatekeeperScreen" class="flex flex-col items-center justify-center min-h-screen">
@@ -38,7 +77,7 @@
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                         <h1 class="text-2xl md:text-3xl font-bold text-white tracking-wider whitespace-nowrap">MILIOLAB SaaS Center</h1>
-                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21.3</span>
+                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21.4.1</span>
                     </div>
                     <p class="text-slate-400 text-[11px] md:text-xs mt-2 uppercase font-bold tracking-widest leading-relaxed max-w-2xl">
                         Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot
@@ -92,21 +131,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs text-slate-400 block mb-1">Currency Input Saat Ini</label>
-                        <select id="tenantBaseCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none">
-                            <option value="IDR">IDR - Rupiah</option>
-                            <option value="MYR">MYR - Ringgit</option>
-                            <option value="USD">USD - Dollar</option>
-                            <option value="SGD">SGD - Singapore Dollar</option>
-                        </select>
+                        <select id="tenantBaseCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></select>
                     </div>
                     <div>
                         <label class="text-xs text-slate-400 block mb-1">Currency Tampilan</label>
-                        <select id="tenantDisplayCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none">
-                            <option value="IDR">IDR - Rupiah</option>
-                            <option value="MYR">MYR - Ringgit</option>
-                            <option value="USD">USD - Dollar</option>
-                            <option value="SGD">SGD - Singapore Dollar</option>
-                        </select>
+                        <select id="tenantDisplayCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></select>
                     </div>
                 </div>
                 <div id="statusContainer" class="hidden">
@@ -122,6 +151,7 @@
         window.addEventListener('keydown', function(e) { if (e.key === 'Enter') { if (!document.getElementById('gatekeeperScreen').classList.contains('hidden')) { submitGatekeeper(); } } });
         
         window.addEventListener('DOMContentLoaded', async () => {
+            populateAdmInternationalSelectors();
             const savedOwnerUser = localStorage.getItem('milio_owner_user');
             const savedOwnerPass = localStorage.getItem('milio_owner_pass');
             if (savedOwnerUser && savedOwnerPass) {
@@ -187,6 +217,7 @@
         }
 
         function openAddTenantModal() {
+            populateAdmInternationalSelectors();
             document.getElementById('tenantForm').reset(); document.getElementById('tenantUserId').value = "";
             document.getElementById('modalTitle').innerText = "Daftarkan Pembeli App Baru"; document.getElementById('statusContainer').classList.add('hidden');
             document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0];
@@ -196,6 +227,7 @@
         }
 
         function openEditTenantModal(userId) {
+            populateAdmInternationalSelectors();
             const t = tenantsList.find(x => x.userId === userId); if(!t) return;
             document.getElementById('tenantUserId').value = t.userId; document.getElementById('tenantNamaBisnis').value = t.namaBisnis;
             document.getElementById('tenantLogoUrl').value = t.logoUrl; document.getElementById('tenantUsername').value = t.username;
