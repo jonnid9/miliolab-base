@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.2C</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.3 Reset System Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -38,7 +38,7 @@
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                         <h1 class="text-2xl md:text-3xl font-bold text-white tracking-wider whitespace-nowrap">MILIOLAB SaaS Center</h1>
-                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21</span>
+                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21.3</span>
                     </div>
                     <p class="text-slate-400 text-[11px] md:text-xs mt-2 uppercase font-bold tracking-widest leading-relaxed max-w-2xl">
                         Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot
@@ -179,8 +179,9 @@
                     <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
                     <td class="p-4 text-center flex gap-2 justify-center mt-1">
                         <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-purple-600 hover:text-white">⚙️ Kelola Akun</button>
-                        ${t.userId === 'USER01' ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-amber-600 hover:text-white">Reset Data</button>`}
-                        ${t.userId === 'USER01' ? '' : `<button onclick="deleteTenant('${t.userId}')" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
+                        ${t.userId === 'USER01' ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" title="Soft Reset: arsipkan data jadi backup merah" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-amber-600 hover:text-white">Soft Reset</button>`}
+                        ${t.userId === 'USER01' ? '' : `<button onclick="factoryResetTenantDataSafe('${t.userId}')" title="Factory Reset: hapus data workspace, akun tetap ada" class="bg-red-900/40 border border-red-500/40 text-red-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-red-600 hover:text-white">Factory Reset</button>`}
+                        ${t.userId === 'USER01' ? '' : `<button onclick="deleteTenant('${t.userId}')" title="Hapus akun permanen" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
                     </td></tr>`;
             });
         }
@@ -216,7 +217,7 @@
 
         async function deleteTenant(userId) { 
             if(confirm("⚠️ PERINGATAN CRITICAL:\nApakah Om yakin ingin menghapus permanent akun pembeli dengan ID: " + userId + "?\nSemua akses login mereka akan langsung terputus!")) {
-                const pin = prompt("🔐 VALIDASI KEAMANAN OWNER:\nMasukkan kembali Password Admin Om untuk mengeksekusi penghapusan:");
+                const pin = prompt("🔐 VALIDASI KEAMANAN OWNER:\nMasukkan kembali Password Admin Om untuk menghapus akun permanen:");
                 if (pin === null) { return; } 
                 else if (pin !== ownerSessionPass) { alert("❌ Akses Ditolak: Password Admin yang Om masukkan SALAH! Data aman tidak terhapus."); return; }
                 try {
@@ -231,18 +232,47 @@
             if(userId === 'USER01') { alert('Akun pusat MILIOLAB-BASE tidak boleh direset dari tombol ini.'); return; }
             const t = tenantsList.find(x => x.userId === userId);
             const name = t ? t.namaBisnis : userId;
-            if(!confirm(`⚠️ RESET DATA TENANT AMAN:
-Reset hanya akan mengosongkan data workspace milik ${name} saja.
-Tenant lain dan MILIOLAB-BASE tidak akan tersentuh.
+            if(!confirm(`🟡 SOFT RESET / BACKUP MERAH:
+Data workspace milik ${name} TIDAK dihapus permanen.
+Semua member, reseller, mitra, dan produk akan diarsipkan, diberi flag backup, serta diwarnai merah di GSheet.
+
+Dashboard tenant akan terlihat kosong, tapi histori masih tersimpan untuk audit.
 
 Lanjutkan?`)) return;
-            const pin = prompt('🔐 Masukkan password owner untuk konfirmasi reset tenant:');
+            const pin = prompt('🔐 Masukkan password owner untuk konfirmasi Soft Reset:');
             if(pin === null) return;
-            if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Reset dibatalkan.'); return; }
+            if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Soft Reset dibatalkan.'); return; }
             try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'resetTenantData', userId: userId }) });
+                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'resetTenantSoft', userId: userId }) });
                 const res = await r.json();
-                alert(res.message || 'Reset selesai.');
+                alert(res.message || 'Soft Reset selesai.');
+                await loadTenants();
+            } catch(e) { alert('Gagal koneksi ke database.'); }
+        }
+
+        async function factoryResetTenantDataSafe(userId) {
+            if(userId === 'USER01') { alert('Akun pusat MILIOLAB-BASE tidak boleh di-factory reset dari tombol ini.'); return; }
+            const t = tenantsList.find(x => x.userId === userId);
+            const name = t ? t.namaBisnis : userId;
+            if(!confirm(`🔴 FACTORY RESET PERMANEN:
+Semua data workspace milik ${name} akan DIHAPUS dari GSheet:
+- Members
+- Resellers
+- Companies/Mitra
+- Packages/Produk
+
+Akun login tetap ada dan masih bisa masuk seperti app baru kosong.
+
+Lanjutkan?`)) return;
+            const pin = prompt('🔐 Masukkan password owner untuk konfirmasi Factory Reset:');
+            if(pin === null) return;
+            if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Factory Reset dibatalkan.'); return; }
+            const ketik = prompt('Ketik HAPUS untuk melanjutkan Factory Reset permanen:');
+            if((ketik || '').toUpperCase() !== 'HAPUS') { alert('Factory Reset dibatalkan.'); return; }
+            try {
+                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'factoryResetTenantData', userId: userId }) });
+                const res = await r.json();
+                alert(res.message || 'Factory Reset selesai.');
                 await loadTenants();
             } catch(e) { alert('Gagal koneksi ke database.'); }
         }
