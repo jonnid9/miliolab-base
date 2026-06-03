@@ -125,6 +125,7 @@
         let followUpOnlyMode = false;
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let clientCurrency = "IDR"; 
+        let clientBaseCurrency = "IDR";
         let clientLanguage = "ID"; 
 
         let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 };
@@ -168,16 +169,35 @@
             return new Date(str);
         }
 
-        function convertAndFormat(amount, showPrefix = true) {
+        function convertCurrencyValue(amount, fromCurrency, toCurrency) {
             const num = parseFloat(amount) || 0;
-            const rate = currencyRates[clientCurrency] || 1;
-            const converted = num * rate;
-            const decimals = clientCurrency === "IDR" ? 0 : 2;
+            const from = (fromCurrency || clientBaseCurrency || "IDR").toUpperCase();
+            const to = (toCurrency || clientCurrency || "IDR").toUpperCase();
+            const fromRate = currencyRates[from] || 1;
+            const toRate = currencyRates[to] || 1;
+            const amountInIDR = num / fromRate;
+            return amountInIDR * toRate;
+        }
+
+        function moneyDecimals(currencyCode) {
+            return currencyCode === "IDR" ? 0 : 2;
+        }
+
+        function convertAndFormat(amount, showPrefix = true, fromCurrency = null) {
+            const sourceCurrency = (fromCurrency || clientBaseCurrency || "IDR").toUpperCase();
+            const targetCurrency = (clientCurrency || sourceCurrency || "IDR").toUpperCase();
+            const converted = convertCurrencyValue(amount, sourceCurrency, targetCurrency);
+            const decimals = moneyDecimals(targetCurrency);
             const formattedNumber = converted.toLocaleString("id-ID", { 
                 minimumFractionDigits: decimals, 
                 maximumFractionDigits: decimals 
             });
-            return showPrefix ? `${clientCurrency} ${formattedNumber}` : formattedNumber;
+            return showPrefix ? `${targetCurrency} ${formattedNumber}` : formattedNumber;
+        }
+
+        function formatBaseInputNumber(amount, currencyCode = null) {
+            const cur = (currencyCode || clientBaseCurrency || "IDR").toUpperCase();
+            return (parseFloat(amount) || 0).toFixed(moneyDecimals(cur));
         }
 
         const dictionary = {
@@ -215,7 +235,7 @@
                 lblHapus: "Hapus", mstWhitelabelTitle: "Whitelabel Identity", phNamaBrand: "Nama Brand", phUrlLogo: "URL Logo Link", btnSaveBrand: "Simpan Brand",
                 setCloudPrefsTitle: "<i class=\"fa-solid fa-gears\"></i> KUNCI PREFERENCES AKUN (CLOUD SAVED)",
                 setCloudPrefsDesc: "Mata uang transaksi dan bahasa laporan otomatis terkunci permanen di akun pengguna.",
-                lblCurrencySelect: "Mata Uang:", lblLanguageSelect: "Bahasa Aplikasi:", btnLockPrefs: "KUNCI PREFERENCES AKUN 🔒",
+                lblCurrencySelect: "Mata Uang Aktif/Input:", lblLanguageSelect: "Bahasa Aplikasi:", btnLockPrefs: "KUNCI PREFERENCES AKUN 🔒",
                 mstWipeoutTitle: "Advanced System Wipeout", lblResetType: "Pilih Tipe Target Reset:", lblResetScope: "Pilih Target Scope Nama Mitra:", btnTriggerReset: "EKSEKUSI PENGHAPUSAN ASSET ⚠️",
                 optResetMember: "Reset Member Perusahaan Tertentu",
                 optResetProfile: "Hapus Profil Mitra Tertentu",
@@ -302,7 +322,7 @@
                 lblHapus: "Delete", mstWhitelabelTitle: "Brand Identity", phNamaBrand: "Brand Name", phUrlLogo: "URL Logo Link", btnSaveBrand: "Save Brand",
                 setCloudPrefsTitle: "<i class=\"fa-solid fa-gears\"></i> LOCK ACCOUNT PREFERENCES (CLOUD SAVED)",
                 setCloudPrefsDesc: "Transaction currency and report language are permanently locked in the user's account.",
-                lblCurrencySelect: "Currency:", lblLanguageSelect: "App Language:", btnLockPrefs: "LOCK ACCOUNT PREFERENCES 🔒",
+                lblCurrencySelect: "Active/Input Currency:", lblLanguageSelect: "App Language:", btnLockPrefs: "LOCK ACCOUNT PREFERENCES 🔒",
                 mstWipeoutTitle: "Advanced System Wipeout", lblResetType: "Select Reset Target Type:", lblResetScope: "Select Target Scope Vendor Name:", btnTriggerReset: "EXECUTE ASSET DELETION ⚠️",
                 optResetMember: "Reset Specific Company Members",
                 optResetProfile: "Delete Specific Vendor Profile",
@@ -485,7 +505,7 @@
 
     <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
-            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v21 DISKON + TENANT SAFE</p></div>
+            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v21.2 CURRENCY TENANT SAFE</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
             
             <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
@@ -799,7 +819,7 @@
                     <p id="setCloudPrefsDesc" class="text-[11px] text-slate-400 mb-3">Mata uang transaksi dan bahasa laporan otomatis terkunci permanen di akun pengguna.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
-                            <label id="lblCurrencySelect" class="text-[10px] text-slate-500 block mb-1">Mata Uang:</label>
+                            <label id="lblCurrencySelect" class="text-[10px] text-slate-500 block mb-1">Mata Uang Aktif/Input:</label>
                             <select id="setCurrencySelector" class="w-full bg-slate-950 border border-slate-800 p-2.5 text-xs text-white rounded-xl outline-none cursor-pointer">
                                 <option value="IDR">Rupiah Indonesia (IDR)</option><option value="MYR">Ringgit Malaysia (MYR)</option><option value="SGD">Dollar Singapore (SGD)</option><option value="USD">Dollar Amerika (USD)</option>
                             </select>
@@ -982,11 +1002,13 @@
                     localStorage.setItem('milio_user', u); localStorage.setItem('milio_pass', p);
                     currentUser = res.user; currentPasswordPlain = p; applyBrandIdentity(currentUser.namaBisnis, currentUser.logoUrl, currentUser.role);
                     
-                    clientCurrency = localStorage.getItem('milio_currency') || res.user.currency || "IDR";
-                    clientLanguage = localStorage.getItem('milio_lang') || res.user.language || "ID";
-                    
+                    clientBaseCurrency = res.user.baseCurrency || res.user.currency || "IDR";
+                    clientCurrency = res.user.displayCurrency || res.user.currency || clientBaseCurrency || "IDR";
+                    clientLanguage = res.user.language || "ID";
+
                     localStorage.setItem('milio_lang', clientLanguage);
                     localStorage.setItem('milio_currency', clientCurrency);
+                    localStorage.setItem('milio_base_currency', clientBaseCurrency);
                     
                     document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
                     await loadInitData(); await refreshMembersList();
@@ -1023,7 +1045,7 @@
         }
 
         async function executePrefsCloudSave(currencyVal, languageVal) {
-            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, currency: currencyVal, language: languageVal };
+            const payload = { action: "saveAccountPrefs", userId: currentUser.userId, baseCurrency: clientBaseCurrency || currencyVal, displayCurrency: currencyVal, currency: currencyVal, language: languageVal }; // Model C: base tetap sebagai fallback, currency aktif menjadi input/display berikutnya
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const res = await r.json();
@@ -1053,6 +1075,14 @@
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getFormInitData", userId: currentUser ? currentUser.userId : "", role: currentUser ? currentUser.role : "" }) });
             const res = await response.json(); 
             if(res.status === "success") { 
+                if(res.prefs) {
+                    clientBaseCurrency = res.prefs.baseCurrency || clientBaseCurrency || "IDR";
+                    clientCurrency = res.prefs.displayCurrency || clientCurrency || clientBaseCurrency;
+                    clientLanguage = res.prefs.language || clientLanguage || "ID";
+                    localStorage.setItem('milio_base_currency', clientBaseCurrency);
+                    localStorage.setItem('milio_currency', clientCurrency);
+                    localStorage.setItem('milio_lang', clientLanguage);
+                }
                 masterCompanies = res.companies; masterPackages = res.packages; 
                 renderCompanyMenus(); populateFormDropdowns();
                 applyGlobalLanguageUI();
@@ -1165,12 +1195,12 @@
                 const jenis = formJenis.value;
                 const pkg = masterPackages.find(p => p.id === selectedPkgId);
                 if(pkg) {
-                    const rate = currencyRates[clientCurrency] || 1;
-                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                    const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
+                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = formatBaseInputNumber(pkg.hargaBeli, pkgCurrency);
                     const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
                     const manualOn = document.getElementById('checkDiskonManual') && document.getElementById('checkDiskonManual').checked;
-                    if(document.getElementById('formHargaJual') && !manualOn) document.getElementById('formHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                    if(manualOn) recalculateManualProfit(); else if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
+                    if(document.getElementById('formHargaJual') && !manualOn) document.getElementById('formHargaJual').value = formatBaseInputNumber(hargaJual, pkgCurrency);
+                    if(manualOn) recalculateManualProfit(); else if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat((parseFloat(hargaJual)||0) - (parseFloat(pkg.hargaBeli)||0), true, pkgCurrency);
                 }
             }
         }
@@ -1197,10 +1227,9 @@
 
         function recalculateManualProfit() {
             const base = getSelectedPackageBasePrices();
-            const rate = currencyRates[clientCurrency] || 1;
-            const jualDisplay = parseFloat(document.getElementById('formHargaJual') ? document.getElementById('formHargaJual').value : 0) || 0;
-            const jualIDR = jualDisplay / rate;
-            if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(jualIDR - base.hargaBeli);
+            const jualBase = parseFloat(document.getElementById('formHargaJual') ? document.getElementById('formHargaJual').value : 0) || 0;
+            const sourceCurrency = (base.pkg && base.pkg.currencyCode) ? base.pkg.currencyCode : (clientBaseCurrency || "IDR");
+            if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(jualBase - base.hargaBeli, true, sourceCurrency);
         }
 
         function resellerPost(payload) {
@@ -1311,10 +1340,10 @@
             const jenisPembeli = document.getElementById('formJenis').value;
             const hargaNormal = (jenisPembeli === "User Langsung") ? (parseFloat(pkg.hargaJualUser)||0) : (parseFloat(pkg.hargaJualReseller)||0);
             const isDiskon = document.getElementById('checkDiskonManual') && document.getElementById('checkDiskonManual').checked;
-            const rate = currencyRates[clientCurrency] || 1;
+            const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
             let hargaJual = hargaNormal;
             if(isDiskon) {
-                hargaJual = (parseFloat(document.getElementById('formHargaJual').value) || 0) / rate;
+                hargaJual = (parseFloat(document.getElementById('formHargaJual').value) || 0);
                 if(hargaJual <= 0) { alert('Harga jual diskon wajib lebih dari 0.'); btn.innerText = originalText; btn.disabled = false; return; }
             }
 
@@ -1335,7 +1364,8 @@
                 hargaBeli: pkg.hargaBeli,
                 hargaJual: hargaJual,
                 hargaNormal: hargaNormal,
-                isDiskon: isDiskon
+                isDiskon: isDiskon,
+                currencyCode: pkgCurrency
             };
 
             try {
@@ -1504,7 +1534,6 @@
             const noteText = `${lang.docNoteFilter} ${startText} s/d ${endText}`;
                 
             if(type === 'excel') {
-                const rate = currencyRates[clientCurrency] || 1;
                 let content = filteredMembers.map(m => {
                     let obj = {};
                     obj[lang.xlHeaderTimestamp] = m.timestamp;
@@ -1513,9 +1542,9 @@
                     obj[lang.xlHeaderEmail] = m.email;
                     obj[lang.xlHeaderPlatform] = m.perusahaan;
                     obj[lang.xlHeaderPackage] = m.namaPaket;
-                    obj[lang.xlHeaderCost] = (parseFloat(m.hargaBeli) * rate);
-                    obj[lang.xlHeaderSell] = (parseFloat(m.hargaJual) * rate);
-                    obj[lang.xlHeaderProfit] = (parseFloat(m.profit) * rate);
+                    obj[lang.xlHeaderCost] = convertCurrencyValue(m.hargaBeli, m.currencyCode || clientBaseCurrency, clientCurrency);
+                    obj[lang.xlHeaderSell] = convertCurrencyValue(m.hargaJual, m.currencyCode || clientBaseCurrency, clientCurrency);
+                    obj[lang.xlHeaderProfit] = convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
                     obj[lang.xlHeaderCurrency] = clientCurrency;
                     obj[lang.xlHeaderExpired] = m.tglExpired;
                     return obj;
@@ -1588,7 +1617,7 @@
                 const tTimestamp = parseJsonDate(m.timestamp);
                 const tExpired = parseJsonDate(m.tglExpired);
                 const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
-                totalProfit += parseFloat(m.profit); 
+                totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency); 
                 
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
                 
@@ -1668,7 +1697,7 @@
                         <span class="text-slate-300">${m.namaPaket}</span><br>
                         <span class="${jenisClass} text-[10px] uppercase tracking-widest mt-1 block">${jenisLabel}</span>
                     </td>
-                    <td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit)}</td>
+                    <td class="p-3 text-emerald-400 font-mono text-xs">${convertAndFormat(m.profit, true, m.currencyCode || clientBaseCurrency)}</td>
                     <td class="p-3 font-mono text-xs text-indigo-300">${tglDaftarClean}<br><span class="text-[10px] text-slate-500 font-normal">${tglDaftarTime}</span></td><td class="p-3 font-mono text-xs text-red-300">${tglExpiredClean}</td>
                     <td class="p-3 text-center">${textSisa}</td><td class="p-3 text-center"><button onclick="printInvoice(${m.rowId})" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-print"></i></button></td>
                     <td class="p-3"><div class="flex gap-1 items-center justify-center">
@@ -1683,7 +1712,7 @@
             if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
             if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
             if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
-            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit);
+            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit, true, clientCurrency);
             updateFollowUpCenterButton(followCount);
         }
 
@@ -1721,10 +1750,10 @@
             filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
             
             let omset = 0, modal = 0, cuan = 0;
-            filteredMembers.forEach(m => { omset += parseFloat(m.hargaJual) || 0; modal += parseFloat(m.hargaBeli) || 0; cuan += parseFloat(m.profit) || 0; });
-            if(document.getElementById('finOmset')) document.getElementById('finOmset').innerText = convertAndFormat(omset); 
-            if(document.getElementById('finModal')) document.getElementById('finModal').innerText = convertAndFormat(modal); 
-            if(document.getElementById('finCuan')) document.getElementById('finCuan').innerText = convertAndFormat(cuan);
+            filteredMembers.forEach(m => { omset += convertCurrencyValue(m.hargaJual, m.currencyCode || clientBaseCurrency, clientCurrency); modal += convertCurrencyValue(m.hargaBeli, m.currencyCode || clientBaseCurrency, clientCurrency); cuan += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency); });
+            if(document.getElementById('finOmset')) document.getElementById('finOmset').innerText = convertAndFormat(omset, true, clientCurrency); 
+            if(document.getElementById('finModal')) document.getElementById('finModal').innerText = convertAndFormat(modal, true, clientCurrency); 
+            if(document.getElementById('finCuan')) document.getElementById('finCuan').innerText = convertAndFormat(cuan, true, clientCurrency);
             renderMilioFinanceChart();
             renderMembersTable();
         }
@@ -1765,11 +1794,11 @@
         function autoFillEditPrices() {
             const selectedPkgId = document.getElementById('editFormPaket').value, jenis = document.getElementById('editFormJenis').value, pkg = masterPackages.find(p => p.id === selectedPkgId);
             if(pkg) {
-                const rate = currencyRates[clientCurrency] || 1;
-                document.getElementById('editFormHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
+                document.getElementById('editFormHargaBeli').value = formatBaseInputNumber(pkg.hargaBeli, pkgCurrency);
                 const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-                document.getElementById('editFormHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                document.getElementById('editFormProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
+                document.getElementById('editFormHargaJual').value = formatBaseInputNumber(hargaJual, pkgCurrency);
+                document.getElementById('editFormProfitLabel').innerText = convertAndFormat((parseFloat(hargaJual)||0) - (parseFloat(pkg.hargaBeli)||0), true, pkgCurrency);
             }
         }
         function closeEditModal() { document.getElementById('editFormModalModal').classList.add('hidden'); }
@@ -1792,7 +1821,8 @@
                 namaMember: document.getElementById('editFormNama').value, noWhatsapp: inputWa, email: document.getElementById('editFormEmail').value,
                 perusahaanSumber: document.getElementById('editFormPerusahaan').value, 
                 namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), 
-                durasiHari: document.getElementById('editFormDurasi').value, jenisPembeli: document.getElementById('editFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual
+                durasiHari: document.getElementById('editFormDurasi').value, jenisPembeli: document.getElementById('editFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual,
+                currencyCode: pkg.currencyCode || clientBaseCurrency || "IDR"
             };
             try { 
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) }); 
@@ -1824,7 +1854,7 @@
             doc.autoTable({ 
                 startY: 66, 
                 head: [[lang.docInvDesc, lang.docInvActive, lang.docInvTotal]], 
-                body: [[m.namaPaket + "\nVendor Platform: " + m.perusahaan, tglSkg + " s/d\n" + tglExp, convertAndFormat(m.hargaJual)]], 
+                body: [[m.namaPaket + "\nVendor Platform: " + m.perusahaan, tglSkg + " s/d\n" + tglExp, convertAndFormat(m.hargaJual, true, m.currencyCode || clientBaseCurrency)]], 
                 theme: 'striped', headStyles: { fillColor: [7, 10, 19] } 
             });
             
@@ -1867,7 +1897,7 @@
                     };
                 });
                 if(confirm("Import " + rows.length + " member sekaligus?")) {
-                    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "bulkAddMembers", userId: currentUser ? currentUser.userId : "", resellerId: currentUser.userId, rows: rows }) }).then(() => { refreshMembersList(); switchTab('dashboard'); });
+                    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "bulkAddMembers", userId: currentUser ? currentUser.userId : "", resellerId: currentUser.userId, rows: rows, currencyCode: clientCurrency || clientBaseCurrency || "IDR" }) }).then(() => { refreshMembersList(); switchTab('dashboard'); });
                 }
             }; reader.readAsArrayBuffer(file);
         }
@@ -1882,9 +1912,9 @@
                     <td class="p-2 font-bold text-green-400 p-2 truncate max-w-[100px]">${p.perusahaan}</td>
                     <td class="p-2 truncate max-w-[120px]">${p.namaPaket}</td>
                     <td class="p-2">${p.varian}</td>
-                    <td class="p-2">${convertAndFormat(p.hargaBeli)}</td>
-                    <td class="p-2">${convertAndFormat(p.hargaJualUser)}</td>
-                    <td class="p-2">${convertAndFormat(p.hargaJualReseller)}</td>
+                    <td class="p-2">${convertAndFormat(p.hargaBeli, true, p.currencyCode || clientBaseCurrency)}</td>
+                    <td class="p-2">${convertAndFormat(p.hargaJualUser, true, p.currencyCode || clientBaseCurrency)}</td>
+                    <td class="p-2">${convertAndFormat(p.hargaJualReseller, true, p.currencyCode || clientBaseCurrency)}</td>
                     <td class="p-2 text-center"><div class="flex gap-2 justify-center items-center">
                         <button onclick="openEditProduct('${p.id}')" class="text-amber-400 hover:text-amber-300 font-bold transition cursor-pointer select-none">✏️</button>
                         <button onclick="deleteProduct('${p.id}')" class="text-red-400 hover:text-red-300 transition cursor-pointer select-none"><i class="fa-solid fa-trash"></i></button>
@@ -1900,9 +1930,9 @@
             document.getElementById('prodFormNama').value = p.namaPaket;
             document.getElementById('prodFormVarian').value = p.varian;
             document.getElementById('prodFormDurasi').value = p.durasi;
-            document.getElementById('prodFormModal').value = Math.round(p.hargaBeli);
-            document.getElementById('prodFormUser').value = Math.round(p.hargaJualUser);
-            document.getElementById('prodFormReseller').value = Math.round(p.hargaJualReseller);
+            document.getElementById('prodFormModal').value = formatBaseInputNumber(p.hargaBeli, p.currencyCode || clientBaseCurrency);
+            document.getElementById('prodFormUser').value = formatBaseInputNumber(p.hargaJualUser, p.currencyCode || clientBaseCurrency);
+            document.getElementById('prodFormReseller').value = formatBaseInputNumber(p.hargaJualReseller, p.currencyCode || clientBaseCurrency);
             
             const btnSave = document.getElementById('btnSaveCatalog');
             btnSave.innerText = clientLanguage === "ID" ? "UPDATE KATALOG 🚀" : "UPDATE CATALOG 🚀";
@@ -1921,7 +1951,8 @@
                 perusahaan: document.getElementById('prodFormComp').value, namaPaket: document.getElementById('prodFormNama').value,
                 varian: document.getElementById('prodFormVarian').value || "-", durasi: document.getElementById('prodFormDurasi').value,
                 hargaBeli: document.getElementById('prodFormModal').value, hargaJualUser: document.getElementById('prodFormUser').value, hargaJualReseller: document.getElementById('prodFormReseller').value,
-                userId: currentUser ? currentUser.userId : ""
+                userId: currentUser ? currentUser.userId : "",
+                currencyCode: clientCurrency || clientBaseCurrency || "IDR"
             };
             try {
                 const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -2025,11 +2056,11 @@
         function autoFillRenewPrices() {
             const selectedPkgId = document.getElementById('renewFormPaket').value, jenis = document.getElementById('renewFormJenis').value, pkg = masterPackages.find(p => p.id === selectedPkgId);
             if(pkg) {
-                const rate = currencyRates[clientCurrency] || 1;
-                document.getElementById('renewFormHargaBeli').value = (pkg.hargaBeli * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
+                const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
+                document.getElementById('renewFormHargaBeli').value = formatBaseInputNumber(pkg.hargaBeli, pkgCurrency);
                 const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-                document.getElementById('renewFormHargaJual').value = (hargaJual * rate).toFixed(clientCurrency === 'IDR' ? 0 : 2);
-                document.getElementById('renewFormProfitLabel').innerText = convertAndFormat(hargaJual - pkg.hargaBeli);
+                document.getElementById('renewFormHargaJual').value = formatBaseInputNumber(hargaJual, pkgCurrency);
+                document.getElementById('renewFormProfitLabel').innerText = convertAndFormat((parseFloat(hargaJual)||0) - (parseFloat(pkg.hargaBeli)||0), true, pkgCurrency);
             }
         }
         function closeRenewModal() { document.getElementById('renewFormModalModal').classList.add('hidden'); }
@@ -2119,8 +2150,8 @@
                 membersData.forEach(m => {
                     const t = parseJsonDate(m.timestamp);
                     if (t >= d && t < next) {
-                        totalOmset += parseFloat(m.hargaJual) || 0;
-                        totalProfit += parseFloat(m.profit) || 0;
+                        totalOmset += convertCurrencyValue(m.hargaJual, m.currencyCode || clientBaseCurrency, clientCurrency);
+                        totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
                     }
                 });
                 omset.push(totalOmset);
