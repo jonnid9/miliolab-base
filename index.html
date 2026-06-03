@@ -13,6 +13,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Urbanist', sans-serif; background-color: #070a13; }
+        /* MILIOLAB V21.4.1 INTERNATIONAL FONT SYNC */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+        body.milio-lang-ZH { font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC','Urbanist',sans-serif !important; }
+        body.milio-lang-JA { font-family:'Noto Sans JP','Yu Gothic','Hiragino Sans','Urbanist',sans-serif !important; }
+        body.milio-lang-KO { font-family:'Noto Sans KR','Malgun Gothic','Urbanist',sans-serif !important; }
+        body.milio-lang-AR { font-family:'Noto Naskh Arabic','Tahoma','Arial',sans-serif !important; }
+        body.milio-lang-TH { font-family:'Noto Sans Thai','Tahoma','Urbanist',sans-serif !important; }
+        body.milio-lang-HI { font-family:'Noto Sans Devanagari','Nirmala UI','Urbanist',sans-serif !important; }
+        body.milio-lang-VI, body.milio-lang-MS, body.milio-lang-FIL, body.milio-lang-ES, body.milio-lang-FR, body.milio-lang-PT, body.milio-lang-DE, body.milio-lang-TR, body.milio-lang-EN, body.milio-lang-ID { font-family:'Noto Sans','Urbanist',sans-serif !important; }
+        body.milio-rtl { direction: rtl; }
+        body.milio-rtl .md\:border-r { border-right-width:0 !important; border-left-width:1px !important; }
+        body.milio-rtl table { direction: rtl; }
+
         .tab-content { display: none; } .tab-content.active { display: block; }
         .launcher-card { transition: all 0.3s ease; } .launcher-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2); }
         button, .sidebar-btn { transition: all 0.1s ease-in-out; cursor: pointer; }
@@ -128,7 +141,61 @@
         let clientBaseCurrency = "IDR";
         let clientLanguage = "ID"; 
 
-        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064 };
+        let currencyRates = { IDR: 1, MYR: 0.00029, SGD: 0.000085, USD: 0.000064, PHP: 0.0036, THB: 0.0023, VND: 1.63, INR: 0.0053, AED: 0.00023, SAR: 0.00024, EUR: 0.000059, GBP: 0.000050, AUD: 0.000097, CAD: 0.000087, JPY: 0.0098, KRW: 0.087, CNY: 0.00046, HKD: 0.00050, TWD: 0.0021, BRL: 0.00035, MXN: 0.0012, TRY: 0.0021, NZD: 0.00010, CHF: 0.000057 };
+        const MILIO_CURRENCY_OPTIONS = [
+            {code:"IDR", label:"Indonesia (IDR)"}, {code:"MYR", label:"Malaysia (MYR)"}, {code:"SGD", label:"Singapore (SGD)"}, {code:"USD", label:"United States (USD)"},
+            {code:"PHP", label:"Philippines (PHP)"}, {code:"THB", label:"Thailand (THB)"}, {code:"VND", label:"Vietnam (VND)"}, {code:"INR", label:"India (INR)"},
+            {code:"AED", label:"United Arab Emirates (AED)"}, {code:"SAR", label:"Saudi Arabia (SAR)"}, {code:"EUR", label:"European Union (EUR)"}, {code:"GBP", label:"United Kingdom (GBP)"},
+            {code:"AUD", label:"Australia (AUD)"}, {code:"CAD", label:"Canada (CAD)"}, {code:"JPY", label:"Japan (JPY)"}, {code:"KRW", label:"South Korea (KRW)"},
+            {code:"CNY", label:"China (CNY)"}, {code:"HKD", label:"Hong Kong (HKD)"}, {code:"TWD", label:"Taiwan (TWD)"}, {code:"BRL", label:"Brazil (BRL)"},
+            {code:"MXN", label:"Mexico (MXN)"}, {code:"TRY", label:"Turkey (TRY)"}, {code:"NZD", label:"New Zealand (NZD)"}, {code:"CHF", label:"Switzerland (CHF)"}
+        ];
+
+        const MILIO_LANGUAGE_OPTIONS = [
+            {code:"ID", label:"Bahasa Indonesia (ID)"}, {code:"EN", label:"English (EN)"}, {code:"MS", label:"Malay / Bahasa Melayu (MS)"}, {code:"FIL", label:"Filipino / Tagalog (FIL)"},
+            {code:"TH", label:"Thai (TH)"}, {code:"VI", label:"Vietnamese (VI)"}, {code:"HI", label:"Hindi (HI)"}, {code:"AR", label:"Arabic (AR)"},
+            {code:"ES", label:"Spanish (ES)"}, {code:"FR", label:"French (FR)"}, {code:"PT", label:"Portuguese (PT)"}, {code:"DE", label:"German (DE)"},
+            {code:"TR", label:"Turkish (TR)"}, {code:"JA", label:"Japanese (JA)"}, {code:"KO", label:"Korean (KO)"}, {code:"ZH", label:"Chinese (ZH)"}
+        ];
+
+        const MILIO_COUNTRY_OPTIONS = [
+            {code:"62", country:"ID", label:"Indonesia (+62)"}, {code:"60", country:"MY", label:"Malaysia (+60)"}, {code:"65", country:"SG", label:"Singapore (+65)"}, {code:"1", country:"US", label:"United States / Canada (+1)"},
+            {code:"63", country:"PH", label:"Philippines (+63)"}, {code:"66", country:"TH", label:"Thailand (+66)"}, {code:"84", country:"VN", label:"Vietnam (+84)"}, {code:"91", country:"IN", label:"India (+91)"},
+            {code:"971", country:"AE", label:"United Arab Emirates (+971)"}, {code:"966", country:"SA", label:"Saudi Arabia (+966)"}, {code:"44", country:"GB", label:"United Kingdom (+44)"}, {code:"61", country:"AU", label:"Australia (+61)"},
+            {code:"81", country:"JP", label:"Japan (+81)"}, {code:"82", country:"KR", label:"South Korea (+82)"}, {code:"86", country:"CN", label:"China (+86)"}, {code:"852", country:"HK", label:"Hong Kong (+852)"},
+            {code:"886", country:"TW", label:"Taiwan (+886)"}, {code:"55", country:"BR", label:"Brazil (+55)"}, {code:"52", country:"MX", label:"Mexico (+52)"}, {code:"90", country:"TR", label:"Turkey (+90)"},
+            {code:"CUSTOM", country:"CUSTOM", label:"Other / Manual"}
+        ];
+
+        function milioFillSelectOptions(selectId, options, valueKey = "code") {
+            const el = document.getElementById(selectId);
+            if (!el) return;
+            const oldValue = el.value;
+            el.innerHTML = options.map(o => `<option value="${o[valueKey]}">${o.label}</option>`).join("");
+            if (oldValue && Array.from(el.options).some(op => op.value === oldValue)) el.value = oldValue;
+        }
+
+        function populateInternationalSelectors() {
+            milioFillSelectOptions("setCurrencySelector", MILIO_CURRENCY_OPTIONS, "code");
+            milioFillSelectOptions("setLanguageSelector", MILIO_LANGUAGE_OPTIONS, "code");
+            milioFillSelectOptions("formCountryCode", MILIO_COUNTRY_OPTIONS, "code");
+            milioFillSelectOptions("resellerNegaraInput", MILIO_COUNTRY_OPTIONS.filter(o => o.country !== "CUSTOM").map(o => ({code:o.country, label:o.label})), "code");
+            if(document.getElementById('setLanguageSelector')) document.getElementById('setLanguageSelector').value = clientLanguage || "ID";
+            if(document.getElementById('setCurrencySelector')) document.getElementById('setCurrencySelector').value = clientCurrency || "IDR";
+        }
+
+        function getDefaultCountryCodeByLanguage(lang) {
+            const map = {ID:"62", MS:"60", EN:"1", FIL:"63", TH:"66", VI:"84", HI:"91", AR:"971", ES:"34", FR:"33", PT:"351", DE:"49", TR:"90", JA:"81", KO:"82", ZH:"86"};
+            return map[(lang || "ID").toUpperCase()] || "62";
+        }
+
+        function applyCountryCodeDefaultFromLanguage() {
+            const el = document.getElementById("formCountryCode");
+            if (!el || el.value) return;
+            const code = getDefaultCountryCodeByLanguage(clientLanguage);
+            if (Array.from(el.options).some(op => op.value === code)) el.value = code;
+        }
+
 
         function milioB64Transport(v) { try { return "B64:" + btoa(unescape(encodeURIComponent(v || ""))); } catch(e) { return v || ""; } } 
 
@@ -240,7 +307,8 @@
                 optResetMember: "Reset Member Perusahaan Tertentu",
                 optResetProfile: "Hapus Profil Mitra Tertentu",
                 optResetCatalog: "Bersihkan Katalog Produk Perusahaan",
-                optResetAll: "RESET ALL ASSET (TOTAL WIPE)",
+                optResetSoftAll: "SOFT RESET ALL ASSET (ARSIP BACKUP MERAH)",
+                optResetAll: "FACTORY RESET ALL ASSET (HAPUS TOTAL)",
                 
                 phSearchMember: "Cari nama, email, wa...",
                 phSearchVendor: "Cari nama vendor / mitra...",
@@ -327,7 +395,8 @@
                 optResetMember: "Reset Specific Company Members",
                 optResetProfile: "Delete Specific Vendor Profile",
                 optResetCatalog: "Clear Company Product Catalog",
-                optResetAll: "RESET ALL ASSET (TOTAL WIPE)",
+                optResetSoftAll: "SOFT RESET ALL ASSET (ARSIP BACKUP MERAH)",
+                optResetAll: "FACTORY RESET ALL ASSET (HAPUS TOTAL)",
                 
                 phSearchMember: "Search name, email, wa...",
                 phSearchVendor: "Search vendor name...",
@@ -376,6 +445,13 @@
                 bcSendBtn: "Send WA 📲"
             }
         };
+
+
+        // Bahasa tambahan memakai struktur terjemahan stabil agar tidak ada key yang miss.
+        // Untuk label UI inti, bahasa selain ID memakai EN sampai kamus terjemahan detail ditambahkan bertahap.
+        ["MS","FIL","TH","VI","HI","AR","ES","FR","PT","DE","TR","JA","KO","ZH"].forEach(function(langCode){
+            if(!dictionary[langCode]) dictionary[langCode] = Object.assign({}, dictionary.EN);
+        });
 
         function applyGlobalLanguageUI() {
             const translation = dictionary[clientLanguage] || dictionary.ID;
@@ -491,11 +567,13 @@
                     <option value="member_comp">${translation.optResetMember}</option>
                     <option value="company_only">${translation.optResetProfile}</option>
                     <option value="product_comp">${translation.optResetCatalog}</option>
+                    <option value="soft_all">${translation.optResetSoftAll || 'SOFT RESET ALL ASSET (RED BACKUP ARCHIVE)'}</option>
                     <option value="all">${translation.optResetAll}</option>
                 `;
                 if (currentVal) resetSel.value = currentVal;
             }
 
+            populateInternationalSelectors();
             if(document.getElementById('setLanguageSelector')) document.getElementById('setLanguageSelector').value = clientLanguage;
             if(document.getElementById('setCurrencySelector')) document.getElementById('setCurrencySelector').value = clientCurrency;
             
@@ -505,7 +583,7 @@
 
     <div id="loginPage" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl w-full max-w-md text-center shadow-2xl space-y-6">
-            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v21.3 RESET SYSTEM STABLE</p></div>
+            <div><h1 class="text-2xl md:text-3xl font-bold text-white tracking-widest">MILIOLAB <span class="text-green-500">BASE</span></h1><p class="text-slate-500 text-xs uppercase font-bold tracking-widest mt-1">v21.4.1 LANGUAGE FONT SYNC STABLE</p></div>
             <div id="loginError" class="hidden bg-red-900/40 text-red-200 p-3 rounded-xl text-sm border border-red-500"></div>
             
             <form onsubmit="event.preventDefault(); handleLogin(false);" class="space-y-4 text-left">
@@ -674,12 +752,7 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
                         <input type="text" id="resellerNamaInput" placeholder="Nama Reseller" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
-                        <select id="resellerNegaraInput" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
-                            <option value="ID">ID (+62)</option>
-                            <option value="MY">MY (+60)</option>
-                            <option value="SG">SG (+65)</option>
-                            <option value="US">US (+1)</option>
-                        </select>
+                        <select id="resellerNegaraInput" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none"></select>
                         <input type="text" id="resellerWaInput" placeholder="Nomor WA" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-800 text-white text-xs outline-none">
                         <button type="button" onclick="saveResellerDB()" class="bg-green-500 hover:bg-green-400 text-slate-950 font-bold rounded-xl text-xs uppercase">Simpan</button>
                     </div>
@@ -694,9 +767,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" id="formNama" placeholder="Nama Member" required class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
                         <div class="flex gap-2 w-full">
-                            <select id="formCountryCode" class="bg-slate-950 border border-slate-800 p-2 md:p-3 text-xs font-bold text-slate-400 rounded-xl outline-none cursor-pointer">
-                                <option value="62">ID (+62)</option><option value="60">MY (+60)</option><option value="65">SG (+65)</option><option value="CUSTOM">Lainnya</option>
-                            </select>
+                            <select id="formCountryCode" class="bg-slate-950 border border-slate-800 p-2 md:p-3 text-xs font-bold text-slate-400 rounded-xl outline-none cursor-pointer"></select>
                             <input type="text" id="formWA" placeholder="Contoh: 08123xxx" required class="flex-1 bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
                         </div>
                     </div>
@@ -820,15 +891,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
                             <label id="lblCurrencySelect" class="text-[10px] text-slate-500 block mb-1">Mata Uang Aktif/Input:</label>
-                            <select id="setCurrencySelector" class="w-full bg-slate-950 border border-slate-800 p-2.5 text-xs text-white rounded-xl outline-none cursor-pointer">
-                                <option value="IDR">Rupiah Indonesia (IDR)</option><option value="MYR">Ringgit Malaysia (MYR)</option><option value="SGD">Dollar Singapore (SGD)</option><option value="USD">Dollar Amerika (USD)</option>
-                            </select>
+                            <select id="setCurrencySelector" class="w-full bg-slate-950 border border-slate-800 p-2.5 text-xs text-white rounded-xl outline-none cursor-pointer"></select>
                         </div>
                         <div>
                             <label id="lblLanguageSelect" class="text-[10px] text-slate-500 block mb-1">Bahasa Aplikasi:</label>
-                            <select id="setLanguageSelector" onchange="lockClientPreferences()" class="w-full bg-slate-950 border border-slate-800 p-2.5 text-xs text-white rounded-xl outline-none cursor-pointer">
-                                <option value="ID">Bahasa Indonesia (ID)</option><option value="EN">English Language (EN)</option>
-                            </select>
+                            <select id="setLanguageSelector" onchange="lockClientPreferences()" class="w-full bg-slate-950 border border-slate-800 p-2.5 text-xs text-white rounded-xl outline-none cursor-pointer"></select>
                         </div>
                     </div>
                     <button id="btnLockPrefs" onclick="lockClientPreferences()" class="w-full bg-green-600 text-slate-950 font-bold text-xs p-2.5 rounded-xl uppercase tracking-wide">Kunci Preferences Akun 🔒</button>
@@ -928,8 +995,9 @@
             const type = document.getElementById('resetTypeSelect').value;
             const scopeSelect = document.getElementById('resetScopeSelect');
             scopeSelect.innerHTML = '';
-            if (type === 'all') {
-                scopeSelect.innerHTML = '<option value="ALL">Wipeout Seluruh Isi Database Asset</option>';
+            if (type === 'all' || type === 'soft_all') {
+                const label = (type === 'soft_all') ? 'Soft Reset Semua Asset (Arsip Backup Merah)' : 'Factory Reset Seluruh Isi Database Asset';
+                scopeSelect.innerHTML = `<option value="ALL">${label}</option>`;
             } else {
                 masterCompanies.forEach(c => { scopeSelect.innerHTML += `<option value="${c}">${c}</option>`; });
             }
@@ -938,7 +1006,8 @@
         async function triggerAdvancedReset() {
             const type = document.getElementById('resetTypeSelect').value;
             const scope = document.getElementById('resetScopeSelect').value;
-            if(confirm("⚠️ CRITICAL ACTION:\nApakah Om yakin ingin menghapus aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
+            const modeLabel = (type === 'soft_all') ? 'SOFT RESET / ARSIP BACKUP MERAH' : (type === 'all' ? 'FACTORY RESET / HAPUS TOTAL' : 'PENGHAPUSAN ASSET');
+            if(confirm("⚠️ " + modeLabel + ":\nApakah Om yakin memproses aset data dari " + scope + "? Aksi ini hanya berlaku untuk akun login ini. Akun lain aman.")) {
                 if(validatePasswordSecurity()) {
                     await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "hardResetApp", type: type, scope: scope, userId: currentUser ? currentUser.userId : "" }) });
                     window.location.reload();
@@ -980,6 +1049,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
+            populateInternationalSelectors();
             await fetchLiveGlobalRates(); 
             const savedUser = localStorage.getItem('milio_user');
             const savedPass = localStorage.getItem('milio_pass');
@@ -1289,8 +1359,8 @@
             if (!r) return;
             document.getElementById('formNama').value = r.nama || '';
             let wa = String(r.wa || '').replace(/\D/g, '');
-            const negaraMap = { ID: '62', MY: '60', SG: '65', US: '1' };
-            const kode = negaraMap[r.negara] || '62';
+            const foundCountry = MILIO_COUNTRY_OPTIONS.find(o => o.country === r.negara);
+            const kode = foundCountry ? foundCountry.code : '62';
             document.getElementById('formCountryCode').value = kode;
             if (wa.indexOf(kode) === 0) wa = wa.substring(kode.length);
             document.getElementById('formWA').value = wa;
@@ -2211,5 +2281,82 @@
             setTimeout(renderMilioFinanceChart, 1400);
         });
     </script>
+
+<script>
+// ====================================================================
+// MILIOLAB V21.4.1 INTERNATIONAL LANGUAGE + FONT + THEME SYNC PATCH
+// ====================================================================
+(function(){
+    const MILIO_TRANSLATION_PATCH = {"ZH": {"monitor": "客户监控", "finance": "财务与数据分析", "input": "新增会员", "import": "批量导入 Excel", "master": "产品与供应商", "settings": "高级系统重置", "aktifSales": "活跃销售会员", "followUp": "需要跟进", "netProfit": "筛选后净利润", "subTitle": "客户数据库监控", "thNama": "会员姓名", "thKontak": "WhatsApp / 邮箱", "thProduk": "供应商与产品", "thProfit": "利润", "thDaftar": "注册日期", "thBerakhir": "到期日期", "thSisa": "剩余天数", "thInv": "票据", "thAksi": "操作", "statusAman": "正常", "statusExpired": "已到期 ❌", "statusHangus": "逾期 (15天+)", "statusHari": "天", "btnChat": "联系会员", "btnFollow": "跟进", "btnEdit": "✏️ 编辑/升级", "btnRenew": "🔄 续订", "lblSemua": "全部", "modalEditTitle": "修正 / 套餐升级结算", "modalEditUpgradeMode": "启用套餐升级模式（计算差价）", "lblTampilkanSemua": "显示全部", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> 退出登录", "finTitle": "收入分析 📊", "finAll": "全部数据", "finDaily": "今天", "finWeekly": "最近 7 天", "finMonthly": "本月", "finApply": "应用筛选", "lblFinOmset": "筛选后总营业额（毛额）", "lblFinModal": "总成本支出", "lblFinCuan": "净利润", "titExportSec": "<i class=\"fa-solid fa-file-export text-green-400\"></i> 官方文档导出生成器", "btnExpExcel": "📥 导出筛选 Excel", "btnExpPdf": "📄 官方 PDF 报告 + 图表", "inpTitle": "新增会员", "inpSubtitle": "支持登记新会员或补录旧会员数据", "phNamaMember": "会员姓名", "optUserLangsung": "直接用户", "optReseller": "代理商", "lblCheckBackdate": "使用自定义日期（旧会员）", "lblInpHargaBeli": "成本价：", "lblInpHargaJual": "销售价：", "btnSubmitMember": "保存客户数据 🚀", "impTitle": "批量会员导入 (XLS) 📁", "btnChooseExcel": "选择 EXCEL 文件", "lblExcelHeaderWarn": "<i class=\"fa-solid fa-circle-info\"></i> EXCEL 表头格式示例：", "mstCompTitle": "🏢 公司管理", "phNamaBaru": "新名称", "btnSaveComp": "添加", "mstProdTitle": "📦 添加变体 / 产品", "phNamaPaket": "套餐名称", "phVarian": "变体", "phModal": "成本", "btnSaveCatalog": "保存目录", "thMstId": "ID", "thMstMitra": "供应商", "thMstPaket": "套餐名称", "thMstVarian": "变体", "thMstModal": "成本", "thMstUser": "用户价", "thMstReseller": "代理价", "thMstAksi": "操作", "lblHapus": "删除", "mstWhitelabelTitle": "白标品牌信息", "phNamaBrand": "品牌名称", "phUrlLogo": "Logo 链接 URL", "btnSaveBrand": "保存品牌", "setCloudPrefsTitle": "<i class=\"fa-solid fa-gears\"></i> 锁定账户偏好（云端保存）", "setCloudPrefsDesc": "交易货币与报告语言会永久锁定在用户账户中。", "lblCurrencySelect": "当前/输入货币：", "lblLanguageSelect": "应用语言：", "btnLockPrefs": "锁定账户偏好 🔒", "mstWipeoutTitle": "高级系统清理", "lblResetType": "选择重置目标类型：", "lblResetScope": "选择目标供应商范围：", "btnTriggerReset": "执行资产删除 ⚠️", "optResetMember": "重置指定公司会员", "optResetProfile": "删除指定供应商资料", "optResetCatalog": "清理公司产品目录", "optResetSoftAll": "软重置全部资产（红色备份归档）", "optResetAll": "工厂重置全部资产（彻底删除）", "phSearchMember": "搜索姓名、邮箱、WA...", "phSearchVendor": "搜索供应商名称...", "btnEditVendor": "✏️ 编辑", "docInvoiceTitle": "高级云服务订阅正式收据", "docCustomerInfo": "客户信息：", "docCustName": "客户姓名", "docCustEmail": "访问邮箱", "docCustWA": "WhatsApp 号码", "docInvDesc": "产品与供应商说明", "docInvActive": "套餐有效期", "docInvTotal": "已支付总额", "docPaidStatus": "付款状态：已支付 / 已结清", "docThankYou": "“非常感谢您的订阅！客户满意是我们的最高优先事项。”", "docReportTitle": "官方财务分析报告", "docBarGross": "[绿色柱] 总营业额趋势", "docBarModal": "[红色柱] 成本支出", "docBarCuan": "[蓝色柱] 净利润", "xlHeaderTimestamp": "输入时间", "xlHeaderName": "客户姓名", "xlHeaderWA": "WhatsApp 号码", "xlHeaderEmail": "邮箱地址", "xlHeaderPlatform": "平台 / 供应商", "xlHeaderPackage": "套餐名称", "xlHeaderCost": "成本", "xlHeaderSell": "售价", "xlHeaderProfit": "净利润", "xlHeaderCurrency": "货币", "xlHeaderExpired": "到期日期", "docNoteFilter": "以下为所选日期登记的会员：", "btnDone": "✔️ 完成", "statusSelesai": "已完成 🏁", "confirmDone": "确认手动完成该会员服务任务吗？闪烁提醒将立即停止。", "txtWaExpired": "您好 {NAME} 😊，您的账户 *{EMAIL}* 的套餐 *{PACKAGE}* 已到期。请确认是否续订或暂时停止，以便我们更新会员资料 🙏。回复 **YES** 继续，回复 **NO** 暂停。来自 *{BRAND}* ✨", "txtWaReminder": "您好 {NAME} 😊，温馨提醒：您的账户 *{EMAIL}* 的套餐 *{PACKAGE}* 将在 *{DAYS} 天后* 到期。请确认是否续订或有任何问题，以便会员状态保持正常 🙏。来自 *{BRAND}* ✨", "bcTitle": "全局广播指令中心 📢", "bcPlaceholder": "在此输入广播消息（最多 10,000 字）... 空格和换行会自动保留。", "bcLockBtn": "锁定并选择目标 🔒", "bcUnlockBtn": "解锁并编辑消息 🔓", "bcTargetLabel": "按产品变体选择目标分组：", "bcGlobalOption": "全部会员（全局广播）", "bcSendBtn": "发送 WA 📲", "themeLight": "浅色模式", "themeDark": "深色模式", "loginButton": "进入仪表板", "loading": "正在加载数据..."}, "MS": {"monitor": "Monitor Pelanggan", "finance": "Kewangan & Analitik", "input": "Input Ahli Baharu", "import": "Import Excel Pukal", "master": "Produk & Vendor", "settings": "Reset Sistem Lanjutan", "aktifSales": "Ahli Aktif", "followUp": "Perlu Follow Up", "netProfit": "Untung Bersih Ditapis", "subTitle": "Monitor Pangkalan Data Pelanggan", "thNama": "Nama Ahli", "thKontak": "WhatsApp / Emel", "thProduk": "Vendor & Produk", "thProfit": "Untung", "thDaftar": "Tarikh Daftar", "thBerakhir": "Tarikh Tamat", "thSisa": "Baki Hari", "thAksi": "Tindakan", "lblSemua": "Semua", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Log Keluar", "finDaily": "Hari Ini", "finWeekly": "7 Hari Terakhir", "finMonthly": "Bulan Ini", "btnSubmitMember": "SIMPAN DATA PELANGGAN 🚀", "themeLight": "Mod Cerah", "themeDark": "Mod Gelap", "loginButton": "MASUK KE DASHBOARD"}, "JA": {"monitor": "顧客モニター", "finance": "財務・分析", "input": "新規会員入力", "import": "Excel 一括インポート", "master": "商品・ベンダー", "settings": "高度なシステムリセット", "aktifSales": "有効会員", "followUp": "フォローアップ必要", "netProfit": "絞り込み純利益", "subTitle": "顧客データベースモニター", "thNama": "会員名", "thKontak": "WhatsApp / メール", "thProduk": "ベンダー & 商品", "thProfit": "利益", "thDaftar": "登録日", "thBerakhir": "有効期限", "thSisa": "残り日数", "thAksi": "操作", "lblSemua": "すべて", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> ログアウト", "finDaily": "今日", "finWeekly": "過去7日", "finMonthly": "今月", "btnSubmitMember": "顧客データを保存 🚀", "themeLight": "ライトモード", "themeDark": "ダークモード", "loginButton": "ダッシュボードへ"}, "KO": {"monitor": "고객 모니터", "finance": "재무 및 분석", "input": "새 회원 입력", "import": "Excel 일괄 가져오기", "master": "제품 및 공급업체", "settings": "고급 시스템 초기화", "aktifSales": "활성 회원", "followUp": "후속 조치 필요", "netProfit": "필터링된 순이익", "subTitle": "고객 데이터베이스 모니터", "thNama": "회원 이름", "thKontak": "WhatsApp / 이메일", "thProduk": "공급업체 & 제품", "thProfit": "이익", "thDaftar": "등록일", "thBerakhir": "만료일", "thSisa": "남은 일수", "thAksi": "작업", "lblSemua": "전체", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> 로그아웃", "finDaily": "오늘", "finWeekly": "최근 7일", "finMonthly": "이번 달", "btnSubmitMember": "고객 데이터 저장 🚀", "themeLight": "라이트 모드", "themeDark": "다크 모드", "loginButton": "대시보드로 이동"}, "AR": {"monitor": "مراقبة العملاء", "finance": "المالية والتحليلات", "input": "إضافة عضو جديد", "import": "استيراد Excel جماعي", "master": "المنتجات والموردون", "settings": "إعادة ضبط النظام المتقدمة", "aktifSales": "الأعضاء النشطون", "followUp": "يحتاج متابعة", "netProfit": "صافي الربح المفلتر", "subTitle": "مراقبة قاعدة بيانات العملاء", "thNama": "اسم العضو", "thKontak": "واتساب / البريد", "thProduk": "المورد والمنتج", "thProfit": "الربح", "thDaftar": "تاريخ التسجيل", "thBerakhir": "تاريخ الانتهاء", "thSisa": "الأيام المتبقية", "thAksi": "الإجراء", "lblSemua": "الكل", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> تسجيل الخروج", "finDaily": "اليوم", "finWeekly": "آخر 7 أيام", "finMonthly": "هذا الشهر", "btnSubmitMember": "حفظ بيانات العميل 🚀", "themeLight": "الوضع الفاتح", "themeDark": "الوضع الداكن", "loginButton": "الدخول إلى لوحة التحكم"}, "TH": {"monitor": "มอนิเตอร์ลูกค้า", "finance": "การเงินและวิเคราะห์", "input": "เพิ่มสมาชิกใหม่", "import": "นำเข้า Excel แบบกลุ่ม", "master": "สินค้าและผู้ขาย", "settings": "รีเซ็ตระบบขั้นสูง", "aktifSales": "สมาชิกที่ใช้งาน", "followUp": "ต้องติดตาม", "netProfit": "กำไรสุทธิที่กรองแล้ว", "subTitle": "มอนิเตอร์ฐานข้อมูลลูกค้า", "thNama": "ชื่อสมาชิก", "thKontak": "WhatsApp / อีเมล", "thProduk": "ผู้ขายและสินค้า", "thProfit": "กำไร", "thDaftar": "วันที่สมัคร", "thBerakhir": "วันหมดอายุ", "thSisa": "วันที่เหลือ", "thAksi": "การทำงาน", "lblSemua": "ทั้งหมด", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> ออกจากระบบ", "finDaily": "วันนี้", "finWeekly": "7 วันที่ผ่านมา", "finMonthly": "เดือนนี้", "btnSubmitMember": "บันทึกข้อมูลลูกค้า 🚀", "themeLight": "โหมดสว่าง", "themeDark": "โหมดมืด", "loginButton": "เข้าสู่แดชบอร์ด"}, "HI": {"monitor": "ग्राहक मॉनिटर", "finance": "वित्त और विश्लेषण", "input": "नया सदस्य जोड़ें", "import": "बल्क Excel आयात", "master": "उत्पाद और विक्रेता", "settings": "उन्नत सिस्टम रीसेट", "aktifSales": "सक्रिय सदस्य", "followUp": "फॉलो अप आवश्यक", "netProfit": "फ़िल्टर किया गया शुद्ध लाभ", "subTitle": "ग्राहक डेटाबेस मॉनिटर", "thNama": "सदस्य का नाम", "thKontak": "WhatsApp / ईमेल", "thProduk": "विक्रेता और उत्पाद", "thProfit": "लाभ", "thDaftar": "पंजीकरण तिथि", "thBerakhir": "समाप्ति तिथि", "thSisa": "शेष दिन", "thAksi": "कार्य", "lblSemua": "सभी", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> लॉग आउट", "finDaily": "आज", "finWeekly": "पिछले 7 दिन", "finMonthly": "इस महीने", "btnSubmitMember": "ग्राहक डेटा सहेजें 🚀", "themeLight": "लाइट मोड", "themeDark": "डार्क मोड", "loginButton": "डैशबोर्ड में प्रवेश करें"}, "ES": {"monitor": "Monitor de Clientes", "finance": "Finanzas y Analítica", "input": "Nuevo Miembro", "import": "Importación Excel Masiva", "master": "Productos y Proveedores", "settings": "Reinicio Avanzado", "aktifSales": "Miembros Activos", "followUp": "Requiere Seguimiento", "netProfit": "Beneficio Neto Filtrado", "subTitle": "Monitor de Base de Datos", "thNama": "Nombre", "thKontak": "WhatsApp / Email", "thProduk": "Proveedor y Producto", "thProfit": "Beneficio", "thDaftar": "Fecha Alta", "thBerakhir": "Fecha Vencimiento", "thSisa": "Días Restantes", "thAksi": "Acción", "lblSemua": "Todo", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Salir", "finDaily": "Hoy", "finWeekly": "Últimos 7 Días", "finMonthly": "Este Mes", "btnSubmitMember": "GUARDAR CLIENTE 🚀", "themeLight": "Modo Claro", "themeDark": "Modo Oscuro", "loginButton": "ENTRAR AL PANEL"}, "FR": {"monitor": "Suivi Clients", "finance": "Finance & Analytique", "input": "Nouveau Membre", "import": "Import Excel en Lot", "master": "Produits & Fournisseurs", "settings": "Réinitialisation Avancée", "aktifSales": "Membres Actifs", "followUp": "À Relancer", "netProfit": "Profit Net Filtré", "subTitle": "Suivi Base Clients", "thNama": "Nom", "thKontak": "WhatsApp / Email", "thProduk": "Fournisseur & Produit", "thProfit": "Profit", "thDaftar": "Date Inscription", "thBerakhir": "Date Expiration", "thSisa": "Jours Restants", "thAksi": "Action", "lblSemua": "Tous", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Déconnexion", "finDaily": "Aujourd'hui", "finWeekly": "7 Derniers Jours", "finMonthly": "Ce Mois", "btnSubmitMember": "ENREGISTRER CLIENT 🚀", "themeLight": "Mode Clair", "themeDark": "Mode Sombre", "loginButton": "ACCÉDER AU TABLEAU"}, "DE": {"monitor": "Kundenmonitor", "finance": "Finanzen & Analytik", "input": "Neues Mitglied", "import": "Excel-Massenimport", "master": "Produkte & Anbieter", "settings": "Erweiterter Systemreset", "aktifSales": "Aktive Mitglieder", "followUp": "Nachfassen nötig", "netProfit": "Gefilterter Nettogewinn", "subTitle": "Kundendatenbank-Monitor", "thNama": "Name", "thKontak": "WhatsApp / E-Mail", "thProduk": "Anbieter & Produkt", "thProfit": "Gewinn", "thDaftar": "Registriert", "thBerakhir": "Ablaufdatum", "thSisa": "Resttage", "thAksi": "Aktion", "lblSemua": "Alle", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Abmelden", "finDaily": "Heute", "finWeekly": "Letzte 7 Tage", "finMonthly": "Dieser Monat", "btnSubmitMember": "KUNDENDATEN SPEICHERN 🚀", "themeLight": "Heller Modus", "themeDark": "Dunkler Modus", "loginButton": "ZUM DASHBOARD"}, "PT": {"monitor": "Monitor de Clientes", "finance": "Finanças & Analytics", "input": "Novo Membro", "import": "Importação Excel em Massa", "master": "Produtos & Fornecedores", "settings": "Reset Avançado", "aktifSales": "Membros Ativos", "followUp": "Precisa Follow Up", "netProfit": "Lucro Líquido Filtrado", "subTitle": "Monitor da Base de Clientes", "thNama": "Nome", "thKontak": "WhatsApp / Email", "thProduk": "Fornecedor & Produto", "thProfit": "Lucro", "thDaftar": "Data Registro", "thBerakhir": "Data Expiração", "thSisa": "Dias Restantes", "thAksi": "Ação", "lblSemua": "Todos", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Sair", "finDaily": "Hoje", "finWeekly": "Últimos 7 Dias", "finMonthly": "Este Mês", "btnSubmitMember": "SALVAR CLIENTE 🚀", "themeLight": "Modo Claro", "themeDark": "Modo Escuro", "loginButton": "ENTRAR NO PAINEL"}, "TR": {"monitor": "Müşteri Monitörü", "finance": "Finans ve Analitik", "input": "Yeni Üye Ekle", "import": "Toplu Excel İçe Aktar", "master": "Ürünler ve Tedarikçiler", "settings": "Gelişmiş Sistem Sıfırlama", "aktifSales": "Aktif Üyeler", "followUp": "Takip Gerekli", "netProfit": "Filtrelenmiş Net Kâr", "subTitle": "Müşteri Veritabanı Monitörü", "thNama": "Üye Adı", "thKontak": "WhatsApp / E-posta", "thProduk": "Tedarikçi & Ürün", "thProfit": "Kâr", "thDaftar": "Kayıt Tarihi", "thBerakhir": "Bitiş Tarihi", "thSisa": "Kalan Gün", "thAksi": "İşlem", "lblSemua": "Tümü", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Çıkış", "finDaily": "Bugün", "finWeekly": "Son 7 Gün", "finMonthly": "Bu Ay", "btnSubmitMember": "MÜŞTERİYİ KAYDET 🚀", "themeLight": "Aydınlık Mod", "themeDark": "Karanlık Mod", "loginButton": "PANELE GİR"}, "VI": {"monitor": "Theo dõi Khách hàng", "finance": "Tài chính & Phân tích", "input": "Thêm Thành viên", "import": "Nhập Excel Hàng loạt", "master": "Sản phẩm & Nhà cung cấp", "settings": "Đặt lại Hệ thống Nâng cao", "aktifSales": "Thành viên Hoạt động", "followUp": "Cần Theo dõi", "netProfit": "Lợi nhuận Ròng đã lọc", "subTitle": "Theo dõi CSDL Khách hàng", "thNama": "Tên thành viên", "thKontak": "WhatsApp / Email", "thProduk": "Nhà cung cấp & Sản phẩm", "thProfit": "Lợi nhuận", "thDaftar": "Ngày ĐK", "thBerakhir": "Ngày Hết hạn", "thSisa": "Ngày Còn lại", "thAksi": "Thao tác", "lblSemua": "Tất cả", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Đăng xuất", "finDaily": "Hôm nay", "finWeekly": "7 ngày qua", "finMonthly": "Tháng này", "btnSubmitMember": "LƯU KHÁCH HÀNG 🚀", "themeLight": "Chế độ Sáng", "themeDark": "Chế độ Tối", "loginButton": "VÀO BẢNG ĐIỀU KHIỂN"}, "FIL": {"monitor": "Customer Monitor", "finance": "Finance & Analytics", "input": "Magdagdag ng Member", "import": "Bulk Excel Import", "master": "Products & Vendors", "settings": "Advanced System Reset", "aktifSales": "Active Members", "followUp": "Needs Follow Up", "netProfit": "Filtered Net Profit", "subTitle": "Customer Database Monitor", "thNama": "Pangalan", "thKontak": "WhatsApp / Email", "thProduk": "Vendor & Product", "thProfit": "Profit", "thDaftar": "Reg Date", "thBerakhir": "Expiry Date", "thSisa": "Remaining Days", "thAksi": "Action", "lblSemua": "Lahat", "sideExit": "<i class=\"fa-solid fa-power-off\"></i> Logout", "finDaily": "Today", "finWeekly": "Last 7 Days", "finMonthly": "This Month", "btnSubmitMember": "SAVE CUSTOMER DATA 🚀", "themeLight": "Light Mode", "themeDark": "Dark Mode", "loginButton": "ENTER DASHBOARD"}};
+    const MILIO_LOCALE_MAP = {ID:'id-ID', EN:'en-US', MS:'ms-MY', FIL:'fil-PH', TH:'th-TH', VI:'vi-VN', HI:'hi-IN', AR:'ar-AE', ES:'es-ES', FR:'fr-FR', PT:'pt-PT', DE:'de-DE', TR:'tr-TR', JA:'ja-JP', KO:'ko-KR', ZH:'zh-CN'};
+    const MILIO_LANG_FONT_CLASS = ['ID','EN','MS','FIL','TH','VI','HI','AR','ES','FR','PT','DE','TR','JA','KO','ZH'].map(c=>'milio-lang-'+c);
+    const EXTRA_COUNTRIES = [
+        {code:'33', country:'FR', label:'France (+33)'}, {code:'34', country:'ES', label:'Spain (+34)'}, {code:'39', country:'IT', label:'Italy (+39)'}, {code:'49', country:'DE', label:'Germany (+49)'},
+        {code:'351', country:'PT', label:'Portugal (+351)'}, {code:'31', country:'NL', label:'Netherlands (+31)'}, {code:'41', country:'CH', label:'Switzerland (+41)'}, {code:'46', country:'SE', label:'Sweden (+46)'},
+        {code:'47', country:'NO', label:'Norway (+47)'}, {code:'45', country:'DK', label:'Denmark (+45)'}, {code:'358', country:'FI', label:'Finland (+358)'}, {code:'48', country:'PL', label:'Poland (+48)'},
+        {code:'7', country:'RU', label:'Russia / Kazakhstan (+7)'}, {code:'20', country:'EG', label:'Egypt (+20)'}, {code:'27', country:'ZA', label:'South Africa (+27)'}, {code:'234', country:'NG', label:'Nigeria (+234)'},
+        {code:'254', country:'KE', label:'Kenya (+254)'}, {code:'92', country:'PK', label:'Pakistan (+92)'}, {code:'880', country:'BD', label:'Bangladesh (+880)'}, {code:'94', country:'LK', label:'Sri Lanka (+94)'},
+        {code:'977', country:'NP', label:'Nepal (+977)'}, {code:'54', country:'AR', label:'Argentina (+54)'}, {code:'56', country:'CL', label:'Chile (+56)'}, {code:'57', country:'CO', label:'Colombia (+57)'},
+        {code:'51', country:'PE', label:'Peru (+51)'}
+    ];
+    function patchDictionaryNow(){
+        if(!window.dictionary) return;
+        Object.keys(MILIO_TRANSLATION_PATCH).forEach(function(code){
+            window.dictionary[code] = Object.assign({}, window.dictionary.EN || {}, window.dictionary[code] || {}, MILIO_TRANSLATION_PATCH[code]);
+        });
+    }
+    function patchCountryOptionsNow(){
+        if(!window.MILIO_COUNTRY_OPTIONS || !Array.isArray(window.MILIO_COUNTRY_OPTIONS)) return;
+        EXTRA_COUNTRIES.forEach(function(item){
+            if(!window.MILIO_COUNTRY_OPTIONS.some(function(x){ return x.code === item.code && x.country === item.country; })) {
+                const manualIndex = window.MILIO_COUNTRY_OPTIONS.findIndex(function(x){ return x.code === 'CUSTOM'; });
+                if(manualIndex >= 0) window.MILIO_COUNTRY_OPTIONS.splice(manualIndex, 0, item);
+                else window.MILIO_COUNTRY_OPTIONS.push(item);
+            }
+        });
+    }
+    window.getMilioActiveLocale = function(){ return MILIO_LOCALE_MAP[(window.clientLanguage || 'ID').toUpperCase()] || 'en-US'; };
+    window.applyMilioLanguageFont = function(){
+        const lang = (window.clientLanguage || localStorage.getItem('milio_lang') || 'ID').toUpperCase();
+        document.documentElement.lang = (MILIO_LOCALE_MAP[lang] || 'id-ID').split('-')[0];
+        document.documentElement.dir = lang === 'AR' ? 'rtl' : 'ltr';
+        document.body.classList.remove.apply(document.body.classList, MILIO_LANG_FONT_CLASS.concat(['milio-rtl']));
+        document.body.classList.add('milio-lang-' + lang);
+        if(lang === 'AR') document.body.classList.add('milio-rtl');
+    };
+    window.convertAndFormat = function(amount, showPrefix = true, fromCurrency = null){
+        const sourceCurrency = (fromCurrency || window.clientBaseCurrency || 'IDR').toUpperCase();
+        const targetCurrency = (window.clientCurrency || sourceCurrency || 'IDR').toUpperCase();
+        const converted = convertCurrencyValue(amount, sourceCurrency, targetCurrency);
+        const decimals = moneyDecimals(targetCurrency);
+        const formattedNumber = converted.toLocaleString(window.getMilioActiveLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        return showPrefix ? `${targetCurrency} ${formattedNumber}` : formattedNumber;
+    };
+    window.updateMilioThemeButton = function(){
+        const lang = (window.clientLanguage || localStorage.getItem('milio_lang') || 'ID').toUpperCase();
+        const t = (window.dictionary && window.dictionary[lang]) || (window.dictionary && window.dictionary.ID) || {themeLight:'Mode Terang', themeDark:'Mode Gelap'};
+        const isLight = document.body.classList.contains('milio-light-mode');
+        const icon = isLight ? 'fa-moon' : 'fa-sun';
+        const text = isLight ? (t.themeDark || 'Dark Mode') : (t.themeLight || 'Light Mode');
+        const btn = document.getElementById('milioThemeToggle');
+        if(btn) btn.innerHTML = `<i class="fa-solid ${icon}"></i><span id="milioThemeLabel">${text}</span>`;
+    };
+    const oldApply = window.applyGlobalLanguageUI;
+    window.applyGlobalLanguageUI = function(){
+        patchDictionaryNow(); patchCountryOptionsNow();
+        if(typeof oldApply === 'function') oldApply.apply(this, arguments);
+        window.applyMilioLanguageFont();
+        window.updateMilioThemeButton();
+        const t = (window.dictionary && window.dictionary[(window.clientLanguage || 'ID').toUpperCase()]) || window.dictionary.ID;
+        const loginBtn = document.getElementById('btnLogin'); if(loginBtn && t.loginButton) loginBtn.innerText = t.loginButton;
+        const loaderText = document.querySelector('#globalLoader .text-green-400'); if(loaderText && t.loading) loaderText.innerText = t.loading;
+    };
+    const oldPopulate = window.populateInternationalSelectors;
+    window.populateInternationalSelectors = function(){ patchCountryOptionsNow(); if(typeof oldPopulate === 'function') oldPopulate.apply(this, arguments); };
+    patchDictionaryNow(); patchCountryOptionsNow(); window.applyMilioLanguageFont();
+    document.addEventListener('DOMContentLoaded', function(){ patchDictionaryNow(); patchCountryOptionsNow(); window.applyMilioLanguageFont(); window.updateMilioThemeButton(); });
+})();
+</script>
+
 </body>
 </html>
