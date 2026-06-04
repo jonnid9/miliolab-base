@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.4 Reset System Stable</title>
+    <title>MILIOLAB CENTER - Master SaaS Control Panel v21.5 Reset System Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght=400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Urbanist', sans-serif; background-color: #0c0714; }
@@ -43,6 +43,7 @@
         function populateAdmInternationalSelectors() {
             fillAdmSelectOptions("tenantBaseCurrency", MILIO_CURRENCY_OPTIONS);
             fillAdmSelectOptions("tenantDisplayCurrency", MILIO_CURRENCY_OPTIONS);
+            fillAdmSelectOptions("tenantLanguage", MILIO_LANGUAGE_OPTIONS);
         }
  
     </script>
@@ -64,7 +65,7 @@
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                         <h1 class="text-2xl md:text-3xl font-bold text-white tracking-wider whitespace-nowrap">MILIOLAB SaaS Center</h1>
-                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21.4</span>
+                        <span class="text-purple-400 text-2xl md:text-3xl font-bold whitespace-nowrap">v21.5</span>
                     </div>
                     <p class="text-slate-400 text-[11px] md:text-xs mt-2 uppercase font-bold tracking-widest leading-relaxed max-w-2xl">
                         Sistem Manajemen Lisensi Pembeli Aplikasi Autopilot
@@ -124,6 +125,10 @@
                         <label class="text-xs text-slate-400 block mb-1">Currency Tampilan</label>
                         <select id="tenantDisplayCurrency" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></select>
                     </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Bahasa Aplikasi Tenant</label>
+                    <select id="tenantLanguage" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></select>
                 </div>
                 <div id="statusContainer" class="hidden">
                     <label class="text-xs text-slate-400 block mb-1">Status Lisensi Pembeli</label>
@@ -210,6 +215,7 @@
             document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0];
             if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = "IDR";
             if(document.getElementById('tenantDisplayCurrency')) document.getElementById('tenantDisplayCurrency').value = "IDR";
+            if(document.getElementById('tenantLanguage')) document.getElementById('tenantLanguage').value = "ID";
             document.getElementById('tenantModal').classList.remove('hidden');
         }
 
@@ -222,6 +228,7 @@
             document.getElementById('tenantTglExpired').value = t.tglExpired; document.getElementById('tenantStatusSaaS').value = t.statusSaaS;
             if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = t.baseCurrency || t.currency || "IDR";
             if(document.getElementById('tenantDisplayCurrency')) document.getElementById('tenantDisplayCurrency').value = t.displayCurrency || t.currency || "IDR";
+            if(document.getElementById('tenantLanguage')) document.getElementById('tenantLanguage').value = t.language || "ID";
             document.getElementById('modalTitle').innerText = `Kelola Lisensi Klien: ${t.namaBisnis}`;
             document.getElementById('statusContainer').classList.remove('hidden'); document.getElementById('tenantModal').classList.remove('hidden');
         }
@@ -229,7 +236,7 @@
 
         async function submitTenantForm() {
             const id = document.getElementById('tenantUserId').value;
-            const payload = { action: id ? "editTenant" : "addTenant", userId: id, namaBisnis: document.getElementById('tenantNamaBisnis').value, logoUrl: document.getElementById('tenantLogoUrl').value, username: document.getElementById('tenantUsername').value, password: document.getElementById('tenantPassword').value, tglMulai: document.getElementById('tenantTglMulai').value, tglExpired: document.getElementById('tenantTglExpired').value, statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif", baseCurrency: document.getElementById('tenantBaseCurrency') ? document.getElementById('tenantBaseCurrency').value : "IDR", displayCurrency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR", currency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR" };
+            const payload = { action: id ? "editTenant" : "addTenant", userId: id, namaBisnis: document.getElementById('tenantNamaBisnis').value, logoUrl: document.getElementById('tenantLogoUrl').value, username: document.getElementById('tenantUsername').value, password: document.getElementById('tenantPassword').value, tglMulai: document.getElementById('tenantTglMulai').value, tglExpired: document.getElementById('tenantTglExpired').value, statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif", baseCurrency: document.getElementById('tenantBaseCurrency') ? document.getElementById('tenantBaseCurrency').value : "IDR", displayCurrency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR", currency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR", language: document.getElementById('tenantLanguage') ? document.getElementById('tenantLanguage').value : "ID" };
             const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             const res = await r.json(); alert(res.message); closeTenantModal(); await loadTenants();
         }
