@@ -16,7 +16,13 @@
 <body class="text-slate-200 min-h-screen p-4 md:p-8">
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3e7-p05PTi0N23qjKD2FTTHNwzTFWrcWQtyCo915Jl1hmOwxasq8DkmKrJaFmIlGePw/exec";
+        const SB_URL="https://qiaeodxtdmxajtmjhdbd.supabase.co";
+        const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVvZHh0ZG14YWp0bWpoZGJkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTYyNzA1NCwiZXhwIjoyMDk3MjAzMDU0fQ.clJ_qudv3tL8ySX_0hqf29HxVGqcPNdfgiIQtQhjI4Q";
+        const SB_H2={"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"};
+        const sbA=async function(t,p){return (await fetch(SB_URL+"/rest/v1/"+t+"?"+p,{headers:SB_H2})).json();};
+        const sbAP=async function(t,b){return (await fetch(SB_URL+"/rest/v1/"+t,{method:"POST",headers:SB_H2,body:JSON.stringify(b)})).json();};
+        const sbAPch=async function(t,f,b){return (await fetch(SB_URL+"/rest/v1/"+t+"?"+f,{method:"PATCH",headers:SB_H2,body:JSON.stringify(b)})).json();};
+        const sbADel=async function(t,f){return (await fetch(SB_URL+"/rest/v1/"+t+"?"+f,{method:"DELETE",headers:SB_H2})).ok;};
         let tenantsList = []; 
         let ownerSessionPass = "";
         const MILIO_CURRENCY_OPTIONS = [
@@ -106,7 +112,30 @@
                 <input type="hidden" id="tenantUserId">
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-xs text-slate-400 block mb-1">Nama Brand Bisnis</label><input type="text" id="tenantNamaBisnis" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
-                    <div><label class="text-xs text-slate-400 block mb-1">Link Logo URL</label><input type="text" id="tenantLogoUrl" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Logo Brand</label>
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2">
+                            <div class="flex items-center gap-3">
+                                <!-- Preview -->
+                                <div class="w-12 h-12 rounded-xl border border-slate-700 bg-slate-900 flex items-center justify-center shrink-0 overflow-hidden">
+                                    <img id="logoPreviewAdm" src="" class="w-full h-full object-cover rounded-xl hidden">
+                                    <i id="logoPlaceholderAdm" class="fa-solid fa-shop text-purple-500 text-lg"></i>
+                                </div>
+                                <div class="flex-1 space-y-1.5">
+                                    <input type="text" id="tenantLogoUrl" placeholder="Paste URL atau upload gambar..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none" oninput="previewLogoAdm()">
+                                    <div class="flex gap-2">
+                                        <label class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center gap-1 cursor-pointer border border-slate-700 transition">
+                                            <i class="fa-solid fa-upload text-purple-400"></i> Upload Gambar
+                                            <input type="file" accept="image/*" class="hidden" onchange="handleLogoUploadAdm(event)">
+                                        </label>
+                                        <button type="button" onclick="clearLogoAdm()" class="bg-slate-800 hover:bg-slate-700 text-slate-500 hover:text-red-400 py-1.5 px-2 rounded-lg text-[10px] border border-slate-700 transition" title="Hapus logo">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-xs text-slate-400 block mb-1">Username Login</label><input type="text" id="tenantUsername" required class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
@@ -160,9 +189,9 @@
             if(!u || !p) { alert("Username dan Password wajib diisi!"); return; }
             btn.disabled = true; btn.innerHTML = 'Memverifikasi Keamanan...';
             try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "login", username: u, password: p }) });
-                const res = await r.json();
-                if(res.status === "success" && (res.user.role === "Owner" || res.user.role === "OWNER")) {
+                var _lr=await sbA("users","username=eq."+encodeURIComponent(u)+"&select=*");
+                const res=await (async function(){if(!_lr||!_lr.length)return {status:"error",message:"Login gagal"};var _u=_lr[0];if(_u.password!==p)return {status:"error",message:"Password salah"};return {status:"success",user:{userId:_u.user_id,username:_u.username,role:_u.role,namaBisnis:_u.nama_bisnis||"ADMIN"}};})();
+                if(res.status === "success" && (res.user.role === "Owner" || res.user.role === "OWNER" || res.user.role === "SuperOwner")) {
                     localStorage.setItem('milio_owner_user', u);
                     localStorage.setItem('milio_owner_pass', p);
                     ownerSessionPass = p;
@@ -177,14 +206,22 @@
         }
 
         async function loadTenants() {
-            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "getAllTenants" }) });
-            const res = await r.json(); if(res.status === "success") { tenantsList = res.data; renderTenantTable(); }
+            var _tr2=await sbA("users","select=*&order=created_at.asc");
+            const res={status:"success",data:(_tr2||[]).map(function(t){return {userId:t.user_id,username:t.username,password:t.password,namaBisnis:t.nama_bisnis||"",logoUrl:t.logo_url||"",role:t.role,tglMulai:t.tgl_mulai_saas?t.tgl_mulai_saas.split("T")[0]:"",tglExpired:t.tgl_expired_saas?t.tgl_expired_saas.split("T")[0]:"",statusSaaS:t.status_saas||"Aktif",baseCurrency:t.base_currency||t.currency||"IDR",displayCurrency:t.display_currency||t.currency||"IDR",currency:t.currency||"IDR",language:t.language||"ID"};})};
+            if(res.status==="success"){
+                tenantsList=res.data.sort(function(a,b){
+                    if(a.userId==="USER01") return -1;
+                    if(b.userId==="USER01") return 1;
+                    return 0;
+                });
+                renderTenantTable();
+            }
         }
 
         function renderTenantTable() {
             const tbody = document.getElementById('tenantTableBody'); tbody.innerHTML = '';
             tenantsList.forEach(t => {
-                if(t.role === "Owner" || t.role === "OWNER") return;
+                if(t.role === 'SuperOwner') return;
                 const isExpired = new Date(t.tglExpired) < new Date();
                 const statusStyle = (t.statusSaaS === "Aktif" && !isExpired) ? "bg-green-500/10 text-green-400 border border-green-500/30" : "bg-red-500/10 text-red-400 border border-red-500/30";
                 const badgeStatus = (t.statusSaaS === "Aktif" && !isExpired) ? "Active ✅" : (isExpired ? "Expired ❌" : "Suspended 🚫");
@@ -201,9 +238,11 @@
                     <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
                     <td class="p-4 text-center flex gap-2 justify-center mt-1">
                         <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-purple-600 hover:text-white">⚙️ Kelola Akun</button>
-                        ${t.userId === 'USER01' ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" title="Soft Reset: arsipkan data jadi backup merah" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-amber-600 hover:text-white">Soft Reset</button>`}
-                        ${t.userId === 'USER01' ? '' : `<button onclick="factoryResetTenantDataSafe('${t.userId}')" title="Factory Reset: hapus data workspace, akun tetap ada" class="bg-red-900/40 border border-red-500/40 text-red-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-red-600 hover:text-white">Factory Reset</button>`}
-                        ${t.userId === 'USER01' ? '' : `<button onclick="deleteTenant('${t.userId}')" title="Hapus akun permanen" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
+                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" title="Soft Reset: arsipkan data jadi backup merah" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-amber-600 hover:text-white">Soft Reset</button>`}
+                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="factoryResetTenantDataSafe('${t.userId}')" title="Factory Reset: hapus data workspace, akun tetap ada" class="bg-red-900/40 border border-red-500/40 text-red-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-red-600 hover:text-white">Factory Reset</button>`}
+                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="deleteTenant('${t.userId}')" title="Hapus akun permanen" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
+                        <button onclick="exportTenantCSV('${t.userId}', '${t.namaBisnis}')" title="Export semua data member ke CSV backup lengkap" class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-emerald-600 hover:text-white flex items-center gap-1"><i class="fa-solid fa-file-csv"></i> Export</button>
+                        <label title="Import CSV backup untuk recovery data member" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-blue-600 hover:text-white flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-upload"></i> Import<input type="file" accept=".csv" class="hidden" onchange="importTenantCSV(event, '${t.userId}', '${t.namaBisnis}')"></label>
                     </td></tr>`;
             });
         }
@@ -213,6 +252,7 @@
             document.getElementById('tenantForm').reset(); document.getElementById('tenantUserId').value = "";
             document.getElementById('modalTitle').innerText = "Daftarkan Pembeli App Baru"; document.getElementById('statusContainer').classList.add('hidden');
             document.getElementById('tenantTglMulai').value = new Date().toISOString().split('T')[0];
+            setTimeout(clearLogoAdm, 50);
             if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = "IDR";
             if(document.getElementById('tenantDisplayCurrency')) document.getElementById('tenantDisplayCurrency').value = "IDR";
             if(document.getElementById('tenantLanguage')) document.getElementById('tenantLanguage').value = "ID";
@@ -223,7 +263,8 @@
             populateAdmInternationalSelectors();
             const t = tenantsList.find(x => x.userId === userId); if(!t) return;
             document.getElementById('tenantUserId').value = t.userId; document.getElementById('tenantNamaBisnis').value = t.namaBisnis;
-            document.getElementById('tenantLogoUrl').value = t.logoUrl; document.getElementById('tenantUsername').value = t.username;
+            document.getElementById('tenantLogoUrl').value = t.logoUrl;
+            setTimeout(previewLogoAdm, 50); document.getElementById('tenantUsername').value = t.username;
             document.getElementById('tenantPassword').value = t.password; document.getElementById('tenantTglMulai').value = t.tglMulai;
             document.getElementById('tenantTglExpired').value = t.tglExpired; document.getElementById('tenantStatusSaaS').value = t.statusSaaS;
             if(document.getElementById('tenantBaseCurrency')) document.getElementById('tenantBaseCurrency').value = t.baseCurrency || t.currency || "IDR";
@@ -234,28 +275,343 @@
         }
         function closeTenantModal() { document.getElementById('tenantModal').classList.add('hidden'); }
 
+        // Logo upload functions - adm.html
+        function previewLogoAdm() {
+            const url = document.getElementById('tenantLogoUrl').value.trim();
+            const img = document.getElementById('logoPreviewAdm');
+            const ph = document.getElementById('logoPlaceholderAdm');
+            if (!img || !ph) return;
+            if (url) { img.src = url; img.classList.remove('hidden'); ph.classList.add('hidden'); }
+            else { img.classList.add('hidden'); ph.classList.remove('hidden'); }
+        }
+
+        function handleLogoUploadAdm(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) { alert('Ukuran gambar maksimal 2MB!'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                document.getElementById('tenantLogoUrl').value = dataUrl;
+                const img = document.getElementById('logoPreviewAdm');
+                const ph = document.getElementById('logoPlaceholderAdm');
+                img.src = dataUrl; img.classList.remove('hidden'); ph.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearLogoAdm() {
+            document.getElementById('tenantLogoUrl').value = '';
+            const img = document.getElementById('logoPreviewAdm');
+            const ph = document.getElementById('logoPlaceholderAdm');
+            img.src = ''; img.classList.add('hidden'); ph.classList.remove('hidden');
+        }
+
+        // ============================================================
+        // VALIDASI PASSWORD ADMIN - wajib untuk semua aksi sensitif
+        // ============================================================
+        function validateAdminPass(action = "melakukan aksi ini") {
+            const pin = prompt(`🔐 VALIDASI KEAMANAN OWNER:\nMasukkan Password Admin untuk ${action}:`);
+            if (pin === null) return false;
+            if (pin !== ownerSessionPass) {
+                alert("❌ Akses Ditolak! Password Admin salah.\nAksi dibatalkan.");
+                return false;
+            }
+            return true;
+        }
+
+        // ============================================================
+        // EXPORT CSV - Semua data member user (aktif + arsip)
+        // ============================================================
+        async function exportTenantCSV(userId, namaBisnis) {
+            if (!validateAdminPass(`export data ${namaBisnis}`)) return;
+            if (!confirm(`Export semua data member ${namaBisnis} ke CSV?\nData aktif + arsip + semua status akan ter-export.`)) return;
+            try {
+                // Ambil semua data tanpa filter deleted_flag
+                const members = await sbA("members", "owner_user_id=eq."+userId+"&order=timestamp.asc&limit=10000");
+                const companies = await sbA("companies", "owner_user_id=eq."+userId+"&limit=100");
+                const packages = await sbA("packages", "owner_user_id=eq."+userId+"&limit=500");
+                const resellers = await sbA("resellers", "owner_user_id=eq."+userId+"&limit=500");
+                
+                if (!members || members.length === 0) { alert("Tidak ada data member untuk di-export."); return; }
+                
+                // Build CSV
+                const headers = [
+                    "ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email",
+                    "Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli",
+                    "Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci",
+                    "Tgl_Expired","Status","Last_FU_Date","Owner_User_ID",
+                    "Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code",
+                    "Deleted_Flag","Deleted_Date"
+                ];
+                
+                const rows = members.map(m => [
+                    m.id, m.timestamp||"", m.reseller_id||"", 
+                    (m.nama_member||"").replace(/,/g,";"),
+                    m.no_whatsapp||"", m.email||"",
+                    (m.perusahaan_sumber||"").replace(/,/g,";"),
+                    (m.nama_paket||"").replace(/,/g,";"),
+                    m.jenis_pembeli||"User Langsung",
+                    m.harga_beli_saat_ini||0, m.harga_jual_saat_ini||0, m.profit_terkunci||0,
+                    m.tgl_expired||"", m.status||"Aktif", m.last_fu_date||"",
+                    m.owner_user_id||"",
+                    m.harga_normal||0, m.harga_diskon||0, m.is_diskon||"Tidak",
+                    m.currency_code||"IDR", m.deleted_flag||"", m.deleted_date||""
+                ].map(v => `"${v}"`).join(","));
+                
+                const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                const dateStr = new Date().toISOString().split("T")[0];
+                a.href = url;
+                a.download = `BACKUP_${namaBisnis}_${userId}_${dateStr}_${members.length}rows.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                alert(`✅ Export berhasil!\n📊 ${members.length} member ter-export\n🏢 ${(companies||[]).length} companies\n📦 ${(packages||[]).length} packages\n👥 ${(resellers||[]).length} resellers\n\nFile: BACKUP_${namaBisnis}_${dateStr}.csv`);
+            } catch(e) {
+                alert("❌ Gagal export: " + e.message);
+            }
+        }
+
+        // ============================================================
+        // IMPORT CSV - Recovery dengan smart conflict detection
+        // ============================================================
+        async function importTenantCSV(event, userId, namaBisnis) {
+            const file = event.target.files[0];
+            if (!file) return;
+            event.target.value = "";
+            
+            if (!file.name.endsWith('.csv')) { alert("File harus berformat .csv"); return; }
+            if (!validateAdminPass(`import recovery data ${namaBisnis}`)) return;
+            if (!confirm(`⚠️ RECOVERY MODE\nFile: ${file.name}\nAkun: ${namaBisnis} (${userId})\n\nSistem akan:\n✅ Cek data SAMA (by ID) → tanya Replace/Skip\n✅ Cek data BARU di DB → tanya Pertahankan/Hapus\n\nLanjutkan analisa?`)) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result.replace(/^\uFEFF/, "");
+                    const lines = text.split("\n").filter(l => l.trim());
+                    if (lines.length < 2) { alert("File CSV kosong atau tidak valid."); return; }
+                    
+                    const headerLine = lines[0].split(",").map(h => h.replace(/"/g,"").trim());
+                    const requiredHeaders = ["Nama_Member", "Owner_User_ID"];
+                    const missingHeaders = requiredHeaders.filter(h => !headerLine.includes(h));
+                    if (missingHeaders.length > 0) {
+                        alert("❌ Format CSV tidak sesuai!\nHeader hilang: " + missingHeaders.join(", "));
+                        return;
+                    }
+                    
+                    const parseCSVLine = (line) => {
+                        const result = []; let current = "", inQuotes = false;
+                        for (let i = 0; i < line.length; i++) {
+                            if (line[i] === '"') { inQuotes = !inQuotes; }
+                            else if (line[i] === ',' && !inQuotes) { result.push(current); current = ""; }
+                            else { current += line[i]; }
+                        }
+                        result.push(current);
+                        return result.map(v => v.trim());
+                    };
+                    
+                    // Parse semua baris CSV
+                    const csvRows = [];
+                    for (const line of lines.slice(1)) {
+                        const vals = parseCSVLine(line);
+                        if (vals.length < 5) continue;
+                        const obj = {};
+                        headerLine.forEach((h, idx) => { obj[h] = vals[idx] || ""; });
+                        if (obj["Nama_Member"]) csvRows.push(obj);
+                    }
+                    
+                    if (csvRows.length === 0) { alert("Tidak ada data valid di CSV."); return; }
+                    
+                    // Ambil data existing dari DB
+                    showProgress(`Menganalisa data...`, 0, csvRows.length);
+                    const existing = await sbA("members", "owner_user_id=eq."+userId+"&select=id,nama_member,no_whatsapp,timestamp&limit=10000");
+                    const existingIds = new Set((existing||[]).map(m => String(m.id)));
+                    const csvIds = new Set(csvRows.filter(r => r["ID"]).map(r => r["ID"]));
+                    
+                    // Kategorikan
+                    const sameInCSVandDB = csvRows.filter(r => r["ID"] && existingIds.has(r["ID"])); // ada di CSV dan DB → conflict
+                    const onlyInCSV = csvRows.filter(r => !r["ID"] || !existingIds.has(r["ID"]));    // baru dari CSV
+                    const onlyInDB = (existing||[]).filter(m => !csvIds.has(String(m.id)));           // ada di DB tapi tidak di CSV
+                    
+                    hideProgress();
+                    
+                    // === KONFIRMASI 1: Data SAMA (ada di CSV dan DB) ===
+                    let replaceConflicts = false;
+                    if (sameInCSVandDB.length > 0) {
+                        const ans = confirm(
+                            `🔄 KONFIRMASI DATA SAMA\n\n` +
+                            `Ditemukan ${sameInCSVandDB.length} data yang SAMA\n` +
+                            `(ada di CSV backup DAN sudah ada di database)\n\n` +
+                            `Contoh: ${sameInCSVandDB.slice(0,3).map(r=>r["Nama_Member"]).join(", ")}...\n\n` +
+                            `✅ OK = REPLACE (data DB diganti dengan data dari CSV)\n` +
+                            `❌ Cancel = SKIP (pertahankan data DB yang sudah ada)`
+                        );
+                        replaceConflicts = ans;
+                    }
+                    
+                    // === KONFIRMASI 2: Data BARU di DB (tidak ada di CSV) ===
+                    let deleteExtraDB = false;
+                    if (onlyInDB.length > 0) {
+                        const ans2 = confirm(
+                            `⚠️ KONFIRMASI DATA BARU DI DATABASE\n\n` +
+                            `Ditemukan ${onlyInDB.length} data di database yang TIDAK ADA di CSV backup\n` +
+                            `(kemungkinan input baru setelah backup dibuat)\n\n` +
+                            `Contoh: ${onlyInDB.slice(0,3).map(m=>m.nama_member).join(", ")}...\n\n` +
+                            `✅ OK = HAPUS data baru tsb (full restore ke kondisi backup)\n` +
+                            `❌ Cancel = PERTAHANKAN data baru di database`
+                        );
+                        deleteExtraDB = ans2;
+                    }
+                    
+                    // === EKSEKUSI ===
+                    let imported = 0, replaced = 0, skipped = 0, deleted = 0, errors = 0;
+                    const total = csvRows.length + (deleteExtraDB ? onlyInDB.length : 0);
+                    let processed = 0;
+                    
+                    showProgress("Memproses recovery...", 0, total);
+                    
+                    // Hapus data baru di DB kalau user minta
+                    if (deleteExtraDB && onlyInDB.length > 0) {
+                        for (const m of onlyInDB) {
+                            try {
+                                await sbADel("members", "id=eq."+m.id);
+                                deleted++;
+                            } catch(err) { errors++; }
+                            processed++;
+                            updateProgress(processed, total);
+                        }
+                    }
+                    
+                    // Proses data dari CSV
+                    for (const rowObj of csvRows) {
+                        const csvId = rowObj["ID"];
+                        const isConflict = csvId && existingIds.has(csvId);
+                        
+                        if (isConflict && !replaceConflicts) {
+                            skipped++; processed++; updateProgress(processed, total); continue;
+                        }
+                        
+                        const insertData = {
+                            timestamp: rowObj["Timestamp"] || new Date().toISOString(),
+                            reseller_id: rowObj["Reseller_ID"] || "",
+                            nama_member: rowObj["Nama_Member"] || "",
+                            no_whatsapp: rowObj["No_WhatsApp"] || "",
+                            email: rowObj["Email"] || "",
+                            perusahaan_sumber: rowObj["Perusahaan_Sumber"] || "",
+                            nama_paket: rowObj["Nama_Paket"] || "",
+                            jenis_pembeli: rowObj["Jenis_Pembeli"] || "User Langsung",
+                            harga_beli_saat_ini: parseFloat(rowObj["Harga_Beli_Saat_Ini"]) || 0,
+                            harga_jual_saat_ini: parseFloat(rowObj["Harga_Jual_Saat_Ini"]) || 0,
+                            profit_terkunci: parseFloat(rowObj["Profit_Terkunci"]) || 0,
+                            status: rowObj["Status"] || "Aktif",
+                            owner_user_id: rowObj["Owner_User_ID"] || userId,
+                            harga_normal: parseFloat(rowObj["Harga_Normal"]) || 0,
+                            harga_diskon: parseFloat(rowObj["Harga_Diskon"]) || 0,
+                            is_diskon: rowObj["Is_Diskon"] || "Tidak",
+                            currency_code: rowObj["Currency_Code"] || "IDR",
+                            deleted_flag: rowObj["Deleted_Flag"] || "",
+                        };
+                        if (rowObj["Tgl_Expired"]) insertData.tgl_expired = rowObj["Tgl_Expired"];
+                        if (rowObj["Last_FU_Date"]) insertData.last_fu_date = rowObj["Last_FU_Date"];
+                        if (rowObj["Deleted_Date"]) insertData.deleted_date = rowObj["Deleted_Date"];
+                        
+                        try {
+                            if (isConflict && replaceConflicts) {
+                                // REPLACE: update by ID
+                                await sbAPch("members", "id=eq."+csvId, insertData);
+                                replaced++;
+                            } else {
+                                // INSERT baru
+                                const r = await sbAP("members", insertData);
+                                if (r && !r.code) imported++;
+                                else errors++;
+                            }
+                        } catch(err) { errors++; }
+                        
+                        processed++;
+                        updateProgress(processed, total);
+                    }
+                    
+                    hideProgress();
+                    alert(
+                        `✅ RECOVERY SELESAI!\n\n` +
+                        `✅ Data baru diimport: ${imported}\n` +
+                        `🔄 Data di-replace: ${replaced}\n` +
+                        `⏭️ Data di-skip: ${skipped}\n` +
+                        `🗑️ Data DB dihapus: ${deleted}\n` +
+                        `❌ Error: ${errors}\n\n` +
+                        `Total diproses: ${processed} operasi`
+                    );
+                    await loadTenants();
+                    
+                } catch(err) {
+                    hideProgress();
+                    alert("❌ Gagal import: " + err.message);
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        // Progress helpers
+        function showProgress(msg, current, total) {
+            let el = document.getElementById('importProgress');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'importProgress';
+                el.className = 'fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center';
+                document.body.appendChild(el);
+            }
+            el.innerHTML = `<div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 text-center w-80 space-y-3">
+                <div class="text-green-400 font-bold text-lg">⏳ Memproses...</div>
+                <div id="importProgText" class="text-slate-400 text-sm">${msg}</div>
+                <div class="h-2 bg-slate-800 rounded-full"><div id="importProgBar" class="h-full bg-green-500 rounded-full transition-all" style="width:${total>0?Math.round(current/total*100):0}%"></div></div>
+                <div id="importProgPct" class="text-slate-500 text-xs">${total>0?Math.round(current/total*100):0}%</div>
+            </div>`;
+        }
+        function updateProgress(current, total) {
+            const pct = total > 0 ? Math.round(current/total*100) : 0;
+            const bar = document.getElementById('importProgBar');
+            const txt = document.getElementById('importProgText');
+            const pctEl = document.getElementById('importProgPct');
+            if (bar) bar.style.width = pct + '%';
+            if (txt) txt.innerText = `Memproses ${current}/${total}`;
+            if (pctEl) pctEl.innerText = pct + '%';
+        }
+        function hideProgress() { document.getElementById('importProgress')?.remove(); }
+
+
         async function submitTenantForm() {
             const id = document.getElementById('tenantUserId').value;
             const payload = { action: id ? "editTenant" : "addTenant", userId: id, namaBisnis: document.getElementById('tenantNamaBisnis').value, logoUrl: document.getElementById('tenantLogoUrl').value, username: document.getElementById('tenantUsername').value, password: document.getElementById('tenantPassword').value, tglMulai: document.getElementById('tenantTglMulai').value, tglExpired: document.getElementById('tenantTglExpired').value, statusSaaS: id ? document.getElementById('tenantStatusSaaS').value : "Aktif", baseCurrency: document.getElementById('tenantBaseCurrency') ? document.getElementById('tenantBaseCurrency').value : "IDR", displayCurrency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR", currency: document.getElementById('tenantDisplayCurrency') ? document.getElementById('tenantDisplayCurrency').value : "IDR", language: document.getElementById('tenantLanguage') ? document.getElementById('tenantLanguage').value : "ID" };
-            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const res = await r.json(); alert(res.message); closeTenantModal(); await loadTenants();
+            const r = {ok:true};
+            var _sr2; 
+            if(!payload.userId){
+                var _nId2="USER_"+Date.now();
+                var _ir2=await sbAP("users",{user_id:_nId2,username:payload.username,password:payload.password,role:"User",nama_bisnis:payload.namaBisnis||"",logo_url:payload.logoUrl||"",tgl_mulai_saas:payload.tglMulai?new Date(payload.tglMulai).toISOString():null,tgl_expired_saas:payload.tglExpired?new Date(payload.tglExpired).toISOString():null,status_saas:payload.statusSaaS||"Aktif",currency:payload.currency||"IDR",language:payload.language||"ID",base_currency:payload.baseCurrency||"IDR",display_currency:payload.displayCurrency||"IDR"});
+                _sr2=_ir2&&!_ir2.code?{message:"Tenant ditambahkan! ID: "+_nId2}:{message:"Gagal"};
+            } else {
+                await sbAPch("users","user_id=eq."+payload.userId,{nama_bisnis:payload.namaBisnis,logo_url:payload.logoUrl,username:payload.username,tgl_mulai_saas:payload.tglMulai?new Date(payload.tglMulai).toISOString():null,tgl_expired_saas:payload.tglExpired?new Date(payload.tglExpired).toISOString():null,status_saas:payload.statusSaaS,currency:payload.currency||"IDR",language:payload.language||"ID",base_currency:payload.baseCurrency||"IDR",display_currency:payload.displayCurrency||"IDR"});
+                _sr2={message:"Tenant diupdate!"};
+            }
+            alert(_sr2.message); closeTenantModal(); await loadTenants();
         }
 
-        async function deleteTenant(userId) { 
-            if(confirm("⚠️ PERINGATAN CRITICAL:\nApakah Om yakin ingin menghapus permanent akun pembeli dengan ID: " + userId + "?\nSemua akses login mereka akan langsung terputus!")) {
-                const pin = prompt("🔐 VALIDASI KEAMANAN OWNER:\nMasukkan kembali Password Admin Om untuk menghapus akun permanen:");
-                if (pin === null) { return; } 
-                else if (pin !== ownerSessionPass) { alert("❌ Akses Ditolak: Password Admin yang Om masukkan SALAH! Data aman tidak terhapus."); return; }
-                try {
-                    const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteTenant", userId: userId }) }); 
-                    const res = await r.json(); alert("🗑️ " + res.message); await loadTenants(); 
-                } catch (e) { alert("❌ Gagal terhubung ke cloud database."); }
-            }
+        async function deleteTenant(userId) {
+            if (!confirm("⚠️ PERINGATAN CRITICAL:\nHapus permanent akun ID: " + userId + "?\nSemua akses login mereka akan langsung terputus!")) return;
+            if (!validateAdminPass("menghapus akun permanen")) return;
+            try {
+                await sbAPch("users","user_id=eq."+userId,{status_saas:"Nonaktif"});
+                alert("🗑️ Akun berhasil dinonaktifkan.");
+                await loadTenants();
+            } catch (e) { alert("❌ Gagal terhubung ke cloud database."); }
         }
 
 
         async function resetTenantDataSafe(userId) {
-            if(userId === 'USER01') { alert('Akun pusat MILIOLAB-BASE tidak boleh direset dari tombol ini.'); return; }
+            var _uRole = (tenantsList.find(function(x){return x.userId===userId;})||{}).role||''; if(_uRole==='Owner'||_uRole==='OWNER') { alert('Akun Owner tidak boleh direset!'); return; }
             const t = tenantsList.find(x => x.userId === userId);
             const name = t ? t.namaBisnis : userId;
             if(!confirm(`🟡 SOFT RESET / BACKUP MERAH:
@@ -265,19 +621,15 @@ Semua member, reseller, mitra, dan produk akan diarsipkan, diberi flag backup, s
 Dashboard tenant akan terlihat kosong, tapi histori masih tersimpan untuk audit.
 
 Lanjutkan?`)) return;
-            const pin = prompt('🔐 Masukkan password owner untuk konfirmasi Soft Reset:');
-            if(pin === null) return;
-            if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Soft Reset dibatalkan.'); return; }
+            if (!validateAdminPass('Soft Reset')) return;
             try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'resetTenantSoft', userId: userId }) });
-                const res = await r.json();
-                alert(res.message || 'Soft Reset selesai.');
+                await Promise.all([sbAPch("members","owner_user_id=eq."+userId,{deleted_flag:"SOFT_DELETED",deleted_date:new Date().toISOString()}),sbAPch("packages","owner_user_id=eq."+userId,{deleted_flag:"SOFT_DELETED",deleted_date:new Date().toISOString()}),sbAPch("companies","owner_user_id=eq."+userId,{deleted_flag:"SOFT_DELETED",deleted_date:new Date().toISOString()})]);alert('✅ Soft Reset selesai. Data diarsipkan.');
                 await loadTenants();
             } catch(e) { alert('Gagal koneksi ke database.'); }
         }
 
         async function factoryResetTenantDataSafe(userId) {
-            if(userId === 'USER01') { alert('Akun pusat MILIOLAB-BASE tidak boleh di-factory reset dari tombol ini.'); return; }
+            var _uRole2 = (tenantsList.find(function(x){return x.userId===userId;})||{}).role||''; if(_uRole2==='Owner'||_uRole2==='OWNER') { alert('Akun Owner tidak boleh di-factory reset!'); return; }
             const t = tenantsList.find(x => x.userId === userId);
             const name = t ? t.namaBisnis : userId;
             if(!confirm(`🔴 FACTORY RESET PERMANEN:
@@ -290,15 +642,11 @@ Semua data workspace milik ${name} akan DIHAPUS dari GSheet:
 Akun login tetap ada dan masih bisa masuk seperti app baru kosong.
 
 Lanjutkan?`)) return;
-            const pin = prompt('🔐 Masukkan password owner untuk konfirmasi Factory Reset:');
-            if(pin === null) return;
-            if(pin !== ownerSessionPass) { alert('❌ Password owner salah. Factory Reset dibatalkan.'); return; }
+            if (!validateAdminPass('Factory Reset PERMANEN')) return;
             const ketik = prompt('Ketik HAPUS untuk melanjutkan Factory Reset permanen:');
             if((ketik || '').toUpperCase() !== 'HAPUS') { alert('Factory Reset dibatalkan.'); return; }
             try {
-                const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'factoryResetTenantData', userId: userId }) });
-                const res = await r.json();
-                alert(res.message || 'Factory Reset selesai.');
+                await Promise.all([sbADel("members","owner_user_id=eq."+userId),sbADel("packages","owner_user_id=eq."+userId),sbADel("companies","owner_user_id=eq."+userId),sbADel("resellers","owner_user_id=eq."+userId)]);alert('✅ Factory Reset selesai. Data workspace dihapus.');
                 await loadTenants();
             } catch(e) { alert('Gagal koneksi ke database.'); }
         }
@@ -306,18 +654,12 @@ Lanjutkan?`)) return;
 
         async function repairTenantSystem() {
             if(!confirm('Jalankan repair tenant isolation? Ini akan sinkronkan User_ID dan Owner_User_ID agar data tidak lompat akun.')) return;
-            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "repairTenantSystem" }) });
-            const res = await r.json();
-            alert(res.message || 'Repair selesai');
-            await loadTenants();
+            alert("Di Supabase tidak perlu repair manual."); await loadTenants();
         }
 
         async function cleanupDuplicates() {
             if(!confirm('Bersihkan duplikat company seperti USER-ADMIN dobel di semua tenant?')) return;
-            const r = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "cleanupTenantDuplicates" }) });
-            const res = await r.json();
-            alert(res.message || 'Selesai');
-            await loadTenants();
+            alert("Di Supabase tidak perlu cleanup manual."); await loadTenants();
         }
 
         function handleOwnerLogout() { localStorage.removeItem('milio_owner_user'); localStorage.removeItem('milio_owner_pass'); location.reload(); }
