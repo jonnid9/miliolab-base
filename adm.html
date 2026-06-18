@@ -342,7 +342,8 @@
                     "Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci",
                     "Tgl_Expired","Status","Last_FU_Date","Owner_User_ID",
                     "Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code",
-                    "Deleted_Flag","Deleted_Date"
+                    "Deleted_Flag","Deleted_Date",
+                    "Tag_Color","Tag_Label","Tag_Opacity"
                 ];
                 
                 const rows = members.map(m => [
@@ -356,7 +357,8 @@
                     m.tgl_expired||"", m.status||"Aktif", m.last_fu_date||"",
                     m.owner_user_id||"",
                     m.harga_normal||0, m.harga_diskon||0, m.is_diskon||"Tidak",
-                    m.currency_code||"IDR", m.deleted_flag||"", m.deleted_date||""
+                    m.currency_code||"IDR", m.deleted_flag||"", m.deleted_date||"",
+                    m.tag_color||"", m.tag_label||"", m.tag_opacity||1
                 ].map(v => `"${v}"`).join(","));
                 
                 const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
@@ -517,6 +519,10 @@
                         if (rowObj["Tgl_Expired"]) insertData.tgl_expired = rowObj["Tgl_Expired"];
                         if (rowObj["Last_FU_Date"]) insertData.last_fu_date = rowObj["Last_FU_Date"];
                         if (rowObj["Deleted_Date"]) insertData.deleted_date = rowObj["Deleted_Date"];
+                        // Tag fields - terangkut saat recovery
+                        if (rowObj["Tag_Color"] !== undefined) insertData.tag_color = rowObj["Tag_Color"]||"";
+                        if (rowObj["Tag_Label"] !== undefined) insertData.tag_label = rowObj["Tag_Label"]||"";
+                        if (rowObj["Tag_Opacity"] !== undefined) insertData.tag_opacity = parseFloat(rowObj["Tag_Opacity"])||1.0;
                         
                         try {
                             if (isConflict && replaceConflicts) {
