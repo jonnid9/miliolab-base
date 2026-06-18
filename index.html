@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- PROFIT INIT STYLE: harus setelah Tailwind agar tidak di-override -->
     <style id="profitInitStyle">
-        #cardProfit { filter: blur(8px) !important; user-select: none !important; pointer-events: none !important; transition: filter 0.3s; }
+        #cardProfit { filter: blur(8px) !important; user-select: none !important; transition: filter 0.3s; }
         span.profit-value { display: none !important; }
         span.profit-hidden { display: inline !important; }
     </style>
@@ -523,7 +523,7 @@
             if (_pv !== 'show') {
                 // Blur card profit
                 var cp = document.getElementById('cardProfit');
-                if (cp) { cp.style.setProperty('filter','blur(8px)','important'); cp.style.setProperty('user-select','none','important'); cp.style.setProperty('pointer-events','none','important'); }
+                if (cp) { cp.style.setProperty('filter','blur(8px)','important'); cp.style.setProperty('user-select','none','important'); }
                 // Hide profit values via inline style (paling kuat, tidak bisa di-override CSS)
                 var pvs = document.querySelectorAll('span.profit-value, .profit-value');
                 pvs.forEach(function(el){ el.style.setProperty('display','none','important'); });
@@ -4741,9 +4741,13 @@ td:last-child{font-weight:bold;}
 
             // Card profit: blur atau normal
             if (cardProfit) {
-                cardProfit.style.filter = _profitVisible ? '' : 'blur(8px)';
-                cardProfit.style.userSelect = _profitVisible ? '' : 'none';
-                cardProfit.style.pointerEvents = _profitVisible ? '' : 'none';
+                if (_profitVisible) {
+                    cardProfit.style.setProperty('filter', 'none', 'important');
+                    cardProfit.style.setProperty('user-select', 'auto', 'important');
+                } else {
+                    cardProfit.style.setProperty('filter', 'blur(8px)', 'important');
+                    cardProfit.style.setProperty('user-select', 'none', 'important');
+                }
             }
         }
 
