@@ -545,6 +545,28 @@
 </head>
 <body class="text-slate-200 min-h-screen" onload="_profitBootInit()">
 
+    <!-- MAINTENANCE GUARD - muncul seketika saat page load sebelum apapun -->
+    <div id="maintenanceOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0a0a0a;align-items:center;justify-content:center;padding:24px">
+        <div style="max-width:480px;width:100%;text-align:center">
+            <div style="font-size:64px;margin-bottom:16px">🔧</div>
+            <div style="display:inline-block;background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 16px;border-radius:999px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">MAINTENANCE</div>
+            <div id="maintImgWrap"></div>
+            <h1 id="maintTitle" style="color:#fff;font-size:24px;font-weight:900;margin-bottom:12px">Sedang Maintenance</h1>
+            <p id="maintMsg" style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:4px">Sistem sedang dalam pemeliharaan. Mohon tunggu sebentar.</p>
+            <div id="maintCountdownWrap"></div>
+            <div id="maintBtnWrap"></div>
+            <p style="color:#475569;font-size:11px;margin-top:24px">Silakan hubungi admin jika butuh bantuan segera.</p>
+        </div>
+    </div>
+
+    <!-- PAGE LOADING GUARD - cegah flash konten sebelum maintenance dicek -->
+    <div id="pageLoadGuard" style="position:fixed;inset:0;z-index:99998;background:#0a0a0a;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center">
+            <div style="font-size:32px;margin-bottom:12px">⚙️</div>
+            <p style="color:#475569;font-size:12px">Memuat...</p>
+        </div>
+    </div>
+
     <div id="globalLoader" class="hidden fixed inset-0 bg-slate-950/80 z-[9999] flex flex-col items-center justify-center backdrop-blur-sm transition-all">
         <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-500 mb-3"></div>
         <div class="text-green-400 font-bold tracking-widest text-sm animate-pulse">MEMUAT DATA...</div>
@@ -1913,7 +1935,7 @@
                 </div>
                 
                 <nav id="mobileNavContainer" class="hidden md:block space-y-1 mt-3 md:mt-0 transition-all duration-300">
-                    <button id="menu-dashboard" onclick="switchTab('dashboard')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-house"></i> Monitor Pelanggan</button>
+                    <button id="menu-dashboard" onclick="activeFilterCompany='ALL';if(document.getElementById('filterLabel'))document.getElementById('filterLabel').innerText=(dictionary[clientLanguage]||dictionary.ID).lblSemua||'Semua';document.querySelectorAll('#sideMenu button,#sideMenuMobile button').forEach(function(b){b.classList.remove('text-green-400','font-bold')});switchTab('dashboard')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-house"></i> <span id="menuMonitorLabel">Monitor Pelanggan</span></button>
                     <button id="menu-finance" onclick="switchTab('finance')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-wallet text-emerald-400"></i> Keuangan & Analytics</button>
                     <button id="menu-input" onclick="openFormInputBaru()" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-user-plus text-blue-400"></i> Input Member Baru</button>
                     <button id="menu-import" onclick="switchTab('import')" class="sidebar-btn w-full text-left p-2.5 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white flex items-center gap-3 text-xs md:text-sm"><i class="fa-solid fa-file-excel text-green-500"></i> Import Member Bulk</button>
@@ -3674,7 +3696,13 @@ ${exportData.map(m => {
                 const tTimestamp = parseJsonDate(m.timestamp);
                 const tExpired = parseJsonDate(m.tglExpired);
                 const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
-                totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency); 
+                totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
+
+                // Hitung expired: status bukan Aktif ATAU tanggal sudah lewat
+                const _isReallyExpired = (m.status !== 'Aktif') || (diffDays < 0);
+                const _isReallyAktif = (m.status === 'Aktif') && (diffDays >= 0);
+                if (_isReallyExpired) expiredCount++;
+                if (_isReallyAktif) activeCount++;
                 
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
                 
@@ -3715,7 +3743,7 @@ ${exportData.map(m => {
                     btnAction = `<div class="w-[76px]"></div>`; 
                 } else {
                     if(diffDays < 0) {
-                        expiredCount++;
+                        // expiredCount sudah dihitung di atas
                         const batasMaxHangus = Math.abs(diffDays) <= 15;
                         textSisa = `<span class="text-red-500 font-bold">${lang.statusExpired}</span>`; rowStyle = "bg-red-950/20";
                         
@@ -3729,7 +3757,7 @@ ${exportData.map(m => {
                             btnAction = `<span class="text-xs text-slate-600 italic block text-center">${lang.statusHangus}</span>`;
                         }
                     } else {
-                        activeCount++;
+                        // activeCount sudah dihitung di atas
                         if(diffDays <= 3) {
                             var _hPrefix={ID:"H-",EN:"D-",ZH:"剩",JA:"残",KO:"D-",AR:"ي-",TH:"ว-",VI:"N-",HI:"D-",MS:"H-",ES:"D-",FR:"J-",PT:"D-",DE:"T-",TR:"G-",FIL:"D-"};
                             var _hSuffix={ID:" ⚠️",EN:" ⚠️",ZH:"天 ⚠️",JA:"日 ⚠️",KO:"일 ⚠️",AR:" ⚠️",TH:"ว ⚠️",VI:"N ⚠️",HI:" ⚠️",MS:" ⚠️",ES:" ⚠️",FR:" ⚠️",PT:" ⚠️",DE:" ⚠️",TR:" ⚠️",FIL:" ⚠️"};
@@ -5551,23 +5579,83 @@ td:last-child{font-weight:bold;}
             initMilioTheme();
             initTheme(); // Apply tema tersimpan
             updateMilioSoundButton();
-            // Apply profit state dari localStorage
-            // CSS sudah hide by default, JS hanya perlu show jika user pernah buka
             applyProfitVisibility();
             initMilioShortcuts();
             setTimeout(loadMilioMembersCache, 900);
             setTimeout(renderMilioFinanceChart, 1400);
+            // CEK MAINTENANCE LANGSUNG SAAT PAGE LOAD - sebelum user bisa interaksi apapun
+            checkAndShowAnnouncement();
+            // Lanjut cek setiap 60 detik (auto-lock jika admin aktifkan saat user sedang pakai app)
+            setInterval(checkAndShowAnnouncement, 60000);
 
         // ANNOUNCEMENT SYSTEM
         var _annCountdownTimer = null;
         async function checkAndShowAnnouncement() {
             try {
                 var rows = await sbG('app_announcements','is_active=eq.true&select=*&limit=1');
-                if (!Array.isArray(rows)||rows.length===0) return;
-                var ann=rows[0], sk='ann_'+ann.id+'_'+(ann.updated_at||'');
-                if (ann.type!=='maintenance'&&sessionStorage.getItem(sk)) return;
-                showAnnouncementPopup(ann,sk);
+                if (!Array.isArray(rows)||rows.length===0) {
+                    // Pastikan overlay maintenance dilepas jika tidak ada yang aktif
+                    releaseMaintenance();
+                    return;
+                }
+                var ann=rows[0];
+                if (ann.type==='maintenance') {
+                    // KUNCI seluruh app - sembunyikan mainApp, tampilkan maintenance overlay
+                    lockForMaintenance(ann);
+                } else {
+                    releaseMaintenance();
+                    var sk='ann_'+ann.id+'_'+(ann.updated_at||'');
+                    if (sessionStorage.getItem(sk)) return;
+                    showAnnouncementPopup(ann,sk);
+                }
             } catch(e) { console.log('Ann:',e); }
+        }
+
+        function lockForMaintenance(ann) {
+            // Sembunyikan mainApp dan loginPage
+            var mainApp = document.getElementById('mainApp');
+            var loginPage = document.getElementById('loginPage');
+            if (mainApp) mainApp.style.display = 'none';
+            if (loginPage) loginPage.style.display = 'none';
+            // Tampilkan maintenance overlay fullscreen
+            var overlay = document.getElementById('maintenanceOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'maintenanceOverlay';
+                overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0a0a0a;display:flex;align-items:center;justify-content:center;padding:24px';
+                document.body.appendChild(overlay);
+            }
+            // Build maintenance UI
+            var cdHtml = '';
+            if (ann.countdown_enabled && ann.countdown_end) {
+                cdHtml = '<div style="background:rgba(127,29,29,0.4);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:20px;margin:20px 0;text-align:center"><p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">⏱ Estimasi Selesai</p><div id="maintCountdown" style="color:#fff;font-size:36px;font-family:monospace;font-weight:900;letter-spacing:6px">--:--:--</div></div>';
+            }
+            var imgHtml = ann.image_url ? '<img src="'+ann.image_url+'" style="max-width:280px;border-radius:16px;margin:16px auto;display:block" onerror="this.hidden=true">' : '';
+            overlay.innerHTML = '<div style="max-width:480px;width:100%;text-align:center"><div style="font-size:64px;margin-bottom:16px">🔧</div><div style="display:inline-block;background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 16px;border-radius:999px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">MAINTENANCE</div>'+imgHtml+'<h1 style="color:#fff;font-size:24px;font-weight:900;margin-bottom:12px">'+(ann.title||'Sedang Maintenance')+'</h1><p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:4px">'+(ann.message||'Sistem sedang dalam pemeliharaan. Mohon tunggu sebentar.').split(String.fromCharCode(10)).join('<br>')+'</p>'+cdHtml+'<p style="color:#475569;font-size:11px;margin-top:20px">Silakan hubungi admin jika butuh bantuan segera.</p></div>';
+            overlay.style.display = 'flex';
+            // Start countdown
+            if (ann.countdown_enabled && ann.countdown_end) {
+                if (window._maintTimer) clearInterval(window._maintTimer);
+                var cd = ann.countdown_end;
+                window._maintTimer = setInterval(function() {
+                    var df = new Date(cd) - new Date();
+                    var el = document.getElementById('maintCountdown');
+                    if (!el) { clearInterval(window._maintTimer); return; }
+                    if (df <= 0) { el.innerText = 'Segera Selesai ✅'; clearInterval(window._maintTimer); return; }
+                    var hh=Math.floor(df/3600000), mm=Math.floor((df%3600000)/60000), ss=Math.floor((df%60000)/1000);
+                    el.innerText = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+                }, 1000);
+            }
+        }
+
+        function releaseMaintenance() {
+            // Sembunyikan overlay maintenance (jangan di-remove, biarkan di DOM)
+            var overlay = document.getElementById('maintenanceOverlay');
+            if (overlay) overlay.style.display = 'none';
+            // Lepas page load guard
+            var guard = document.getElementById('pageLoadGuard');
+            if (guard) guard.style.display = 'none';
+            if (window._maintTimer) { clearInterval(window._maintTimer); window._maintTimer = null; }
         }
         function showAnnouncementPopup(ann,sk) {
             var popup=document.getElementById('announcementPopup'),box=document.getElementById('announcementPopupBox'),cel=document.getElementById('annPopupContent'),cbtn=document.getElementById('annPopupCloseBtn');
