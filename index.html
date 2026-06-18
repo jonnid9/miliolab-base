@@ -315,185 +315,38 @@
 
         /* ============================================================
            UNIVERSAL LIGHT MODE - berlaku untuk SEMUA tema light
-           Override warna hardcode yang tidak adaptif tema
            ============================================================ */
-        body.milio-light-mode,
-        body.theme-7,
-        body.theme-10 {
-            color: #0f172a !important;
-        }
-
-        /* Tabel header - selalu gelap agar tulisan terlihat */
         body.milio-light-mode table thead tr,
         body.theme-7 table thead tr,
         body.theme-10 table thead tr { background: #1e293b !important; }
         body.milio-light-mode table thead tr th,
         body.theme-7 table thead tr th,
         body.theme-10 table thead tr th { color: #f1f5f9 !important; }
-        /* Spesifik untuk memberTableHead agar override Tailwind bg-slate-950/40 */
         body.milio-light-mode #memberTableHead,
         body.theme-7 #memberTableHead,
         body.theme-10 #memberTableHead { background: #1e293b !important; }
         body.milio-light-mode #memberTableHead th,
         body.theme-7 #memberTableHead th,
         body.theme-10 #memberTableHead th { color: #f1f5f9 !important; background: transparent !important; }
-        /* Override bg-slate-950/40 di thead */
-        body.milio-light-mode thead .bg-slate-950\/40,
-        body.milio-light-mode thead .bg-slate-950\/80,
-        body.theme-7 thead .bg-slate-950\/40,
-        body.theme-7 thead .bg-slate-950\/80,
-        body.theme-10 thead .bg-slate-950\/40,
-        body.theme-10 thead .bg-slate-950\/80 { background: #1e293b !important; color: #f1f5f9 !important; }
-        /* Khusus memberTableHead yang pakai bg-slate-950/40 */
-        body.milio-light-mode #memberTableHead,
-        body.theme-7 #memberTableHead,
-        body.theme-10 #memberTableHead { background: #1e293b !important; }
-        body.milio-light-mode #memberTableHead th,
-        body.theme-7 #memberTableHead th,
-        body.theme-10 #memberTableHead th { color: #f1f5f9 !important; }
-        /* Semua thead di semua tabel */
-        body.milio-light-mode thead, body.milio-light-mode thead tr, body.milio-light-mode thead th,
-        body.theme-7 thead, body.theme-7 thead tr, body.theme-7 thead th,
-        body.theme-10 thead, body.theme-10 thead tr, body.theme-10 thead th { background: #1e293b !important; color: #f1f5f9 !important; }
-
-        /* Tabel body - putih dengan teks gelap */
         body.milio-light-mode table tbody tr td,
         body.theme-7 table tbody tr td,
         body.theme-10 table tbody tr td { color: #1e293b !important; }
-
-        /* Teks umum yang hardcode slate gelap */
-        body.milio-light-mode .text-slate-200,
-        body.milio-light-mode .text-slate-300,
-        body.theme-7 .text-slate-200,
-        body.theme-7 .text-slate-300,
-        body.theme-10 .text-slate-200,
-        body.theme-10 .text-slate-300 { color: #1e293b !important; }
-
-        body.milio-light-mode .text-slate-400,
-        body.milio-light-mode .text-slate-500,
-        body.theme-7 .text-slate-400,
-        body.theme-7 .text-slate-500,
-        body.theme-10 .text-slate-400,
-        body.theme-10 .text-slate-500 { color: #475569 !important; }
-
-        /* Background card/panel */
-        body.milio-light-mode .bg-slate-900\/50,
-        body.milio-light-mode .bg-slate-900\/40,
-        body.milio-light-mode .bg-slate-950\/10,
-        body.theme-7 .bg-slate-900\/50,
-        body.theme-7 .bg-slate-900\/40,
-        body.theme-10 .bg-slate-900\/50,
-        body.theme-10 .bg-slate-900\/40 { background: #f8fafc !important; }
-
-        /* Monitor Data Pelanggan title */
-        body.milio-light-mode .text-slate-100,
-        body.theme-7 .text-slate-100,
-        body.theme-10 .text-slate-100 { color: #0f172a !important; }
-
-        /* Input & select di light mode */
-        body.milio-light-mode input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
-        body.milio-light-mode select,
-        body.milio-light-mode textarea,
-        body.theme-7 input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
-        body.theme-7 select,
-        body.theme-7 textarea,
-        body.theme-10 input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
-        body.theme-10 select,
-        body.theme-10 textarea { color: #0f172a !important; }
-
-        /* Tombol filter (Semua, Hari Ini, dll) */
-        body.milio-light-mode .bg-slate-900.border.border-slate-800,
-        body.theme-7 .bg-slate-900.border.border-slate-800 {
-            background: #f1f5f9 !important;
-            color: #0f172a !important;
-        }
-
-        /* Bulk toolbar */
-        body.milio-light-mode #bulkActionBar,
-        body.theme-7 #bulkActionBar,
-        body.theme-10 #bulkActionBar {
-            background: #f1f5f9 !important;
-            border-color: #22c55e !important;
-        }
-        body.milio-light-mode #bulkActionBar *:not(button):not(i),
-        body.theme-7 #bulkActionBar *:not(button):not(i),
-        body.theme-10 #bulkActionBar *:not(button):not(i) { color: #1e293b !important; }
-
-        /* Sidebar aktif tetap gelap di light mode */
-        body.milio-light-mode #sidebar,
-        body.theme-7 #sidebar,
-        body.theme-10 #sidebar { color: #e2e8f0 !important; }
-        body.milio-light-mode #sidebar *,
-        body.theme-7 #sidebar *,
-        body.theme-10 #sidebar * { color: #e2e8f0 !important; }
-
-        /* Quick view modal */
-        body.milio-light-mode #quickViewModal .bg-slate-900,
-        body.theme-7 #quickViewModal .bg-slate-900,
-        body.theme-10 #quickViewModal .bg-slate-900 { background: #ffffff !important; color: #0f172a !important; }
-
-        /* Edit & Renew modal */
-        body.milio-light-mode #editFormModal,
-        body.milio-light-mode #renewFormModalModal,
-        body.theme-7 #editFormModal,
-        body.theme-7 #renewFormModalModal,
-        body.theme-10 #editFormModal,
-        body.theme-10 #renewFormModalModal { background: rgba(15,23,42,0.7) !important; }
-
-        body.milio-light-mode #editFormModal > div,
-        body.milio-light-mode #renewFormModalModal > div > div,
-        body.theme-7 #editFormModal > div,
-        body.theme-7 #renewFormModalModal > div > div,
-        body.theme-10 #editFormModal > div,
-        body.theme-10 #renewFormModalModal > div > div {
-            background: #ffffff !important;
-            color: #0f172a !important;
-        }
-        body.milio-light-mode #editFormModal label,
-        body.milio-light-mode #editFormModal p,
-        body.milio-light-mode #renewFormModalModal label,
-        body.theme-7 #editFormModal label,
-        body.theme-10 #editFormModal label { color: #475569 !important; }
-
-        /* Finance chart area */
-        body.milio-light-mode #tab-finance,
-        body.theme-7 #tab-finance,
-        body.theme-10 #tab-finance { color: #0f172a !important; }
-
-        /* Settings panel */
-        body.milio-light-mode #tab-settings,
-        body.theme-7 #tab-settings,
-        body.theme-10 #tab-settings { color: #0f172a !important; }
-        body.milio-light-mode #tab-settings .text-slate-400,
-        body.theme-7 #tab-settings .text-slate-400,
-        body.theme-10 #tab-settings .text-slate-400 { color: #475569 !important; }
-
-        /* Semua h1-h6 dan label */
+        body.milio-light-mode .text-slate-200, body.milio-light-mode .text-slate-300,
+        body.theme-7 .text-slate-200, body.theme-7 .text-slate-300,
+        body.theme-10 .text-slate-200, body.theme-10 .text-slate-300 { color: #1e293b !important; }
+        body.milio-light-mode .text-slate-400, body.milio-light-mode .text-slate-500,
+        body.theme-7 .text-slate-400, body.theme-7 .text-slate-500,
+        body.theme-10 .text-slate-400, body.theme-10 .text-slate-500 { color: #475569 !important; }
         body.milio-light-mode h1, body.milio-light-mode h2, body.milio-light-mode h3,
         body.milio-light-mode h4, body.milio-light-mode label, body.milio-light-mode p,
-        body.theme-7 h1, body.theme-7 h2, body.theme-7 h3,
-        body.theme-7 h4, body.theme-7 label, body.theme-7 p,
-        body.theme-10 h1, body.theme-10 h2, body.theme-10 h3,
-        body.theme-10 h4, body.theme-10 label, body.theme-10 p { color: #1e293b !important; }
-
-        /* Warna khusus yang perlu tetap berwarna */
-        body.milio-light-mode .text-red-400, body.theme-7 .text-red-400, body.theme-10 .text-red-400 { color: #dc2626 !important; }
-        body.milio-light-mode .text-red-300, body.theme-7 .text-red-300, body.theme-10 .text-red-300 { color: #ef4444 !important; }
-        body.milio-light-mode .text-indigo-300, body.theme-7 .text-indigo-300, body.theme-10 .text-indigo-300 { color: #4f46e5 !important; }
-        body.milio-light-mode .text-yellow-400, body.theme-7 .text-yellow-400, body.theme-10 .text-yellow-400 { color: #d97706 !important; }
-        body.milio-light-mode .text-blue-400, body.theme-7 .text-blue-400, body.theme-10 .text-blue-400 { color: #2563eb !important; }
-
-        /* Member tag label di light mode */
-        body.milio-light-mode .member-tag-label,
-        body.theme-7 .member-tag-label,
+        body.theme-7 h1, body.theme-7 h2, body.theme-7 h3, body.theme-7 h4,
+        body.theme-7 label, body.theme-7 p,
+        body.theme-10 h1, body.theme-10 h2, body.theme-10 h3, body.theme-10 h4,
+        body.theme-10 label, body.theme-10 p { color: #1e293b !important; }
+        body.milio-light-mode .member-tag-label, body.theme-7 .member-tag-label,
         body.theme-10 .member-tag-label { color: #14532e !important; }
-
-        /* Profit blur di light mode tetap bekerja */
-        body.milio-light-mode #cardProfit,
-        body.theme-7 #cardProfit,
-        body.theme-10 #cardProfit { color: #15803d !important; }
-
-        /* ============================================================ */
+        body.milio-light-mode #bulkActionBar, body.theme-7 #bulkActionBar,
+        body.theme-10 #bulkActionBar { background: #f1f5f9 !important; }
 
         /* Font per bahasa - exclude i tag agar FontAwesome tidak rusak */
         body.lang-ZH, body.lang-ZH *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans SC', 'Urbanist', sans-serif !important; }
@@ -738,34 +591,25 @@
         let milioFinanceChartInstance = null;
         let memberDisplayLimit = 10;
         let followUpOnlyMode = false;
-        let _activeCardFilter = 'all'; // 'all', 'aktif', 'expired', 'followup'
+        let _activeCardFilter = 'all';
 
         function filterByCardClick(type) {
-            // Toggle: klik card yang sama = reset ke all
             if (_activeCardFilter === type) type = 'all';
             _activeCardFilter = type;
-
-            // Reset outline semua card
             ['cardWrapTotal','cardWrapAktif','cardWrapExpired','cardWrapFollow'].forEach(function(id) {
                 const el = document.getElementById(id);
                 if (el) { el.style.outline = ''; el.style.boxShadow = ''; }
             });
-
-            // Highlight card yang aktif
-            const colorMap = { all:'#60a5fa', aktif:'#4ade80', expired:'#fb923c', followup:'#f87171' };
-            const idMap = { all:'cardWrapTotal', aktif:'cardWrapAktif', expired:'cardWrapExpired', followup:'cardWrapFollow' };
+            const colorMap = {aktif:'#4ade80', expired:'#fb923c', followup:'#f87171'};
+            const idMap = {aktif:'cardWrapAktif', expired:'cardWrapExpired', followup:'cardWrapFollow', all:'cardWrapTotal'};
             if (type !== 'all') {
                 const el = document.getElementById(idMap[type]);
                 if (el) {
-                    el.style.outline = '2px solid ' + colorMap[type];
-                    el.style.boxShadow = '0 0 12px ' + colorMap[type] + '40';
+                    el.style.outline = '2px solid ' + (colorMap[type]||'#60a5fa');
+                    el.style.boxShadow = '0 0 12px ' + (colorMap[type]||'#60a5fa') + '40';
                 }
             }
-
-            // Sinkronkan followUpOnlyMode
             followUpOnlyMode = (type === 'followup');
-
-            // Re-render dengan filter card aktif
             filterDashboard(currentDashboardFilterMode || 'all');
         }
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
@@ -1128,7 +972,7 @@
         dictionary.ID.txtMenampilkan="Menampilkan maksimal {N} data";
         dictionary.ID.txtMenampilkanSemua="Menampilkan semua data"; dictionary.ID.txtModeFU="Mode Pusat Follow Up aktif";
         dictionary.ID.btnLogin="MASUK KE DASHBOARD"; dictionary.ID.lblUsernamePh="Username kamu"; dictionary.ID.lblOldPassPh="Password lama"; dictionary.ID.lblNewPassPh="Password baru"; dictionary.ID.lblConfirmPassPh="Konfirmasi password baru"; dictionary.ID.lblContactAdminDesc="Masukkan username kamu agar admin bisa memverifikasi akunmu."; dictionary.ID.lblContactAdminPh="Masukkan username kamu..."; dictionary.ID.phEmail="Email / Kode Akses";
-        dictionary.ID.tagColLabel="TAG"; dictionary.ID.tagWarna="Warna Block:"; dictionary.ID.tagOpacity="Opacity:"; dictionary.ID.tagLabel="Label:"; dictionary.ID.tagTerapkan="Terapkan"; dictionary.ID.tagHapusWarna="Hapus Warna"; dictionary.ID.tagHapusLabel="Hapus Label"; dictionary.ID.tagBatal="Batal"; dictionary.ID.tagPlaceholder="Tulis label... (contoh: Member Lama, VIP, Pending)"; dictionary.ID.tagHint="* Klik Terapkan → masukkan password untuk konfirmasi."; dictionary.ID.tagDipilih="dipilih"; dictionary.ID.tagHapusMember="Hapus Member"; dictionary.ID.tagHapusMemberConfirm="Arsipkan {N} member yang dipilih?\nData tidak akan hilang permanen, hanya diarsipkan.\n\nLanjutkan?"; dictionary.ID.lblThemeTitle="Tema Aplikasi"; dictionary.ID.lblThemeDesc="Pilih tema visual dan font. Preview langsung tanpa reload!"; dictionary.ID.lblThemeNote="✨ Tersimpan otomatis. Klik 🌙 ☀️ per kartu untuk ganti mode."; dictionary.ID.lblThemeReset="Reset Default"; dictionary.ID.lblBackupTitle="Backup & Recovery Data"; dictionary.ID.lblBackupDesc="Export semua data kamu ke CSV untuk backup."; dictionary.ID.lblExportAll="Export Semua Data CSV"; dictionary.ID.lblImportRecovery="Import / Recovery CSV"; dictionary.ID.lblBackupNote="⚠️ Import akan mendeteksi data sama & data baru, lalu meminta konfirmasi.";
+        dictionary.ID.tagColLabel="TAG"; dictionary.ID.tagWarna="Warna Block:"; dictionary.ID.tagOpacity="Opacity:"; dictionary.ID.tagLabel="Label:"; dictionary.ID.tagTerapkan="Terapkan"; dictionary.ID.tagHapusWarna="Hapus Warna"; dictionary.ID.tagHapusLabel="Hapus Label"; dictionary.ID.tagBatal="Batal"; dictionary.ID.tagPlaceholder="Tulis label... (contoh: Member Lama, VIP, Pending)"; dictionary.ID.tagHint="* Klik Terapkan → masukkan password untuk konfirmasi."; dictionary.ID.tagDipilih="dipilih"; dictionary.ID.lblThemeTitle="Tema Aplikasi"; dictionary.ID.lblThemeDesc="Pilih tema visual dan font. Preview langsung tanpa reload!"; dictionary.ID.lblThemeNote="✨ Tersimpan otomatis. Klik 🌙 ☀️ per kartu untuk ganti mode."; dictionary.ID.lblThemeReset="Reset Default"; dictionary.ID.lblBackupTitle="Backup & Recovery Data"; dictionary.ID.lblBackupDesc="Export semua data kamu ke CSV untuk backup."; dictionary.ID.lblExportAll="Export Semua Data CSV"; dictionary.ID.lblImportRecovery="Import / Recovery CSV"; dictionary.ID.lblBackupNote="⚠️ Import akan mendeteksi data sama & data baru, lalu meminta konfirmasi.";
         dictionary.ID.lblDbReseller="Database Reseller"; dictionary.ID.phResellerNama="Nama Reseller";
         dictionary.ID.phResellerWa="Nomor WA"; dictionary.ID.btnSimpanReseller="SIMPAN";
         dictionary.ID.btnRefreshReseller="REFRESH"; dictionary.ID.btnHapusReseller="Arsipkan";
@@ -1153,9 +997,9 @@
         dictionary.EN.txtMenampilkan="Showing max {N} data";
         dictionary.EN.txtMenampilkanSemua="Showing all data"; dictionary.EN.txtModeFU="Follow Up Center mode active";
         dictionary.EN.btnLogin="LOGIN TO DASHBOARD"; dictionary.EN.lblUsernamePh="Your username"; dictionary.EN.lblOldPassPh="Old password"; dictionary.EN.lblNewPassPh="New password"; dictionary.EN.lblConfirmPassPh="Confirm new password"; dictionary.EN.lblContactAdminDesc="Enter your username so the admin can verify your account."; dictionary.EN.lblContactAdminPh="Enter your username..."; dictionary.EN.phEmail="Email / Access Code";
-        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.tagHapusMember="Delete Members"; dictionary.EN.tagHapusMemberConfirm="Archive {N} selected members?\nData will not be permanently deleted, only archived.\n\nContinue?"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="Auto-saved. Click moon/sun per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="Import will detect duplicate & new data, then ask for confirmation.";
+        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="Auto-saved. Click moon/sun per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="Import will detect duplicate & new data, then ask for confirmation.";
         dictionary.EN.btnLogin="LOGIN TO DASHBOARD"; dictionary.EN.lblUsernamePh="Your username"; dictionary.EN.lblOldPassPh="Old password"; dictionary.EN.lblNewPassPh="New password"; dictionary.EN.lblConfirmPassPh="Confirm new password"; dictionary.EN.lblContactAdminDesc="Enter your username so the admin can verify your account."; dictionary.EN.lblContactAdminPh="Enter your username..."; dictionary.EN.phEmail="Email / Access Code";
-        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.tagHapusMember="Delete Members"; dictionary.EN.tagHapusMemberConfirm="Archive {N} selected members?\nData will not be permanently deleted, only archived.\n\nContinue?"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="✨ Auto-saved. Click 🌙 ☀️ per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="⚠️ Import will detect duplicate & new data, then ask for confirmation.";
+        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="✨ Auto-saved. Click 🌙 ☀️ per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="⚠️ Import will detect duplicate & new data, then ask for confirmation.";
         dictionary.EN.lblDbReseller="Reseller Database"; dictionary.EN.phResellerNama="Reseller Name";
         dictionary.EN.phResellerWa="WA Number"; dictionary.EN.btnSimpanReseller="SAVE";
         dictionary.EN.btnRefreshReseller="REFRESH"; dictionary.EN.btnHapusReseller="Archive";
@@ -1306,7 +1150,7 @@
             bcLockBtn:"ロックしてターゲットを選択 🔒", bcUnlockBtn:"ロック解除してメッセージを編集 🔓",
             bcTargetLabel:"製品バリアント別ターゲットセグメントを選択：",
             bcGlobalOption:"全メンバー（グローバルブロードキャスト）", bcSendBtn:"WA送信 📲",impTemplateTitle:"📥 テンプレートをダウンロード",impTemplateDesc:"CSV/Excelテンプレートをダウンロードし、会員データを入力してアップロードしてください。",impTplBtnCsv:"⬇️ CSVテンプレートをダウンロード",impTplBtnExcel:"⬇️ Excelテンプレートをダウンロード",impColRequired:"必須",impColOptional:"任意",impColVendor:"ベンダー名",impColPackage:"パッケージ名",impColNumberOnly:"数字のみ",impColDateFmt:"dd/mm/yyyy",impColJenis:"直接ユーザー / リセラー",impColWa:"628xxx",impHeaderWarning:"⚠️ 最初の行が上記のヘッダーと完全に一致することを確認してください。データは2行目から始まります。",
-            phEmail:"电子邮件 / 访问码", btnLogin:"登录", lblUsernamePh:"用户名", lblOldPassPh:"旧密码", lblNewPassPh:"新密码", lblConfirmPassPh:"确认新密码", lblContactAdminDesc:"请输入您的用户名，以便管理员验证您的账户。", lblContactAdminPh:"输入用户名...", tagHapusMember:"删除成员", tagHapusMemberConfirm:"归档 {N} 个所选成员？\n数据不会永久删除，仅归档。\n\n继续？", tagColLabel:"标签", tagWarna:"块颜色：", tagOpacity:"不透明度：", tagLabel:"标签：", tagTerapkan:"应用", tagHapusWarna:"清除颜色", tagHapusLabel:"清除标签", tagBatal:"取消", tagPlaceholder:"输入标签...（例：老会员、VIP、待处理）", tagHint:"点击应用 → 输入密码确认。", tagDipilih:"已选择", lblThemeTitle:"应用主题",             lblThemeDesc:"选择视觉主题和字体。无需刷新即可预览！",             lblThemeNote:"✨ 自动保存。点击每张卡片的 🌙 ☀️ 切换模式。",             lblThemeReset:"重置默认",             lblBackupTitle:"备份与恢复数据",             lblBackupDesc:"将所有数据导出为CSV备份。需要时重新导入恢复。",             lblExportAll:"导出所有数据CSV",             lblImportRecovery:"导入/恢复CSV",             lblBackupNote:"⚠️ 导入时将检测重复和新数据，执行前请确认。"
+            phEmail:"电子邮件 / 访问码", btnLogin:"登录", lblUsernamePh:"用户名", lblOldPassPh:"旧密码", lblNewPassPh:"新密码", lblConfirmPassPh:"确认新密码", lblContactAdminDesc:"请输入您的用户名，以便管理员验证您的账户。", lblContactAdminPh:"输入用户名...", tagColLabel:"标签", tagWarna:"块颜色：", tagOpacity:"不透明度：", tagLabel:"标签：", tagTerapkan:"应用", tagHapusWarna:"清除颜色", tagHapusLabel:"清除标签", tagBatal:"取消", tagPlaceholder:"输入标签...（例：老会员、VIP、待处理）", tagHint:"点击应用 → 输入密码确认。", tagDipilih:"已选择", lblThemeTitle:"应用主题",             lblThemeDesc:"选择视觉主题和字体。无需刷新即可预览！",             lblThemeNote:"✨ 自动保存。点击每张卡片的 🌙 ☀️ 切换模式。",             lblThemeReset:"重置默认",             lblBackupTitle:"备份与恢复数据",             lblBackupDesc:"将所有数据导出为CSV备份。需要时重新导入恢复。",             lblExportAll:"导出所有数据CSV",             lblImportRecovery:"导入/恢复CSV",             lblBackupNote:"⚠️ 导入时将检测重复和新数据，执行前请确认。"
         });
         dictionary.KO = Object.assign({}, dictionary.EN, {
             monitor:"고객 모니터", finance:"재무 분석", input:"신규 회원 추가", import:"Excel 대량 가져오기", master:"제품 및 벤더", settings:"고급 시스템 재설정",
@@ -1373,7 +1217,7 @@
             bcLockBtn:"잠금 및 대상 선택 🔒", bcUnlockBtn:"잠금 해제 및 메시지 편집 🔓",
             bcTargetLabel:"제품 변형별 대상 세그먼트 선택：",
             bcGlobalOption:"전체 회원（글로벌 브로드캐스트）", bcSendBtn:"WA 전송 📲",impTemplateTitle:"📥 템플릿 다운로드",impTemplateDesc:"CSV/Excel 템플릿을 다운로드하고 회원 데이터를 입력한 후 업로드하세요.",impTplBtnCsv:"⬇️ CSV 템플릿 다운로드",impTplBtnExcel:"⬇️ Excel 템플릿 다운로드",impColRequired:"필수",impColOptional:"선택",impColVendor:"벤더 이름",impColPackage:"패키지 이름",impColNumberOnly:"숫자만",impColDateFmt:"dd/mm/yyyy",impColJenis:"직접 사용자 / 리셀러",impColWa:"628xxx",impHeaderWarning:"⚠️ 첫 번째 행이 위의 헤더와 정확히 일치해야 합니다. 데이터는 2행부터 시작합니다.",
-            phEmail:"이메일 / 액세스 코드", btnLogin:"로그인", lblUsernamePh:"사용자명", lblOldPassPh:"이전 비밀번호", lblNewPassPh:"새 비밀번호", lblConfirmPassPh:"새 비밀번호 확인", lblContactAdminDesc:"관리자가 계정을 확인할 수 있도록 사용자명을 입력하세요.", lblContactAdminPh:"사용자명 입력...", tagHapusMember:"멤버 삭제", tagHapusMemberConfirm:"선택한 {N}명의 회원을 보관하시겠습니까?\n데이터는 영구 삭제되지 않고 보관됩니다.\n\n계속하시겠습니까?", tagColLabel:"태그", tagWarna:"블록 색상:", tagOpacity:"불투명도:", tagLabel:"레이블:", tagTerapkan:"적용", tagHapusWarna:"색상 지우기", tagHapusLabel:"레이블 지우기", tagBatal:"취소", tagPlaceholder:"레이블 입력... (예: 오래된 회원, VIP, 대기중)", tagHint:"적용 클릭 → 비밀번호 입력 후 확인.", tagDipilih:"선택됨", lblThemeTitle:"앱 테마", lblThemeDesc:"시각 테마와 폰트를 선택하세요. 새로고침 없이 바로 미리보기!",
+            phEmail:"이메일 / 액세스 코드", btnLogin:"로그인", lblUsernamePh:"사용자명", lblOldPassPh:"이전 비밀번호", lblNewPassPh:"새 비밀번호", lblConfirmPassPh:"새 비밀번호 확인", lblContactAdminDesc:"관리자가 계정을 확인할 수 있도록 사용자명을 입력하세요.", lblContactAdminPh:"사용자명 입력...", tagColLabel:"태그", tagWarna:"블록 색상:", tagOpacity:"불투명도:", tagLabel:"레이블:", tagTerapkan:"적용", tagHapusWarna:"색상 지우기", tagHapusLabel:"레이블 지우기", tagBatal:"취소", tagPlaceholder:"레이블 입력... (예: 오래된 회원, VIP, 대기중)", tagHint:"적용 클릭 → 비밀번호 입력 후 확인.", tagDipilih:"선택됨", lblThemeTitle:"앱 테마", lblThemeDesc:"시각 테마와 폰트를 선택하세요. 새로고침 없이 바로 미리보기!",
             lblThemeNote:"✨ 자동 저장. 카드당 🌙 ☀️ 클릭으로 모드 변경.", lblThemeReset:"기본값으로 재설정",
             lblBackupTitle:"백업 및 복구 데이터", lblBackupDesc:"모든 데이터를 CSV로 내보내기. 필요시 다시 가져와 복구하세요.",
             lblExportAll:"전체 데이터 CSV 내보내기", lblImportRecovery:"가져오기 / 복구 CSV",
@@ -1448,7 +1292,7 @@
             bcLockBtn:"قفل وتحديد الهدف 🔒", bcUnlockBtn:"فتح القفل وتعديل الرسالة 🔓",
             bcTargetLabel:"تحديد شريحة الهدف حسب متغير المنتج:",
             bcGlobalOption:"جميع الأعضاء (بث عالمي)", bcSendBtn:"إرسال واتساب 📲",impTemplateTitle:"📥 تحميل القالب",impTemplateDesc:"قم بتنزيل قالب CSV/Excel وأدخل بيانات الأعضاء ثم ارفعه هنا.",impTplBtnCsv:"⬇️ تحميل قالب CSV",impTplBtnExcel:"⬇️ تحميل قالب Excel",impColRequired:"مطلوب",impColOptional:"اختياري",impColVendor:"اسم المورد",impColPackage:"اسم الباقة",impColNumberOnly:"أرقام فقط",impColDateFmt:"dd/mm/yyyy",impColJenis:"مستخدم مباشر / موزع",impColWa:"628xxx",impHeaderWarning:"⚠️ تأكد من أن الصف الأول هو الرأس المحدد أعلاه. تبدأ البيانات من الصف 2.",
-            phEmail:"البريد الإلكتروني / رمز الوصول", btnLogin:"تسجيل الدخول", lblUsernamePh:"اسم المستخدم", lblOldPassPh:"كلمة المرور القديمة", lblNewPassPh:"كلمة المرور الجديدة", lblConfirmPassPh:"تأكيد كلمة المرور الجديدة", lblContactAdminDesc:"أدخل اسم المستخدم حتى يتمكن المسؤول من التحقق من حسابك.", lblContactAdminPh:"أدخل اسم المستخدم...", tagColLabel:"علامة", tagWarna:"لون الكتلة:", tagOpacity:"الشفافية:", tagLabel:"التسمية:", tagTerapkan:"تطبيق", tagHapusWarna:"مسح اللون", tagHapusLabel:"مسح التسمية", tagBatal:"إلغاء", tagPlaceholder:"اكتب تسمية... (مثل: عضو قديم، VIP، معلق)", tagHint:"انقر تطبيق → أدخل كلمة المرور للتأكيد.", tagDipilih:"محدد", tagHapusMember:"حذف الأعضاء", tagHapusMemberConfirm:"أرشفة {N} من الأعضاء المحددين?\nلن يُحذف البيانات نهائياً، سيتم أرشفتها فقط.\n\nهل تريد المتابعة?", tagColLabel:"Tag", tagWarna:"Warna Blok:", tagOpacity:"Kelegapan:", tagLabel:"Label:", tagTerapkan:"Guna", tagHapusWarna:"Padam Warna", tagHapusLabel:"Padam Label", tagBatal:"Batal", tagPlaceholder:"Tulis label...", tagHint:"Klik Guna → masukkan kata laluan.", tagDipilih:"dipilih", lblThemeTitle:"سمة التطبيق",             lblThemeDesc:"اختر السمة البصرية والخط. معاينة فورية!",             lblThemeNote:"✨ يُحفظ تلقائياً. انقر 🌙 ☀️ لتبديل الوضع.",             lblThemeReset:"إعادة الضبط الافتراضي",             lblBackupTitle:"النسخ الاحتياطي والاستعادة",             lblBackupDesc:"تصدير جميع البيانات إلى CSV.",             lblExportAll:"تصدير كل البيانات CSV",             lblImportRecovery:"استيراد / استعادة CSV",             lblBackupNote:"⚠️ سيكتشف الاستيراد البيانات المكررة ويطلب التأكيد."
+            phEmail:"البريد الإلكتروني / رمز الوصول", btnLogin:"تسجيل الدخول", lblUsernamePh:"اسم المستخدم", lblOldPassPh:"كلمة المرور القديمة", lblNewPassPh:"كلمة المرور الجديدة", lblConfirmPassPh:"تأكيد كلمة المرور الجديدة", lblContactAdminDesc:"أدخل اسم المستخدم حتى يتمكن المسؤول من التحقق من حسابك.", lblContactAdminPh:"أدخل اسم المستخدم...", tagColLabel:"علامة", tagWarna:"لون الكتلة:", tagOpacity:"الشفافية:", tagLabel:"التسمية:", tagTerapkan:"تطبيق", tagHapusWarna:"مسح اللون", tagHapusLabel:"مسح التسمية", tagBatal:"إلغاء", tagPlaceholder:"اكتب تسمية... (مثل: عضو قديم، VIP، معلق)", tagHint:"انقر تطبيق → أدخل كلمة المرور للتأكيد.", tagDipilih:"محدد", tagColLabel:"Tag", tagWarna:"Warna Blok:", tagOpacity:"Kelegapan:", tagLabel:"Label:", tagTerapkan:"Guna", tagHapusWarna:"Padam Warna", tagHapusLabel:"Padam Label", tagBatal:"Batal", tagPlaceholder:"Tulis label...", tagHint:"Klik Guna → masukkan kata laluan.", tagDipilih:"dipilih", lblThemeTitle:"سمة التطبيق",             lblThemeDesc:"اختر السمة البصرية والخط. معاينة فورية!",             lblThemeNote:"✨ يُحفظ تلقائياً. انقر 🌙 ☀️ لتبديل الوضع.",             lblThemeReset:"إعادة الضبط الافتراضي",             lblBackupTitle:"النسخ الاحتياطي والاستعادة",             lblBackupDesc:"تصدير جميع البيانات إلى CSV.",             lblExportAll:"تصدير كل البيانات CSV",             lblImportRecovery:"استيراد / استعادة CSV",             lblBackupNote:"⚠️ سيكتشف الاستيراد البيانات المكررة ويطلب التأكيد."
         });
         // Bahasa lain - EN + override
         var _otherLangs = {
@@ -1902,7 +1746,6 @@
             if(document.getElementById('tagHintLbl')) document.getElementById('tagHintLbl').innerHTML = '* ' + (translation.tagHint||'Klik Terapkan → masukkan password untuk konfirmasi.');
             // Re-apply tag visuals untuk update warna label sesuai tema
             if(typeof applyTagVisuals === 'function') setTimeout(applyTagVisuals, 50);
-            if(document.getElementById('tagHapusMemberLbl')) document.getElementById('tagHapusMemberLbl').innerText = translation.tagHapusMember||'Hapus Member';
 
             // ============================================================
             // MULTILANG COMPLETENESS - Semua elemen kecil
@@ -2940,7 +2783,8 @@
                 // Init financeFilteredMembers dengan semua data
                 financeFilteredMembers = membersData.slice();
                 await loadResellerDB();
-                toggleResellerChooser(); 
+                toggleResellerChooser();
+                setTimeout(checkAndShowAnnouncement, 1000);
             }
         }
 
@@ -3316,35 +3160,25 @@
         }
 
         async function refreshMembersList() {
-            var _mr2 = await sbG("members","owner_user_id=eq."+currentUser.userId+"&deleted_flag=neq.DELETED&deleted_flag=neq.SOFT_DELETED&order=timestamp.desc&select=*");
-            if (!Array.isArray(_mr2)) _mr2 = [];
-            membersData = _mr2.map(function(m){ return {
-                rowId:m.id, timestamp:m.timestamp, createdAt:m.created_at||m.timestamp,
-                namaMember:m.nama_member, noWhatsapp:m.no_whatsapp, email:m.email,
-                perusahaan:m.perusahaan_sumber, namaPaket:m.nama_paket, jenisPembeli:m.jenis_pembeli,
-                hargaBeli:parseFloat(m.harga_beli_saat_ini)||0, hargaJual:parseFloat(m.harga_jual_saat_ini)||0,
-                profit:parseFloat(m.profit_terkunci)||0, tglExpired:m.tgl_expired,
-                status:m.status||'Aktif', lastFuDate:m.last_fu_date, currencyCode:m.currency_code||"IDR"
-            };});
-            saveMilioMembersCache();
-            filterDashboard(currentDashboardFilterMode || 'all');
-            if (typeof renderMilioFinanceChart === 'function') renderMilioFinanceChart();
+            var _mr2=await sbG("members","owner_user_id=eq."+currentUser.userId+"&or=(deleted_flag.eq.,deleted_flag.is.null)&order=timestamp.desc&select=*&limit=2000");
+            const res={status:"success",data:(_mr2||[]).map(function(m){return {rowId:m.id,timestamp:m.timestamp,createdAt:m.created_at||m.timestamp,namaMember:m.nama_member,noWhatsapp:m.no_whatsapp,email:m.email,perusahaan:m.perusahaan_sumber,namaPaket:m.nama_paket,jenisPembeli:m.jenis_pembeli,hargaBeli:parseFloat(m.harga_beli_saat_ini)||0,hargaJual:parseFloat(m.harga_jual_saat_ini)||0,profit:parseFloat(m.profit_terkunci)||0,tglExpired:m.tgl_expired,status:m.status,lastFuDate:m.last_fu_date,currencyCode:m.currency_code||"IDR"};})};
+            const response={ok:true}; 
+            if(res.status === "success") { 
+                membersData = res.data; 
+                saveMilioMembersCache();
+                if (document.getElementById('tab-dashboard').classList.contains('active')) {
+                    filterDashboard(currentDashboardFilterMode);
+                } else {
+                    filterFinance(currentFinanceMode); 
+                }
+                renderMilioFinanceChart();
+            }
         }
 
         function filterCompanyData(compName) { 
             activeFilterCompany = compName; 
             const translation = dictionary[clientLanguage] || dictionary.ID;
-            if(document.getElementById('filterLabel')) document.getElementById('filterLabel').innerText = compName === "ALL" ? translation.lblSemua : compName;
-            // Update judul h3 Monitor Data Pelanggan
-            const h3sub = document.getElementById('h3-sub');
-            if (h3sub) {
-                const mitralbl = compName === "ALL" ? (translation.lblSemua || "Semua") : compName;
-                h3sub.innerHTML = (translation.subTitle || "Monitor Data Pelanggan") + ' (<span>' + mitralbl + '</span>)';
-            }
-            // Update aktif sidebar button
-            document.querySelectorAll('#sideMenu button, #sideMenuMobile button').forEach(function(b) {
-                b.classList.remove('text-green-400', 'font-bold');
-            });
+            if(document.getElementById('filterLabel')) document.getElementById('filterLabel').innerText = compName === "ALL" ? translation.lblSemua : compName; 
             renderMembersTable(); 
             switchTab('dashboard'); 
         }
@@ -3435,18 +3269,8 @@
             }
             
             filteredMembers = membersData.filter(m => {
-                const t = parseJsonDate(m.timestamp);
-                if (t < start || t > end) return false;
-                // Filter mitra dari sidebar
-                if (activeFilterCompany !== 'ALL' && m.perusahaan !== activeFilterCompany) return false;
-                // Filter berdasarkan card yang diklik
-                if (_activeCardFilter === 'all') return true;
-                const _nowF = new Date();
-                const _dExp = Math.ceil((parseJsonDate(m.tglExpired) - _nowF) / 86400000);
-                if (_activeCardFilter === 'aktif') return m.status === 'Aktif' && _dExp >= 0;
-                if (_activeCardFilter === 'expired') return m.status !== 'Aktif' || _dExp < 0;
-                if (_activeCardFilter === 'followup') return isFollowUpTargetMember(m, _nowF, new Date().toLocaleDateString('en-CA'));
-                return true;
+                const t = parseJsonDate(m.timestamp); 
+                return t >= start && t <= end;
             });
             
             // Sort: terbaru di atas (by createdAt), Selesai paling bawah
@@ -3556,7 +3380,14 @@ thead tr{background:#22c55e;color:#fff;}th,td{border:1px solid #ddd;padding:6px;
 <body ${isRTL2}><h2>${lang.monitor.toUpperCase()} - ${currentUser.namaBisnis.toUpperCase()}</h2>
 <div class="sub">${noteText}</div><hr>
 <table><thead><tr><th>${lang.xlHeaderTimestamp||'Tgl Input'}</th><th>${lang.xlHeaderName||'Nama'}</th><th>${lang.xlHeaderPlatform||'Platform'}</th><th>${lang.xlHeaderPackage||'Paket'}</th><th>${lang.xlHeaderExpired||'Tgl Berakhir'}</th><th>${lang.xlHeaderStatus||'Status'}</th><th>${lang.xlHeaderProfit||'Profit'}</th></tr></thead>
-<tbody>${rowsHTML}</tbody></table></body></html>`;
+<tbody>${rowsHTML}</tbody></table>    <!-- ANNOUNCEMENT POPUP -->
+    <div id="announcementPopup" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(4px)">
+        <div id="announcementPopupBox" class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden" style="max-height:90vh;overflow-y:auto">
+            <button id="annPopupCloseBtn" onclick="closeAnnouncementPopup()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white flex items-center justify-center transition text-xs font-bold"><i class="fa-solid fa-xmark"></i></button>
+            <div id="annPopupContent" class="p-6"></div>
+        </div>
+    </div>
+</body></html>`;
                     const w2 = window.open('', '_blank', 'width=900,height=700');
                     w2.document.write(html2); w2.document.close();
                     setTimeout(() => { w2.focus(); w2.print(); }, 800);
@@ -3794,38 +3625,13 @@ ${exportData.map(m => {
             }
         }
 
-        function renderMembersTable() {
+                function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
+            // Pastikan filteredMembers selalu array
             if (!Array.isArray(filteredMembers)) filteredMembers = [];
             const _rowsHtml = [];
-            let renderedRowCount = 0;
-            // ============================================================
-            // STATS CARDS - sinkron dengan filter aktif (tanggal + mitra)
-            // filteredMembers sudah merupakan hasil filter tanggal + mitra
-            // ============================================================
-            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0;
-            const _statsNow = new Date();
-            const _statsToday = `${_statsNow.getFullYear()}-${String(_statsNow.getMonth()+1).padStart(2,'0')}-${String(_statsNow.getDate()).padStart(2,'0')}`;
-            // Hitung dari filteredMembers - sudah include semua filter aktif
-            (filteredMembers || []).forEach(function(m) {
-                totalMemberCount++;
-                const _dExp = Math.ceil((parseJsonDate(m.tglExpired) - _statsNow) / 86400000);
-                const _isAktif = (m.status === 'Aktif') && _dExp >= 0;
-                const _isExpired = (m.status !== 'Aktif') || _dExp < 0;
-                // Profit dari SEMUA member (aktif + expired) sesuai filter aktif
-                totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
-                if (_isAktif) activeCount++;
-                if (_isExpired) expiredCount++;
-                if (_isAktif && isFollowUpTargetMember(m, _statsNow, _statsToday)) followCount++;
-            });
-            if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
-            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
-            if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
-            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
-            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit, true, clientCurrency);
-            updateFollowUpCenterButton(followCount);
-            // ============================================================
+            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0, renderedRowCount = 0;
             const now = new Date();
             const lang = dictionary[clientLanguage] || dictionary.ID;
             
@@ -4003,11 +3809,15 @@ ${exportData.map(m => {
                     </div></td></tr>`);
             });
             tbody.innerHTML = _rowsHtml.join('');
-            // Apply profit state setelah render
+            // Apply profit state setelah render - pakai boot init dulu lalu apply
             if(typeof _profitBootInit === 'function') _profitBootInit();
             if(typeof applyProfitVisibility === 'function') applyProfitVisibility();
             if(typeof applyTagVisuals === 'function') applyTagVisuals();
-            // Update progress bars (pakai stats dari membersData yang sudah dihitung di atas)
+            if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
+            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
+            if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
+            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
+            // Update progress bars
             if(totalMemberCount > 0) {
                 const pctAktif = Math.round((activeCount/totalMemberCount)*100);
                 const pctExp = Math.round((expiredCount/totalMemberCount)*100);
@@ -4016,6 +3826,8 @@ ${exportData.map(m => {
                 if(document.getElementById('barExpired')) document.getElementById('barExpired').style.width = pctExp+'%';
                 if(document.getElementById('barFollow')) document.getElementById('barFollow').style.width = pctFu+'%';
             }
+            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit, true, clientCurrency);
+            updateFollowUpCenterButton(followCount);
         }
 
         async function executeManualDone(rowId) {
@@ -5252,12 +5064,40 @@ td:last-child{font-weight:bold;}
         let _pendingTagColor = null;
         let _pendingTagOpacity = 1.0; // default 100%
 
-        function loadMemberTags() {
+        async function loadMemberTags() {
             try {
                 const key = 'milio_tags_' + (currentUser ? currentUser.userId : 'x');
-                const saved = localStorage.getItem(key);
-                if (saved) memberTags = JSON.parse(saved);
-            } catch(e) { memberTags = {}; }
+                const cached = localStorage.getItem(key);
+                if (cached) memberTags = JSON.parse(cached);
+                // Fetch dari Supabase untuk data terbaru
+                const rows = await sbG('members',
+                    'owner_user_id=eq.'+currentUser.userId+
+                    '&or=(tag_color.neq.,tag_label.neq.)&select=id,tag_color,tag_label,tag_opacity'
+                );
+                if (Array.isArray(rows) && rows.length > 0) {
+                    rows.forEach(function(r) {
+                        if (r.tag_color || r.tag_label) {
+                            memberTags[r.id] = {
+                                color: r.tag_color||'', label: r.tag_label||'',
+                                opacity: parseFloat(r.tag_opacity)||1.0
+                            };
+                            if (r.tag_color) {
+                                const rv=parseInt(r.tag_color.slice(1,3),16)||0;
+                                const gv=parseInt(r.tag_color.slice(3,5),16)||0;
+                                const bv=parseInt(r.tag_color.slice(5,7),16)||0;
+                                memberTags[r.id].bgStyle='rgba('+rv+','+gv+','+bv+','+(parseFloat(r.tag_opacity)||1.0)+')';
+                            }
+                        }
+                    });
+                    saveMemberTagsLocal();
+                }
+            } catch(e) {
+                try {
+                    const key = 'milio_tags_' + (currentUser ? currentUser.userId : 'x');
+                    const cached = localStorage.getItem(key);
+                    if (cached) memberTags = JSON.parse(cached);
+                } catch(e2) { memberTags = {}; }
+            }
         }
 
         function saveMemberTagsLocal() {
@@ -5266,7 +5106,45 @@ td:last-child{font-weight:bold;}
             } catch(e) {}
         }
 
-        // Simpan tag ke Supabase
+        function applyTagVisuals() {
+            const isDark = !document.body.classList.contains('milio-light-mode');
+            const labelColor = isDark ? '#bbf7d0' : '#14532e';
+            Object.keys(memberTags).forEach(function(id) {
+                const tag = memberTags[id];
+                const row = document.getElementById('member-row-' + id);
+                if (!row) return;
+                if (tag.color) {
+                    const rv=parseInt(tag.color.slice(1,3),16)||0;
+                    const gv=parseInt(tag.color.slice(3,5),16)||0;
+                    const bv=parseInt(tag.color.slice(5,7),16)||0;
+                    const op=tag.opacity||1.0;
+                    const finalOp = isDark ? op*0.85 : op;
+                    row.style.background='rgba('+rv+','+gv+','+bv+','+finalOp+')';
+                } else {
+                    row.style.background='';
+                }
+                if (tag.label) {
+                    const nameTd = row.querySelector('td:nth-child(2)');
+                    if (nameTd) {
+                        let existing = nameTd.querySelector('.member-tag-label');
+                        if (!existing) {
+                            const div = nameTd.querySelector('div.flex') || nameTd;
+                            const span = document.createElement('span');
+                            span.className = 'member-tag-label';
+                            span.style.color = labelColor;
+                            span.innerText = tag.label;
+                            div.appendChild(span);
+                        } else {
+                            existing.innerText = tag.label;
+                            existing.style.color = labelColor;
+                        }
+                    }
+                } else {
+                    const nameTd = row.querySelector('td:nth-child(2)');
+                    if (nameTd) { const ex=nameTd.querySelector('.member-tag-label'); if(ex) ex.remove(); }
+                }
+            });
+        }
         async function saveTagToSupabase(memberId, tagColor, tagLabel, tagOpacity) {
             try {
                 await sbU('members', 'id=eq.' + memberId, {
@@ -5420,29 +5298,25 @@ td:last-child{font-weight:bold;}
             clearAllSelections();
         }
 
-        // HAPUS MEMBER BULK - 1x password untuk semua yang dipilih
+        // HAPUS MEMBER BULK
         async function deleteBulkMembers() {
             if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
-            const lang = dictionary[clientLanguage] || dictionary.ID;
             const count = selectedMembers.size;
-            if (!confirm((lang.tagHapusMemberConfirm || 'Arsipkan ' + count + ' member yang dipilih?\nData tidak akan hilang permanen, hanya diarsipkan.\n\nLanjutkan?').replace('{N}', count))) return;
-            if (!validatePasswordSecurity()) return; // 1x password untuk semua
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            if (!confirm((lang.tagHapusMemberConfirm||'Arsipkan {N} member yang dipilih?').replace('{N}',count))) return;
+            if (!validatePasswordSecurity()) return;
             const ids = Array.from(selectedMembers);
-            let success = 0, errors = 0;
-            // Progress indicator
-            const bar = document.getElementById('bulkActionBar');
-            const origContent = bar ? bar.innerHTML : '';
-            if (bar) bar.innerHTML = '<div class="text-center text-xs text-slate-400 py-2"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengarsipkan ' + count + ' member...</div>';
+            let ok=0, err=0;
             for (const id of ids) {
-                try {
-                    await sbU('members', 'id=eq.' + id, { deleted_flag: 'DELETED', deleted_date: new Date().toISOString() });
-                    success++;
-                } catch(e) { errors++; }
+                try { await sbU('members','id=eq.'+id,{deleted_flag:'DELETED',deleted_date:new Date().toISOString()}); ok++; }
+                catch(e) { err++; }
             }
             clearAllSelections();
             await refreshMembersList();
-            alert('✅ ' + success + ' member berhasil diarsipkan.' + (errors > 0 ? '\n❌ ' + errors + ' gagal.' : ''));
+            alert('✅ '+ok+' member diarsipkan.'+(err>0?'\n❌ '+err+' gagal.':''));
         }
+
+        // HAPUS WARNA saja - 1x password untuk semua yang dipilih
         function resetBulkColor() {
             if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
             if (!validatePasswordSecurity()) return; // 1x password untuk semua
@@ -5683,6 +5557,62 @@ td:last-child{font-weight:bold;}
             initMilioShortcuts();
             setTimeout(loadMilioMembersCache, 900);
             setTimeout(renderMilioFinanceChart, 1400);
+
+        // ANNOUNCEMENT SYSTEM
+        var _annCountdownTimer = null;
+        async function checkAndShowAnnouncement() {
+            try {
+                var rows = await sbG('app_announcements','is_active=eq.true&select=*&limit=1');
+                if (!Array.isArray(rows)||rows.length===0) return;
+                var ann=rows[0], sk='ann_'+ann.id+'_'+(ann.updated_at||'');
+                if (ann.type!=='maintenance'&&sessionStorage.getItem(sk)) return;
+                showAnnouncementPopup(ann,sk);
+            } catch(e) { console.log('Ann:',e); }
+        }
+        function showAnnouncementPopup(ann,sk) {
+            var popup=document.getElementById('announcementPopup'),box=document.getElementById('announcementPopupBox'),cel=document.getElementById('annPopupContent'),cbtn=document.getElementById('annPopupCloseBtn');
+            if(!popup||!cel) return;
+            var isMaint=ann.type==='maintenance';
+            var bm={maintenance:'rgba(239,68,68,0.4)',announcement:'rgba(59,130,246,0.4)',promo:'rgba(245,158,11,0.4)'};
+            box.style.borderColor=bm[ann.type]||'rgba(100,116,139,0.4)';
+            if(isMaint) cbtn.classList.add('hidden'); else cbtn.classList.remove('hidden');
+            var lm={maintenance:'⚠️ MAINTENANCE',announcement:'📢 PENGUMUMAN',promo:'🔥 PROMO'};
+            var bgm={maintenance:'#dc2626',announcement:'#2563eb',promo:'#d97706'};
+            var h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="font-size:10px;font-weight:700;padding:3px 12px;border-radius:999px;color:#fff;background:'+(bgm[ann.type]||'#475569')+'">'+(lm[ann.type]||'')+'</span></div>';
+            if(ann.title) h+='<h2 style="font-size:20px;font-weight:700;color:#fff;margin-bottom:12px">'+ann.title+'</h2>';
+            if(ann.image_url) h+='<img src="'+ann.image_url+'" style="width:100%;border-radius:12px;margin-bottom:16px;max-height:220px;object-fit:cover" onerror="this.hidden=true">';
+            if(ann.video_url&&ann.video_type){
+                if(ann.video_type==='youtube'){var yt=(ann.video_url.match(/(?:v=|youtu\.be\/)([^&?]+)/)||[])[1]||'';if(yt)h+='<div style="margin-bottom:16px;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube.com/embed/'+yt+'" style="width:100%;height:220px;border:0" allowfullscreen></iframe></div>';}
+                else if(ann.video_type==='tiktok') h+='<div style="margin-bottom:16px;text-align:center"><a href="'+ann.video_url+'" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#1f2937;color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;text-decoration:none">🎵 TikTok</a></div>';
+                else h+='<video src="'+ann.video_url+'" controls style="width:100%;border-radius:12px;margin-bottom:16px;max-height:220px"></video>';
+            }
+            if(ann.message) h+='<p style="color:#cbd5e1;font-size:14px;line-height:1.6;margin-bottom:16px">'+ann.message.split(String.fromCharCode(10)).join('<br>')+'</p>';
+            if(isMaint&&ann.countdown_enabled&&ann.countdown_end){
+                h+='<div style="background:rgba(127,29,29,0.4);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:16px;margin-bottom:16px;text-align:center"><p style="color:#f87171;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Estimasi Selesai</p><div id="annCountdown" style="color:#fff;font-size:28px;font-family:monospace;font-weight:700;letter-spacing:4px">--:--:--</div></div>';
+                if(_annCountdownTimer) clearInterval(_annCountdownTimer);
+                var cd=ann.countdown_end;
+                _annCountdownTimer=setInterval(function(){
+                    var df=new Date(cd)-new Date(),el=document.getElementById('annCountdown');
+                    if(!el){clearInterval(_annCountdownTimer);return;}
+                    if(df<=0){el.innerText='Segera Selesai ✅';clearInterval(_annCountdownTimer);return;}
+                    var hh=Math.floor(df/3600000),mm=Math.floor((df%3600000)/60000),ss=Math.floor((df%60000)/1000);
+                    el.innerText=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+                },1000);
+            }
+            if(ann.btn_enabled&&ann.btn_label&&ann.btn_link){
+                h+='<a href="'+ann.btn_link+'" target="_blank" style="display:block;text-align:center;background:'+(bgm[ann.type]||'#16a34a')+';color:#fff;font-weight:700;padding:12px 24px;border-radius:12px;font-size:14px;text-decoration:none;margin-bottom:8px">'+ann.btn_label+'</a>';
+            }
+            if(isMaint) h+='<p style="color:#475569;font-size:10px;text-align:center;margin-top:16px">Hubungi admin jika butuh bantuan.</p>';
+            cel.innerHTML=h; popup.classList.remove('hidden');
+            if(!isMaint&&sk) popup._sessionKey=sk;
+        }
+        function closeAnnouncementPopup() {
+            var popup=document.getElementById('announcementPopup');
+            if(popup&&popup._sessionKey) sessionStorage.setItem(popup._sessionKey,'1');
+            if(popup) popup.classList.add('hidden');
+            if(_annCountdownTimer){clearInterval(_annCountdownTimer);_annCountdownTimer=null;}
+        }
+
         });
     </script>
 </body>
