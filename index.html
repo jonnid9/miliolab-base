@@ -3801,32 +3801,24 @@ ${exportData.map(m => {
             const _rowsHtml = [];
             let renderedRowCount = 0;
             // ============================================================
-            // STATS CARDS - hitung dari membersData, ikut filter mitra
-            // Jika mitra tertentu dipilih → stats hanya dari mitra itu
-            // Jika ALL → stats dari semua member
+            // STATS CARDS - sinkron dengan filter aktif (tanggal + mitra)
+            // filteredMembers sudah merupakan hasil filter tanggal + mitra
             // ============================================================
             let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0;
             const _statsNow = new Date();
             const _statsToday = `${_statsNow.getFullYear()}-${String(_statsNow.getMonth()+1).padStart(2,'0')}-${String(_statsNow.getDate()).padStart(2,'0')}`;
-            // Hitung dari membersData - ikut filter mitra jika ada, tapi TIDAK ikut filter tanggal/card
-            const _statsSource = (activeFilterCompany === 'ALL')
-                ? membersData
-                : membersData.filter(m => m.perusahaan === activeFilterCompany);
-            (_statsSource || []).forEach(function(m) {
-                // Filter per mitra jika bukan ALL
-                if (activeFilterCompany !== 'ALL' && m.perusahaan !== activeFilterCompany) return;
+            // Hitung dari filteredMembers - sudah include semua filter aktif
+            (filteredMembers || []).forEach(function(m) {
                 totalMemberCount++;
                 const _dExp = Math.ceil((parseJsonDate(m.tglExpired) - _statsNow) / 86400000);
                 const _isAktif = (m.status === 'Aktif') && _dExp >= 0;
                 const _isExpired = (m.status !== 'Aktif') || _dExp < 0;
-                if (_isAktif) {
-                    activeCount++;
-                    totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
-                }
+                // Profit dari SEMUA member (aktif + expired) sesuai filter aktif
+                totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
+                if (_isAktif) activeCount++;
                 if (_isExpired) expiredCount++;
                 if (_isAktif && isFollowUpTargetMember(m, _statsNow, _statsToday)) followCount++;
             });
-            // Update cards
             if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
             if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
             if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
