@@ -313,13 +313,170 @@
         body.theme-10 table tbody tr:nth-child(even){background:#fdf5e8!important;}
         body.theme-10 #milioThemeToggle{display:none!important;}
 
+        /* ============================================================
+           UNIVERSAL LIGHT MODE - berlaku untuk SEMUA tema light
+           Override warna hardcode yang tidak adaptif tema
+           ============================================================ */
+        body.milio-light-mode,
+        body.theme-7,
+        body.theme-10 {
+            color: #0f172a !important;
+        }
+
+        /* Tabel header - selalu gelap agar tulisan terlihat */
+        body.milio-light-mode table thead tr,
+        body.theme-7 table thead tr,
+        body.theme-10 table thead tr { background: #1e293b !important; }
+        body.milio-light-mode table thead tr th,
+        body.theme-7 table thead tr th,
+        body.theme-10 table thead tr th { color: #f1f5f9 !important; }
+
+        /* Tabel body - putih dengan teks gelap */
+        body.milio-light-mode table tbody tr td,
+        body.theme-7 table tbody tr td,
+        body.theme-10 table tbody tr td { color: #1e293b !important; }
+
+        /* Teks umum yang hardcode slate gelap */
+        body.milio-light-mode .text-slate-200,
+        body.milio-light-mode .text-slate-300,
+        body.theme-7 .text-slate-200,
+        body.theme-7 .text-slate-300,
+        body.theme-10 .text-slate-200,
+        body.theme-10 .text-slate-300 { color: #1e293b !important; }
+
+        body.milio-light-mode .text-slate-400,
+        body.milio-light-mode .text-slate-500,
+        body.theme-7 .text-slate-400,
+        body.theme-7 .text-slate-500,
+        body.theme-10 .text-slate-400,
+        body.theme-10 .text-slate-500 { color: #475569 !important; }
+
+        /* Background card/panel */
+        body.milio-light-mode .bg-slate-900\/50,
+        body.milio-light-mode .bg-slate-900\/40,
+        body.milio-light-mode .bg-slate-950\/10,
+        body.theme-7 .bg-slate-900\/50,
+        body.theme-7 .bg-slate-900\/40,
+        body.theme-10 .bg-slate-900\/50,
+        body.theme-10 .bg-slate-900\/40 { background: #f8fafc !important; }
+
+        /* Monitor Data Pelanggan title */
+        body.milio-light-mode .text-slate-100,
+        body.theme-7 .text-slate-100,
+        body.theme-10 .text-slate-100 { color: #0f172a !important; }
+
+        /* Input & select di light mode */
+        body.milio-light-mode input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
+        body.milio-light-mode select,
+        body.milio-light-mode textarea,
+        body.theme-7 input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
+        body.theme-7 select,
+        body.theme-7 textarea,
+        body.theme-10 input:not([type="checkbox"]):not([type="color"]):not([type="radio"]),
+        body.theme-10 select,
+        body.theme-10 textarea { color: #0f172a !important; }
+
+        /* Tombol filter (Semua, Hari Ini, dll) */
+        body.milio-light-mode .bg-slate-900.border.border-slate-800,
+        body.theme-7 .bg-slate-900.border.border-slate-800 {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+
+        /* Bulk toolbar */
+        body.milio-light-mode #bulkActionBar,
+        body.theme-7 #bulkActionBar,
+        body.theme-10 #bulkActionBar {
+            background: #f1f5f9 !important;
+            border-color: #22c55e !important;
+        }
+        body.milio-light-mode #bulkActionBar *:not(button):not(i),
+        body.theme-7 #bulkActionBar *:not(button):not(i),
+        body.theme-10 #bulkActionBar *:not(button):not(i) { color: #1e293b !important; }
+
+        /* Sidebar aktif tetap gelap di light mode */
+        body.milio-light-mode #sidebar,
+        body.theme-7 #sidebar,
+        body.theme-10 #sidebar { color: #e2e8f0 !important; }
+        body.milio-light-mode #sidebar *,
+        body.theme-7 #sidebar *,
+        body.theme-10 #sidebar * { color: #e2e8f0 !important; }
+
+        /* Quick view modal */
+        body.milio-light-mode #quickViewModal .bg-slate-900,
+        body.theme-7 #quickViewModal .bg-slate-900,
+        body.theme-10 #quickViewModal .bg-slate-900 { background: #ffffff !important; color: #0f172a !important; }
+
+        /* Edit & Renew modal */
+        body.milio-light-mode #editFormModal,
+        body.milio-light-mode #renewFormModalModal,
+        body.theme-7 #editFormModal,
+        body.theme-7 #renewFormModalModal,
+        body.theme-10 #editFormModal,
+        body.theme-10 #renewFormModalModal { background: rgba(15,23,42,0.7) !important; }
+
+        body.milio-light-mode #editFormModal > div,
+        body.milio-light-mode #renewFormModalModal > div > div,
+        body.theme-7 #editFormModal > div,
+        body.theme-7 #renewFormModalModal > div > div,
+        body.theme-10 #editFormModal > div,
+        body.theme-10 #renewFormModalModal > div > div {
+            background: #ffffff !important;
+            color: #0f172a !important;
+        }
+        body.milio-light-mode #editFormModal label,
+        body.milio-light-mode #editFormModal p,
+        body.milio-light-mode #renewFormModalModal label,
+        body.theme-7 #editFormModal label,
+        body.theme-10 #editFormModal label { color: #475569 !important; }
+
+        /* Finance chart area */
+        body.milio-light-mode #tab-finance,
+        body.theme-7 #tab-finance,
+        body.theme-10 #tab-finance { color: #0f172a !important; }
+
+        /* Settings panel */
+        body.milio-light-mode #tab-settings,
+        body.theme-7 #tab-settings,
+        body.theme-10 #tab-settings { color: #0f172a !important; }
+        body.milio-light-mode #tab-settings .text-slate-400,
+        body.theme-7 #tab-settings .text-slate-400,
+        body.theme-10 #tab-settings .text-slate-400 { color: #475569 !important; }
+
+        /* Semua h1-h6 dan label */
+        body.milio-light-mode h1, body.milio-light-mode h2, body.milio-light-mode h3,
+        body.milio-light-mode h4, body.milio-light-mode label, body.milio-light-mode p,
+        body.theme-7 h1, body.theme-7 h2, body.theme-7 h3,
+        body.theme-7 h4, body.theme-7 label, body.theme-7 p,
+        body.theme-10 h1, body.theme-10 h2, body.theme-10 h3,
+        body.theme-10 h4, body.theme-10 label, body.theme-10 p { color: #1e293b !important; }
+
+        /* Warna khusus yang perlu tetap berwarna */
+        body.milio-light-mode .text-red-400, body.theme-7 .text-red-400, body.theme-10 .text-red-400 { color: #dc2626 !important; }
+        body.milio-light-mode .text-red-300, body.theme-7 .text-red-300, body.theme-10 .text-red-300 { color: #ef4444 !important; }
+        body.milio-light-mode .text-indigo-300, body.theme-7 .text-indigo-300, body.theme-10 .text-indigo-300 { color: #4f46e5 !important; }
+        body.milio-light-mode .text-yellow-400, body.theme-7 .text-yellow-400, body.theme-10 .text-yellow-400 { color: #d97706 !important; }
+        body.milio-light-mode .text-blue-400, body.theme-7 .text-blue-400, body.theme-10 .text-blue-400 { color: #2563eb !important; }
+
+        /* Member tag label di light mode */
+        body.milio-light-mode .member-tag-label,
+        body.theme-7 .member-tag-label,
+        body.theme-10 .member-tag-label { color: #14532e !important; }
+
+        /* Profit blur di light mode tetap bekerja */
+        body.milio-light-mode #cardProfit,
+        body.theme-7 #cardProfit,
+        body.theme-10 #cardProfit { color: #15803d !important; }
+
+        /* ============================================================ */
+
         /* Font per bahasa - exclude i tag agar FontAwesome tidak rusak */
-        body.lang-ZH *:not(i) { font-family: 'Noto Sans SC', 'Urbanist', sans-serif !important; }
-        body.lang-JA *:not(i) { font-family: 'Noto Sans JP', 'Urbanist', sans-serif !important; }
-        body.lang-KO *:not(i) { font-family: 'Noto Sans KR', 'Urbanist', sans-serif !important; }
-        body.lang-AR *:not(i) { font-family: 'Noto Kufi Arabic', 'Urbanist', sans-serif !important; }
-        body.lang-TH *:not(i) { font-family: 'Noto Sans Thai', 'Urbanist', sans-serif !important; }
-        body.lang-HI *:not(i) { font-family: 'Noto Sans Devanagari', 'Urbanist', sans-serif !important; }
+        body.lang-ZH, body.lang-ZH *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans SC', 'Urbanist', sans-serif !important; }
+        body.lang-JA, body.lang-JA *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans JP', 'Urbanist', sans-serif !important; }
+        body.lang-KO, body.lang-KO *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans KR', 'Urbanist', sans-serif !important; }
+        body.lang-AR, body.lang-AR *:not(i):not([class*="fa-"]) { font-family: 'Noto Kufi Arabic', 'Urbanist', sans-serif !important; }
+        body.lang-TH, body.lang-TH *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans Thai', 'Urbanist', sans-serif !important; }
+        body.lang-HI, body.lang-HI *:not(i):not([class*="fa-"]) { font-family: 'Noto Sans Devanagari', 'Urbanist', sans-serif !important; }
         body.lang-AR { direction: rtl; }
         .tab-content { display: none; } .tab-content.active { display: block; }
         .launcher-card { transition: all 0.3s ease; } .launcher-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2); }
@@ -481,6 +638,16 @@
         /* Loader overlay */
         body.milio-light-mode #globalLoader { background:rgba(248,250,252,0.9) !important; }
 
+        /* Member Tag System */
+        .member-row-tagged { background: var(--tag-color, transparent) !important; }
+        .member-tag-label { font-style: italic; font-size: 10px; display: block; margin-top: 2px; opacity: 0.85; }
+        .member-checkbox { width: 15px; height: 15px; cursor: pointer; accent-color: #22c55e; }
+        #bulkActionBar { transition: all 0.2s; }
+        .color-swatch { width: 22px; height: 22px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; }
+        .color-swatch:hover, .color-swatch.active { border-color: white; transform: scale(1.2); }
+        .opacity-btn.active { border-color: #22c55e !important; color: #22c55e !important; background: #14532e !important; }
+        body.milio-light-mode .member-tag-label { color: #1e293b !important; }
+
         /* Mobile responsive overrides */
         @media (max-width: 640px) {
             #mainApp { min-height: 100dvh; }
@@ -546,6 +713,36 @@
         let milioFinanceChartInstance = null;
         let memberDisplayLimit = 10;
         let followUpOnlyMode = false;
+        let _activeCardFilter = 'all'; // 'all', 'aktif', 'expired', 'followup'
+
+        function filterByCardClick(type) {
+            // Toggle: klik card yang sama = reset ke all
+            if (_activeCardFilter === type) type = 'all';
+            _activeCardFilter = type;
+
+            // Reset outline semua card
+            ['cardWrapTotal','cardWrapAktif','cardWrapExpired','cardWrapFollow'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) { el.style.outline = ''; el.style.boxShadow = ''; }
+            });
+
+            // Highlight card yang aktif
+            const colorMap = { all:'#60a5fa', aktif:'#4ade80', expired:'#fb923c', followup:'#f87171' };
+            const idMap = { all:'cardWrapTotal', aktif:'cardWrapAktif', expired:'cardWrapExpired', followup:'cardWrapFollow' };
+            if (type !== 'all') {
+                const el = document.getElementById(idMap[type]);
+                if (el) {
+                    el.style.outline = '2px solid ' + colorMap[type];
+                    el.style.boxShadow = '0 0 12px ' + colorMap[type] + '40';
+                }
+            }
+
+            // Sinkronkan followUpOnlyMode
+            followUpOnlyMode = (type === 'followup');
+
+            // Re-render dengan filter card aktif
+            filterDashboard(currentDashboardFilterMode || 'all');
+        }
         let activeFilterCompany = "ALL"; let currentFinanceMode = "all"; let currentDashboardFilterMode = "all";
         let financeFilteredMembers = []; // Hasil filter tab Finance - terpisah dari dashboard
         let financeFilterStart = null; let financeFilterEnd = null; // Simpan range filter aktif
@@ -905,6 +1102,8 @@
         dictionary.ID.lblPusatFollowUp="PUSAT FOLLOW UP"; dictionary.ID.lblMiniChart="Mini Chart 7 Hari";
         dictionary.ID.txtMenampilkan="Menampilkan maksimal {N} data";
         dictionary.ID.txtMenampilkanSemua="Menampilkan semua data"; dictionary.ID.txtModeFU="Mode Pusat Follow Up aktif";
+        dictionary.ID.btnLogin="MASUK KE DASHBOARD"; dictionary.ID.lblUsernamePh="Username kamu"; dictionary.ID.lblOldPassPh="Password lama"; dictionary.ID.lblNewPassPh="Password baru"; dictionary.ID.lblConfirmPassPh="Konfirmasi password baru"; dictionary.ID.lblContactAdminDesc="Masukkan username kamu agar admin bisa memverifikasi akunmu."; dictionary.ID.lblContactAdminPh="Masukkan username kamu..."; dictionary.ID.phEmail="Email / Kode Akses";
+        dictionary.ID.tagColLabel="TAG"; dictionary.ID.tagWarna="Warna Block:"; dictionary.ID.tagOpacity="Opacity:"; dictionary.ID.tagLabel="Label:"; dictionary.ID.tagTerapkan="Terapkan"; dictionary.ID.tagHapusWarna="Hapus Warna"; dictionary.ID.tagHapusLabel="Hapus Label"; dictionary.ID.tagBatal="Batal"; dictionary.ID.tagPlaceholder="Tulis label... (contoh: Member Lama, VIP, Pending)"; dictionary.ID.tagHint="* Klik Terapkan → masukkan password untuk konfirmasi."; dictionary.ID.tagDipilih="dipilih"; dictionary.ID.tagHapusMember="Hapus Member"; dictionary.ID.tagHapusMemberConfirm="Arsipkan {N} member yang dipilih?\nData tidak akan hilang permanen, hanya diarsipkan.\n\nLanjutkan?"; dictionary.ID.lblThemeTitle="Tema Aplikasi"; dictionary.ID.lblThemeDesc="Pilih tema visual dan font. Preview langsung tanpa reload!"; dictionary.ID.lblThemeNote="✨ Tersimpan otomatis. Klik 🌙 ☀️ per kartu untuk ganti mode."; dictionary.ID.lblThemeReset="Reset Default"; dictionary.ID.lblBackupTitle="Backup & Recovery Data"; dictionary.ID.lblBackupDesc="Export semua data kamu ke CSV untuk backup."; dictionary.ID.lblExportAll="Export Semua Data CSV"; dictionary.ID.lblImportRecovery="Import / Recovery CSV"; dictionary.ID.lblBackupNote="⚠️ Import akan mendeteksi data sama & data baru, lalu meminta konfirmasi.";
         dictionary.ID.lblDbReseller="Database Reseller"; dictionary.ID.phResellerNama="Nama Reseller";
         dictionary.ID.phResellerWa="Nomor WA"; dictionary.ID.btnSimpanReseller="SIMPAN";
         dictionary.ID.btnRefreshReseller="REFRESH"; dictionary.ID.btnHapusReseller="Arsipkan";
@@ -928,6 +1127,10 @@
         dictionary.EN.lblPusatFollowUp="FOLLOW UP CENTER"; dictionary.EN.lblMiniChart="7-Day Mini Chart";
         dictionary.EN.txtMenampilkan="Showing max {N} data";
         dictionary.EN.txtMenampilkanSemua="Showing all data"; dictionary.EN.txtModeFU="Follow Up Center mode active";
+        dictionary.EN.btnLogin="LOGIN TO DASHBOARD"; dictionary.EN.lblUsernamePh="Your username"; dictionary.EN.lblOldPassPh="Old password"; dictionary.EN.lblNewPassPh="New password"; dictionary.EN.lblConfirmPassPh="Confirm new password"; dictionary.EN.lblContactAdminDesc="Enter your username so the admin can verify your account."; dictionary.EN.lblContactAdminPh="Enter your username..."; dictionary.EN.phEmail="Email / Access Code";
+        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.tagHapusMember="Delete Members"; dictionary.EN.tagHapusMemberConfirm="Archive {N} selected members?\nData will not be permanently deleted, only archived.\n\nContinue?"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="Auto-saved. Click moon/sun per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="Import will detect duplicate & new data, then ask for confirmation.";
+        dictionary.EN.btnLogin="LOGIN TO DASHBOARD"; dictionary.EN.lblUsernamePh="Your username"; dictionary.EN.lblOldPassPh="Old password"; dictionary.EN.lblNewPassPh="New password"; dictionary.EN.lblConfirmPassPh="Confirm new password"; dictionary.EN.lblContactAdminDesc="Enter your username so the admin can verify your account."; dictionary.EN.lblContactAdminPh="Enter your username..."; dictionary.EN.phEmail="Email / Access Code";
+        dictionary.EN.tagColLabel="TAG"; dictionary.EN.tagWarna="Block Color:"; dictionary.EN.tagOpacity="Opacity:"; dictionary.EN.tagLabel="Label:"; dictionary.EN.tagTerapkan="Apply"; dictionary.EN.tagHapusWarna="Clear Color"; dictionary.EN.tagHapusLabel="Clear Label"; dictionary.EN.tagBatal="Cancel"; dictionary.EN.tagPlaceholder="Write label... (e.g.: Old Member, VIP, Pending)"; dictionary.EN.tagHint="* Click Apply → enter password to confirm."; dictionary.EN.tagDipilih="selected"; dictionary.EN.tagHapusMember="Delete Members"; dictionary.EN.tagHapusMemberConfirm="Archive {N} selected members?\nData will not be permanently deleted, only archived.\n\nContinue?"; dictionary.EN.lblThemeTitle="App Theme"; dictionary.EN.lblThemeDesc="Choose your visual theme and font. Preview instantly!"; dictionary.EN.lblThemeNote="✨ Auto-saved. Click 🌙 ☀️ per card to switch mode."; dictionary.EN.lblThemeReset="Reset Default"; dictionary.EN.lblBackupTitle="Backup & Recovery Data"; dictionary.EN.lblBackupDesc="Export all your data to CSV for backup."; dictionary.EN.lblExportAll="Export All Data CSV"; dictionary.EN.lblImportRecovery="Import / Recovery CSV"; dictionary.EN.lblBackupNote="⚠️ Import will detect duplicate & new data, then ask for confirmation.";
         dictionary.EN.lblDbReseller="Reseller Database"; dictionary.EN.phResellerNama="Reseller Name";
         dictionary.EN.phResellerWa="WA Number"; dictionary.EN.btnSimpanReseller="SAVE";
         dictionary.EN.btnRefreshReseller="REFRESH"; dictionary.EN.btnHapusReseller="Archive";
@@ -1077,7 +1280,8 @@
             bcTitle:"オムニブロードキャストコマンドセンター 📢", bcPlaceholder:"ブロードキャストメッセージを入力してください（最大10,000文字）...",
             bcLockBtn:"ロックしてターゲットを選択 🔒", bcUnlockBtn:"ロック解除してメッセージを編集 🔓",
             bcTargetLabel:"製品バリアント別ターゲットセグメントを選択：",
-            bcGlobalOption:"全メンバー（グローバルブロードキャスト）", bcSendBtn:"WA送信 📲",impTemplateTitle:"📥 テンプレートをダウンロード",impTemplateDesc:"CSV/Excelテンプレートをダウンロードし、会員データを入力してアップロードしてください。",impTplBtnCsv:"⬇️ CSVテンプレートをダウンロード",impTplBtnExcel:"⬇️ Excelテンプレートをダウンロード",impColRequired:"必須",impColOptional:"任意",impColVendor:"ベンダー名",impColPackage:"パッケージ名",impColNumberOnly:"数字のみ",impColDateFmt:"dd/mm/yyyy",impColJenis:"直接ユーザー / リセラー",impColWa:"628xxx",impHeaderWarning:"⚠️ 最初の行が上記のヘッダーと完全に一致することを確認してください。データは2行目から始まります。"
+            bcGlobalOption:"全メンバー（グローバルブロードキャスト）", bcSendBtn:"WA送信 📲",impTemplateTitle:"📥 テンプレートをダウンロード",impTemplateDesc:"CSV/Excelテンプレートをダウンロードし、会員データを入力してアップロードしてください。",impTplBtnCsv:"⬇️ CSVテンプレートをダウンロード",impTplBtnExcel:"⬇️ Excelテンプレートをダウンロード",impColRequired:"必須",impColOptional:"任意",impColVendor:"ベンダー名",impColPackage:"パッケージ名",impColNumberOnly:"数字のみ",impColDateFmt:"dd/mm/yyyy",impColJenis:"直接ユーザー / リセラー",impColWa:"628xxx",impHeaderWarning:"⚠️ 最初の行が上記のヘッダーと完全に一致することを確認してください。データは2行目から始まります。",
+            phEmail:"电子邮件 / 访问码", btnLogin:"登录", lblUsernamePh:"用户名", lblOldPassPh:"旧密码", lblNewPassPh:"新密码", lblConfirmPassPh:"确认新密码", lblContactAdminDesc:"请输入您的用户名，以便管理员验证您的账户。", lblContactAdminPh:"输入用户名...", tagHapusMember:"删除成员", tagHapusMemberConfirm:"归档 {N} 个所选成员？\n数据不会永久删除，仅归档。\n\n继续？", tagColLabel:"标签", tagWarna:"块颜色：", tagOpacity:"不透明度：", tagLabel:"标签：", tagTerapkan:"应用", tagHapusWarna:"清除颜色", tagHapusLabel:"清除标签", tagBatal:"取消", tagPlaceholder:"输入标签...（例：老会员、VIP、待处理）", tagHint:"点击应用 → 输入密码确认。", tagDipilih:"已选择", lblThemeTitle:"应用主题",             lblThemeDesc:"选择视觉主题和字体。无需刷新即可预览！",             lblThemeNote:"✨ 自动保存。点击每张卡片的 🌙 ☀️ 切换模式。",             lblThemeReset:"重置默认",             lblBackupTitle:"备份与恢复数据",             lblBackupDesc:"将所有数据导出为CSV备份。需要时重新导入恢复。",             lblExportAll:"导出所有数据CSV",             lblImportRecovery:"导入/恢复CSV",             lblBackupNote:"⚠️ 导入时将检测重复和新数据，执行前请确认。"
         });
         dictionary.KO = Object.assign({}, dictionary.EN, {
             monitor:"고객 모니터", finance:"재무 분석", input:"신규 회원 추가", import:"Excel 대량 가져오기", master:"제품 및 벤더", settings:"고급 시스템 재설정",
@@ -1143,7 +1347,16 @@
             bcTitle:"옴니브로드캐스트 커맨드 센터 📢", bcPlaceholder:"브로드캐스트 메시지를 입력하세요（최대 10,000자）...",
             bcLockBtn:"잠금 및 대상 선택 🔒", bcUnlockBtn:"잠금 해제 및 메시지 편집 🔓",
             bcTargetLabel:"제품 변형별 대상 세그먼트 선택：",
-            bcGlobalOption:"전체 회원（글로벌 브로드캐스트）", bcSendBtn:"WA 전송 📲",impTemplateTitle:"📥 템플릿 다운로드",impTemplateDesc:"CSV/Excel 템플릿을 다운로드하고 회원 데이터를 입력한 후 업로드하세요.",impTplBtnCsv:"⬇️ CSV 템플릿 다운로드",impTplBtnExcel:"⬇️ Excel 템플릿 다운로드",impColRequired:"필수",impColOptional:"선택",impColVendor:"벤더 이름",impColPackage:"패키지 이름",impColNumberOnly:"숫자만",impColDateFmt:"dd/mm/yyyy",impColJenis:"직접 사용자 / 리셀러",impColWa:"628xxx",impHeaderWarning:"⚠️ 첫 번째 행이 위의 헤더와 정확히 일치해야 합니다. 데이터는 2행부터 시작합니다."
+            bcGlobalOption:"전체 회원（글로벌 브로드캐스트）", bcSendBtn:"WA 전송 📲",impTemplateTitle:"📥 템플릿 다운로드",impTemplateDesc:"CSV/Excel 템플릿을 다운로드하고 회원 데이터를 입력한 후 업로드하세요.",impTplBtnCsv:"⬇️ CSV 템플릿 다운로드",impTplBtnExcel:"⬇️ Excel 템플릿 다운로드",impColRequired:"필수",impColOptional:"선택",impColVendor:"벤더 이름",impColPackage:"패키지 이름",impColNumberOnly:"숫자만",impColDateFmt:"dd/mm/yyyy",impColJenis:"직접 사용자 / 리셀러",impColWa:"628xxx",impHeaderWarning:"⚠️ 첫 번째 행이 위의 헤더와 정확히 일치해야 합니다. 데이터는 2행부터 시작합니다.",
+            phEmail:"이메일 / 액세스 코드", btnLogin:"로그인", lblUsernamePh:"사용자명", lblOldPassPh:"이전 비밀번호", lblNewPassPh:"새 비밀번호", lblConfirmPassPh:"새 비밀번호 확인", lblContactAdminDesc:"관리자가 계정을 확인할 수 있도록 사용자명을 입력하세요.", lblContactAdminPh:"사용자명 입력...", tagHapusMember:"멤버 삭제", tagHapusMemberConfirm:"선택한 {N}명의 회원을 보관하시겠습니까?\n데이터는 영구 삭제되지 않고 보관됩니다.\n\n계속하시겠습니까?", tagColLabel:"태그", tagWarna:"블록 색상:", tagOpacity:"불투명도:", tagLabel:"레이블:", tagTerapkan:"적용", tagHapusWarna:"색상 지우기", tagHapusLabel:"레이블 지우기", tagBatal:"취소", tagPlaceholder:"레이블 입력... (예: 오래된 회원, VIP, 대기중)", tagHint:"적용 클릭 → 비밀번호 입력 후 확인.", tagDipilih:"선택됨", lblThemeTitle:"앱 테마", lblThemeDesc:"시각 테마와 폰트를 선택하세요. 새로고침 없이 바로 미리보기!",
+            lblThemeNote:"✨ 자동 저장. 카드당 🌙 ☀️ 클릭으로 모드 변경.", lblThemeReset:"기본값으로 재설정",
+            lblBackupTitle:"백업 및 복구 데이터", lblBackupDesc:"모든 데이터를 CSV로 내보내기. 필요시 다시 가져와 복구하세요.",
+            lblExportAll:"전체 데이터 CSV 내보내기", lblImportRecovery:"가져오기 / 복구 CSV",
+            lblBackupNote:"⚠️ 가져오기 시 중복 및 새 데이터를 감지하고 실행 전 확인을 요청합니다.",
+            lblLogoBrand:"브랜드 로고", lblUploadImg:"이미지 업로드",
+            lblForgotPass:"비밀번호 분실/변경?", lblRememberPass:"이전 비밀번호 기억 → 변경",
+            lblForgotContact:"비밀번호 분실 → 관리자 문의", lblSendToAdmin:"관리자에게 전송",
+            lblChangePass:"비밀번호 변경", lblSaveNewPass:"새 비밀번호 저장"
         });
         dictionary.AR = Object.assign({}, dictionary.EN, {
             monitor:"مراقبة العملاء", finance:"التحليل المالي", input:"إضافة عضو جديد", import:"استيراد Excel", master:"المنتجات والموردون", settings:"إعادة تعيين متقدمة",
@@ -1209,7 +1422,8 @@
             bcTitle:"مركز قيادة البث الشامل 📢", bcPlaceholder:"اكتب رسالة البث هنا...",
             bcLockBtn:"قفل وتحديد الهدف 🔒", bcUnlockBtn:"فتح القفل وتعديل الرسالة 🔓",
             bcTargetLabel:"تحديد شريحة الهدف حسب متغير المنتج:",
-            bcGlobalOption:"جميع الأعضاء (بث عالمي)", bcSendBtn:"إرسال واتساب 📲",impTemplateTitle:"📥 تحميل القالب",impTemplateDesc:"قم بتنزيل قالب CSV/Excel وأدخل بيانات الأعضاء ثم ارفعه هنا.",impTplBtnCsv:"⬇️ تحميل قالب CSV",impTplBtnExcel:"⬇️ تحميل قالب Excel",impColRequired:"مطلوب",impColOptional:"اختياري",impColVendor:"اسم المورد",impColPackage:"اسم الباقة",impColNumberOnly:"أرقام فقط",impColDateFmt:"dd/mm/yyyy",impColJenis:"مستخدم مباشر / موزع",impColWa:"628xxx",impHeaderWarning:"⚠️ تأكد من أن الصف الأول هو الرأس المحدد أعلاه. تبدأ البيانات من الصف 2."
+            bcGlobalOption:"جميع الأعضاء (بث عالمي)", bcSendBtn:"إرسال واتساب 📲",impTemplateTitle:"📥 تحميل القالب",impTemplateDesc:"قم بتنزيل قالب CSV/Excel وأدخل بيانات الأعضاء ثم ارفعه هنا.",impTplBtnCsv:"⬇️ تحميل قالب CSV",impTplBtnExcel:"⬇️ تحميل قالب Excel",impColRequired:"مطلوب",impColOptional:"اختياري",impColVendor:"اسم المورد",impColPackage:"اسم الباقة",impColNumberOnly:"أرقام فقط",impColDateFmt:"dd/mm/yyyy",impColJenis:"مستخدم مباشر / موزع",impColWa:"628xxx",impHeaderWarning:"⚠️ تأكد من أن الصف الأول هو الرأس المحدد أعلاه. تبدأ البيانات من الصف 2.",
+            phEmail:"البريد الإلكتروني / رمز الوصول", btnLogin:"تسجيل الدخول", lblUsernamePh:"اسم المستخدم", lblOldPassPh:"كلمة المرور القديمة", lblNewPassPh:"كلمة المرور الجديدة", lblConfirmPassPh:"تأكيد كلمة المرور الجديدة", lblContactAdminDesc:"أدخل اسم المستخدم حتى يتمكن المسؤول من التحقق من حسابك.", lblContactAdminPh:"أدخل اسم المستخدم...", tagColLabel:"علامة", tagWarna:"لون الكتلة:", tagOpacity:"الشفافية:", tagLabel:"التسمية:", tagTerapkan:"تطبيق", tagHapusWarna:"مسح اللون", tagHapusLabel:"مسح التسمية", tagBatal:"إلغاء", tagPlaceholder:"اكتب تسمية... (مثل: عضو قديم، VIP، معلق)", tagHint:"انقر تطبيق → أدخل كلمة المرور للتأكيد.", tagDipilih:"محدد", tagHapusMember:"حذف الأعضاء", tagHapusMemberConfirm:"أرشفة {N} من الأعضاء المحددين?\nلن يُحذف البيانات نهائياً، سيتم أرشفتها فقط.\n\nهل تريد المتابعة?", tagColLabel:"Tag", tagWarna:"Warna Blok:", tagOpacity:"Kelegapan:", tagLabel:"Label:", tagTerapkan:"Guna", tagHapusWarna:"Padam Warna", tagHapusLabel:"Padam Label", tagBatal:"Batal", tagPlaceholder:"Tulis label...", tagHint:"Klik Guna → masukkan kata laluan.", tagDipilih:"dipilih", lblThemeTitle:"سمة التطبيق",             lblThemeDesc:"اختر السمة البصرية والخط. معاينة فورية!",             lblThemeNote:"✨ يُحفظ تلقائياً. انقر 🌙 ☀️ لتبديل الوضع.",             lblThemeReset:"إعادة الضبط الافتراضي",             lblBackupTitle:"النسخ الاحتياطي والاستعادة",             lblBackupDesc:"تصدير جميع البيانات إلى CSV.",             lblExportAll:"تصدير كل البيانات CSV",             lblImportRecovery:"استيراد / استعادة CSV",             lblBackupNote:"⚠️ سيكتشف الاستيراد البيانات المكررة ويطلب التأكيد."
         });
         // Bahasa lain - EN + override
         var _otherLangs = {
@@ -1368,8 +1582,13 @@
 
         // FONT SYSTEM PER BAHASA
         function applyLanguageFont(lang) {
-            document.body.className = document.body.className.replace(/\blang-\S+/g, '').trim();
-            if (["ZH","JA","KO","AR","TH","HI"].indexOf(lang) >= 0) document.body.classList.add('lang-' + lang);
+            // Hapus hanya class lang-, JANGAN sentuh class theme/lainnya
+            ["ZH","JA","KO","AR","TH","HI"].forEach(function(l) {
+                document.body.classList.remove('lang-' + l);
+            });
+            if (["ZH","JA","KO","AR","TH","HI"].indexOf(lang) >= 0) {
+                document.body.classList.add('lang-' + lang);
+            }
         }
         const _THEME_DARK  = {ID:"Mode Gelap",EN:"Dark Mode",ZH:"深色模式",JA:"ダークモード",KO:"다크 모드",AR:"الوضع الداكن",TH:"โหมดมืด",VI:"Chế độ tối",HI:"डार्क मोड",MS:"Mod Gelap",ES:"Modo Oscuro",FR:"Mode Sombre",PT:"Modo Escuro",DE:"Dunkler Modus",TR:"Karanlık Mod",FIL:"Dark Mode"};
         const _THEME_LIGHT = {ID:"Mode Terang",EN:"Light Mode",ZH:"浅色模式",JA:"ライトモード",KO:"라이트 모드",AR:"الوضع الفاتح",TH:"โหมดสว่าง",VI:"Chế độ sáng",HI:"लाइट मोड",MS:"Mod Terang",ES:"Modo Claro",FR:"Mode Clair",PT:"Modo Claro",DE:"Heller Modus",TR:"Açık Mod",FIL:"Light Mode"};
@@ -1423,7 +1642,7 @@
             if(document.getElementById('lblMiniChart')) document.getElementById('lblMiniChart').innerText = translation.lblMiniChart || "Mini Chart 7 Hari";
             // Header tabel member
             var _mth = document.getElementById('memberTableHead');
-            if(_mth && _mth.cells.length>=9){_mth.cells[0].innerText=translation.thNama;_mth.cells[1].innerText=translation.thKontak;_mth.cells[2].innerText=translation.thProduk;
+            if(_mth && _mth.cells.length>=9){_mth.cells[1].innerText=translation.thNama;_mth.cells[2].innerText=translation.thKontak;_mth.cells[3].innerText=translation.thProduk;
             // cells[3] = Profit — update label saja, jangan timpa tombol toggle
             var _profLbl=document.getElementById('thProfitLabel');
             if(_profLbl) _profLbl.innerText=translation.thProfit;
@@ -1525,14 +1744,14 @@
             });
             
             const ths = document.querySelectorAll('#tab-dashboard table thead tr th');
-            if(ths && ths.length >= 9) {
-                ths[0].innerText = translation.thNama; ths[1].innerText = translation.thKontak;
-                ths[2].innerText = translation.thProduk;
-                // ths[3] = Profit — jangan timpa, update label saja agar tombol 👁 tidak hilang
+            if(ths && ths.length >= 10) {
+                // ths[0] = TAG checkbox - skip
+                ths[1].innerText = translation.thNama; ths[2].innerText = translation.thKontak;
+                ths[3].innerText = translation.thProduk;
                 var _pLbl = document.getElementById('thProfitLabel');
                 if(_pLbl) _pLbl.innerText = translation.thProfit;
-                ths[4].innerText = translation.thDaftar; ths[5].innerText = translation.thBerakhir;
-                ths[6].innerText = translation.thSisa; ths[7].innerText = translation.thInv; ths[8].innerText = translation.thAksi;
+                ths[5].innerText = translation.thDaftar; ths[6].innerText = translation.thBerakhir;
+                ths[7].innerText = translation.thSisa; ths[8].innerText = translation.thInv; ths[9].innerText = translation.thAksi;
             }
 
             const modalTitleEl = document.querySelector('#editFormModalModal h3');
@@ -1558,6 +1777,7 @@
             if(document.getElementById('inpTitle')) document.getElementById('inpTitle').innerText = translation.inpTitle;
             if(document.getElementById('inpSubtitle')) document.getElementById('inpSubtitle').innerText = translation.inpSubtitle;
             if(document.getElementById('formNama')) document.getElementById('formNama').placeholder = translation.phNamaMember;
+            if(document.getElementById('formEmail')) document.getElementById('formEmail').placeholder = translation.phEmail||'Email / Kode Akses';
             
             const formJenis = document.getElementById('formJenis');
             if(formJenis && formJenis.options.length >= 2) {
@@ -1641,6 +1861,108 @@
             if(document.getElementById('setCurrencySelector')) document.getElementById('setCurrencySelector').value = clientCurrency;
             
             renderMasterCompanyList();
+
+            // ============================================================
+            // TAG SYSTEM MULTILANG
+            // ============================================================
+            if(document.getElementById('tagDipilihLbl')) document.getElementById('tagDipilihLbl').innerText = translation.tagDipilih||'dipilih';
+            if(document.getElementById('tagTerapkanLbl')) document.getElementById('tagTerapkanLbl').innerText = translation.tagTerapkan||'Terapkan';
+            if(document.getElementById('tagHapusWarnaLbl')) document.getElementById('tagHapusWarnaLbl').innerText = translation.tagHapusWarna||'Hapus Warna';
+            if(document.getElementById('tagHapusLabelLbl')) document.getElementById('tagHapusLabelLbl').innerText = translation.tagHapusLabel||'Hapus Label';
+            if(document.getElementById('tagBatalLbl')) document.getElementById('tagBatalLbl').innerText = translation.tagBatal||'Batal';
+            if(document.getElementById('tagWarnaLbl')) document.getElementById('tagWarnaLbl').innerText = translation.tagWarna||'Warna Block:';
+            if(document.getElementById('tagOpacityLbl')) document.getElementById('tagOpacityLbl').innerText = translation.tagOpacity||'Opacity:';
+            if(document.getElementById('tagLabelLbl')) document.getElementById('tagLabelLbl').innerText = translation.tagLabel||'Label:';
+            if(document.getElementById('bulkLabelInput')) document.getElementById('bulkLabelInput').placeholder = translation.tagPlaceholder||'Tulis label...';
+            if(document.getElementById('tagHintLbl')) document.getElementById('tagHintLbl').innerHTML = '* ' + (translation.tagHint||'Klik Terapkan → masukkan password untuk konfirmasi.');
+            // Re-apply tag visuals untuk update warna label sesuai tema
+            if(typeof applyTagVisuals === 'function') setTimeout(applyTagVisuals, 50);
+            if(document.getElementById('tagHapusMemberLbl')) document.getElementById('tagHapusMemberLbl').innerText = translation.tagHapusMember||'Hapus Member';
+
+            // ============================================================
+            // MULTILANG COMPLETENESS - Semua elemen kecil
+            // ============================================================
+
+            // Login screen
+            if(document.getElementById('btnLogin')) document.getElementById('btnLogin').innerText = translation.btnLogin||'MASUK KE DASHBOARD';
+            if(document.getElementById('lblForgotPassBtn')) document.getElementById('lblForgotPassBtn').innerText = translation.lblForgotPass||'Lupa / Ganti Password?';
+            if(document.getElementById('lblRememberPassBtn')) document.getElementById('lblRememberPassBtn').innerText = translation.lblRememberPass||'Ingat Password Lama → Ganti Password Baru';
+            if(document.getElementById('lblForgotContactBtn')) document.getElementById('lblForgotContactBtn').innerText = translation.lblForgotContact||'Lupa Password → Hubungi Admin';
+            if(document.getElementById('lblContactAdminDescEl')) document.getElementById('lblContactAdminDescEl').innerText = translation.lblContactAdminDesc||'Masukkan username kamu agar admin bisa memverifikasi akunmu.';
+            if(document.getElementById('contactAdminUsername')) document.getElementById('contactAdminUsername').placeholder = translation.lblContactAdminPh||'Masukkan username kamu...';
+            if(document.getElementById('lblSendToAdminBtn')) document.getElementById('lblSendToAdminBtn').innerText = translation.lblSendToAdmin||'Kirim ke Admin';
+            if(document.getElementById('lblChangePassTitle')) document.getElementById('lblChangePassTitle').innerText = translation.lblChangePass||'Ganti Password';
+            if(document.getElementById('cpUsername')) document.getElementById('cpUsername').placeholder = translation.lblUsernamePh||'Username kamu';
+            if(document.getElementById('cpOldPass')) document.getElementById('cpOldPass').placeholder = translation.lblOldPassPh||'Password lama';
+            if(document.getElementById('cpNewPass')) document.getElementById('cpNewPass').placeholder = translation.lblNewPassPh||'Password baru';
+            if(document.getElementById('cpConfirmPass')) document.getElementById('cpConfirmPass').placeholder = translation.lblConfirmPassPh||'Konfirmasi password baru';
+            if(document.getElementById('btnSaveNewPass')) document.getElementById('btnSaveNewPass').innerText = translation.lblSaveNewPass||'Simpan Password Baru';
+            if(document.getElementById('btnCancelChangePass')) document.getElementById('btnCancelChangePass').innerText = translation.btnBatalEdit||'Batal';
+            if(document.getElementById('btnCancelContactAdmin')) document.getElementById('btnCancelContactAdmin').innerText = translation.btnBatalEdit||'Batal';
+
+            // Placeholders yang belum di-handle
+            if(document.getElementById('resellerNamaInput')) document.getElementById('resellerNamaInput').placeholder = translation.phResellerNama||'Nama Reseller';
+            if(document.getElementById('resellerWaInput')) document.getElementById('resellerWaInput').placeholder = translation.phResellerWa||'Nomor WA';
+            if(document.getElementById('setBrandName')) document.getElementById('setBrandName').placeholder = translation.phNamaBrand||'Nama Brand';
+            if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = translation.phSearchMember||'Cari nama, email, wa...';
+
+            // Settings - Logo, Theme, Backup
+            if(document.getElementById('lblLogoBrandEl')) document.getElementById('lblLogoBrandEl').innerText = translation.lblLogoBrand||'Logo Brand';
+            if(document.getElementById('setLogoUrl')) document.getElementById('setLogoUrl').placeholder = translation.lblLogoUrlPh||'Paste URL logo atau upload gambar...';
+            if(document.getElementById('lblUploadImgBtn')) document.getElementById('lblUploadImgBtn').innerText = translation.lblUploadImg||'Upload Gambar';
+            if(document.getElementById('lblThemeTitle')) document.getElementById('lblThemeTitle').innerText = translation.lblThemeTitle||'Tema Tampilan';
+            var _thDesc = document.getElementById('lblThemeDescEl');
+            if(_thDesc) _thDesc.innerText = translation.lblThemeDesc||'Pilih tema visual dan font yang kamu suka.';
+            if(document.getElementById('lblThemeNote')) document.getElementById('lblThemeNote').innerText = translation.lblThemeNote||'✨ Tersimpan otomatis.';
+            if(document.getElementById('lblBackupTitleEl')) document.getElementById('lblBackupTitleEl').innerHTML = '<i class="fa-solid fa-database"></i> ' + (translation.lblBackupTitle||'Backup & Recovery Data');
+            if(document.getElementById('lblBackupDescEl')) document.getElementById('lblBackupDescEl').innerText = translation.lblBackupDesc||'Export semua data kamu ke CSV untuk backup.';
+            if(document.getElementById('lblExportAllBtn')) document.getElementById('lblExportAllBtn').innerText = translation.lblExportAll||'Export Semua Data CSV';
+            if(document.getElementById('lblImportRecoveryBtn')) document.getElementById('lblImportRecoveryBtn').innerText = translation.lblImportRecovery||'Import / Recovery CSV';
+            if(document.getElementById('lblBackupNoteEl')) document.getElementById('lblBackupNoteEl').innerText = translation.lblBackupNote||'⚠️ Import akan mendeteksi data sama & data baru.';
+
+            // Dashboard - cards & filter
+            if(document.getElementById('p-total')) document.getElementById('p-total').innerText = translation.pTotal||'Total Data Member';
+            if(document.getElementById('p-aktif')) document.getElementById('p-aktif').innerText = translation.aktifSales||'Member Penjualan Aktif';
+            if(document.getElementById('p-expired')) document.getElementById('p-expired').innerText = translation.pExpired||'Member Expired';
+            if(document.getElementById('p-follow')) document.getElementById('p-follow').innerText = translation.followUp||'Butuh Followup';
+            if(document.getElementById('p-profit')) document.getElementById('p-profit').innerText = translation.netProfit||'Total Untung Terfilter';
+            if(document.getElementById('memberDisplayInfo')) document.getElementById('memberDisplayInfo').innerText = translation.txtMenampilkan ? translation.txtMenampilkan.replace('{N}', memberDisplayLimit||10) : 'Menampilkan data';
+
+            // Broadcast table header (re-apply saat tab dibuka)
+            var _bth2 = document.getElementById('broadcastTableHead');
+            if(_bth2 && _bth2.cells && _bth2.cells.length >= 4) {
+                _bth2.cells[0].innerText = translation.thBcNama||'Nama Member';
+                _bth2.cells[1].innerText = translation.thBcKontak||'WhatsApp / Email';
+                _bth2.cells[2].innerText = translation.thBcVarian||'Varian Paket Mitra';
+                _bth2.cells[3].innerText = translation.thBcAksi||'Aksi Broadcast';
+            }
+
+            // Finance labels
+            if(document.getElementById('finOmsetLabel')) document.getElementById('finOmsetLabel').innerText = translation.lblFinOmset||'Total Omset Terfilter (Gross)';
+            if(document.getElementById('finModalLabel')) document.getElementById('finModalLabel').innerText = translation.lblFinModal||'Total Pengeluaran Modal';
+            if(document.getElementById('finCuanLabel')) document.getElementById('finCuanLabel').innerText = translation.lblFinCuan||'Cuan Bersih (Net Profit)';
+
+            // Edit modal labels
+            if(document.getElementById('lblEditEmail')) document.getElementById('lblEditEmail').innerText = translation.lblEditEmail||'Email Akses';
+            if(document.getElementById('lblEditJenis')) document.getElementById('lblEditJenis').innerText = translation.lblEditJenis||'Jenis Pembeli';
+            if(document.getElementById('lblEditMitra')) document.getElementById('lblEditMitra').innerText = translation.lblEditMitra||'Mitra';
+            if(document.getElementById('lblEditPaket')) document.getElementById('lblEditPaket').innerText = translation.lblEditPaket||'Paket';
+            if(document.getElementById('lblEditDurasi')) document.getElementById('lblEditDurasi').innerText = translation.lblEditDurasi||'Durasi (Hari)';
+            if(document.getElementById('btnBatalEdit')) document.getElementById('btnBatalEdit').innerText = translation.btnBatalEdit||'Batal';
+            if(document.getElementById('btnSimpanMutasi')) document.getElementById('btnSimpanMutasi').innerText = translation.btnSimpanMutasi||'Simpan Mutasi Pembukuan';
+
+            // Renew modal labels
+            if(document.getElementById('lblRenewDurasi')) document.getElementById('lblRenewDurasi').innerText = translation.lblRenewDurasi||'Durasi Hari Baru';
+            if(document.getElementById('lblRenewMitra')) document.getElementById('lblRenewMitra').innerText = translation.lblRenewMitra||'Pilih Mitra Vendor';
+            if(document.getElementById('btnBatalRenew')) document.getElementById('btnBatalRenew').innerText = translation.btnBatalRenew||'Batal';
+            if(document.getElementById('btnSimpanRenew')) document.getElementById('btnSimpanRenew').innerText = translation.btnSimpanRenew||'Proses Perpanjang/Upgrade 🚀';
+
+            // Master/Produk labels (re-apply)
+            if(document.getElementById('mstWhitelabelTitle')) document.getElementById('mstWhitelabelTitle').innerText = translation.mstWhitelabelTitle||'Whitelabel Identity';
+            if(document.getElementById('btnSaveBrand')) document.getElementById('btnSaveBrand').innerText = translation.btnSaveBrand||'Simpan Brand';
+            if(document.getElementById('btnLockPrefs')) document.getElementById('btnLockPrefs').innerText = (translation.btnLockPrefs||'Kunci Preferences Akun') + ' 🔒';
+
+        
         }
     </script>
 
@@ -1862,11 +2184,82 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto -mx-2 sm:mx-0 rounded-xl border border-slate-800/80">
+                    <!-- BULK ACTION BAR -->
+                <div id="bulkActionBar" class="hidden bg-slate-900 border border-green-500/30 rounded-xl p-3 mb-2 shadow-lg space-y-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-green-400 font-bold text-xs"><i class="fa-solid fa-check-square"></i> <span id="bulkCount">0</span> <span id="tagDipilihLbl">dipilih</span></span>
+                        <div class="flex-1"></div>
+                        <button onclick="applyBulkTag()" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-check"></i> <span id="tagTerapkanLbl">Terapkan</span>
+                        </button>
+                        <button onclick="resetBulkColor()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-orange-500/50 text-slate-400 hover:text-orange-400 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-fill-drip"></i> <span id="tagHapusWarnaLbl">Hapus Warna</span>
+                        </button>
+                        <button onclick="resetBulkLabel()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-pink-500/50 text-slate-400 hover:text-pink-400 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-tag"></i> <span id="tagHapusLabelLbl">Hapus Label</span>
+                        </button>
+                        <button onclick="clearAllSelections()" class="text-slate-500 hover:text-red-400 text-xs font-bold px-2 py-1.5"><i class="fa-solid fa-xmark"></i> <span id="tagBatalLbl">Batal</span></button>
+                        <button onclick="deleteBulkMembers()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-trash-can"></i> <span id="tagHapusMemberLbl">Hapus Member</span>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Warna -->
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span id="tagWarnaLbl" class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Warna Block:</span>
+                            <div class="flex gap-1 flex-wrap" id="colorSwatchContainer">
+                                <!-- Gelap -->
+                                <div class="color-swatch" id="sw_1e3a2f" style="background:#1e3a2f" onclick="selectTagColor('#1e3a2f')" title="Hijau Hutan"></div>
+                                <div class="color-swatch" id="sw_0d2137" style="background:#0d2137" onclick="selectTagColor('#0d2137')" title="Biru Navy"></div>
+                                <div class="color-swatch" id="sw_1e1433" style="background:#1e1433" onclick="selectTagColor('#1e1433')" title="Ungu Gelap"></div>
+                                <div class="color-swatch" id="sw_2d0f0f" style="background:#2d0f0f" onclick="selectTagColor('#2d0f0f')" title="Merah Gelap"></div>
+                                <div class="color-swatch" id="sw_2d1a07" style="background:#2d1a07" onclick="selectTagColor('#2d1a07')" title="Oranye Gelap"></div>
+                                <div class="color-swatch" id="sw_1a1a0a" style="background:#1a1a0a" onclick="selectTagColor('#1a1a0a')" title="Kuning Gelap"></div>
+                                <div class="color-swatch" id="sw_0d1a1a" style="background:#0d1a1a" onclick="selectTagColor('#0d1a1a')" title="Cyan Gelap"></div>
+                                <div class="color-swatch" id="sw_1a0d1a" style="background:#1a0d1a" onclick="selectTagColor('#1a0d1a')" title="Magenta Gelap"></div>
+                                <!-- Sedang -->
+                                <div class="color-swatch" id="sw_14532e" style="background:#14532e" onclick="selectTagColor('#14532e')" title="Hijau Emerald"></div>
+                                <div class="color-swatch" id="sw_1e3a5f" style="background:#1e3a5f" onclick="selectTagColor('#1e3a5f')" title="Biru Medium"></div>
+                                <div class="color-swatch" id="sw_3b0764" style="background:#3b0764" onclick="selectTagColor('#3b0764')" title="Violet"></div>
+                                <div class="color-swatch" id="sw_450a0a" style="background:#450a0a" onclick="selectTagColor('#450a0a')" title="Merah Ruby"></div>
+                                <div class="color-swatch" id="sw_431407" style="background:#431407" onclick="selectTagColor('#431407')" title="Burnt Orange"></div>
+                                <div class="color-swatch" id="sw_365314" style="background:#365314" onclick="selectTagColor('#365314')" title="Lime Gelap"></div>
+                                <div class="color-swatch" id="sw_0c4a6e" style="background:#0c4a6e" onclick="selectTagColor('#0c4a6e')" title="Sky Gelap"></div>
+                                <div class="color-swatch" id="sw_831843" style="background:#831843" onclick="selectTagColor('#831843')" title="Rose Gelap"></div>
+                                <!-- Custom picker -->
+                                <label class="color-swatch flex items-center justify-center bg-slate-800 border border-slate-600" title="Warna custom" style="overflow:hidden;">
+                                    <i class="fa-solid fa-eyedropper text-[9px] text-slate-300 pointer-events-none"></i>
+                                    <input type="color" id="customColorPicker" value="#1e3a2f" class="absolute opacity-0 w-6 h-6 cursor-pointer" onchange="selectTagColor(this.value)">
+                                </label>
+                            </div>
+                            <span id="selectedColorPreview" class="text-[10px] text-slate-500 hidden">● <span id="selectedColorHex"></span></span>
+                        </div>
+                        <!-- Opacity -->
+                        <div class="flex items-center gap-1.5">
+                            <span id="tagOpacityLbl" class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Opacity:</span>
+                            <div class="flex gap-1">
+                                <button onclick="selectTagOpacity(0.30)" id="opBtn30" class="opacity-btn bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-lg hover:border-green-500 hover:text-green-400 transition">30%</button>
+                                <button onclick="selectTagOpacity(0.50)" id="opBtn50" class="opacity-btn bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-lg hover:border-green-500 hover:text-green-400 transition">50%</button>
+                                <button onclick="selectTagOpacity(0.75)" id="opBtn75" class="opacity-btn bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-lg hover:border-green-500 hover:text-green-400 transition">75%</button>
+                                <button onclick="selectTagOpacity(1.00)" id="opBtn100" class="opacity-btn bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-lg hover:border-green-500 hover:text-green-400 transition active">100%</button>
+                            </div>
+                        </div>
+                        <!-- Label -->
+                        <div class="flex items-center gap-1.5 flex-1 min-w-48">
+                            <span id="tagLabelLbl" class="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Label:</span>
+                            <input type="text" id="bulkLabelInput" placeholder="Tulis label... (contoh: Member Lama, VIP, Pending)" maxlength="40"
+                                class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-green-500">
+                        </div>
+                    </div>
+                    <p id="tagHintLbl" class="text-[10px] text-slate-600 italic">* Klik <b class="text-green-500">Terapkan</b> → masukkan password untuk konfirmasi.</p>
+                </div>
+
+                <div class="overflow-x-auto -mx-2 sm:mx-0 rounded-xl border border-slate-800/80">
                         <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
                             <thead>
                                 <tr id="memberTableHead" class="text-slate-500 text-xs uppercase font-bold border-b border-slate-800 bg-slate-950/40">
-                                    <th class="p-3">Nama Member</th><th class="p-3">WhatsApp / Email</th><th class="p-3">Mitra &amp; Produk</th>
+                                    <th class="p-2 w-10 text-center"><input type="checkbox" id="checkAllMembers" class="member-checkbox" onclick="toggleSelectAll(this)" title="Pilih semua"></th>
+                                    <th class="p-3" id="thNamaMember">Nama Member</th><th class="p-3" id="thKontakMember">WhatsApp / Email</th><th class="p-3">Mitra &amp; Produk</th>
                                     <th class="p-3 font-mono">
                                         <span id="thProfitLabel">Profit</span>
                                     </th>
@@ -1957,7 +2350,7 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="email" id="formEmail" placeholder="Email" required class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
+                        <input type="text" id="formEmail" placeholder="Email / Kode Akses" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
                         <select id="formJenis" onchange="autoFillPrices(); toggleResellerChooser();" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -2220,7 +2613,7 @@
                 <div><label class="text-xs text-slate-500 block mb-1">WhatsApp</label><input type="text" id="editFormWA" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
             </div>
             <div class="grid grid-cols-2 gap-3 text-sm">
-                <div><label id="lblEditEmail" class="text-xs text-slate-500 block mb-1">Email Akses</label><input type="email" id="editFormEmail" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
+                <div><label id="lblEditEmail" class="text-xs text-slate-500 block mb-1">Email Akses</label><input type="text" id="editFormEmail" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white outline-none"></div>
                 <div><label id="lblEditJenis" class="text-xs text-slate-500 block mb-1">Jenis Pembeli</label><select id="editFormJenis" onchange="autoFillEditPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"><option value="User Langsung">User Langsung</option><option value="Reseller">Reseller</option></select></div>
             </div>
             <div class="grid grid-cols-3 gap-3 text-sm">
@@ -2345,6 +2738,9 @@
                 } else if (tabId === 'finance') {
                     filterFinance(currentFinanceMode);
                 }
+                
+                // Re-apply bahasa setiap pindah tab agar semua elemen ter-translate
+                if (typeof applyGlobalLanguageUI === 'function') applyGlobalLanguageUI();
                 
                 // 3. Matikan Animasi Loading
                 if(loader) loader.classList.add('hidden');
@@ -2895,19 +3291,19 @@
         }
 
         async function refreshMembersList() {
-            var _mr2=await sbG("members","owner_user_id=eq."+currentUser.userId+"&or=(deleted_flag.eq.,deleted_flag.is.null)&order=timestamp.desc&select=*&limit=2000");
-            const res={status:"success",data:(_mr2||[]).map(function(m){return {rowId:m.id,timestamp:m.timestamp,createdAt:m.created_at||m.timestamp,namaMember:m.nama_member,noWhatsapp:m.no_whatsapp,email:m.email,perusahaan:m.perusahaan_sumber,namaPaket:m.nama_paket,jenisPembeli:m.jenis_pembeli,hargaBeli:parseFloat(m.harga_beli_saat_ini)||0,hargaJual:parseFloat(m.harga_jual_saat_ini)||0,profit:parseFloat(m.profit_terkunci)||0,tglExpired:m.tgl_expired,status:m.status,lastFuDate:m.last_fu_date,currencyCode:m.currency_code||"IDR"};})};
-            const response={ok:true}; 
-            if(res.status === "success") { 
-                membersData = res.data; 
-                saveMilioMembersCache();
-                if (document.getElementById('tab-dashboard').classList.contains('active')) {
-                    filterDashboard(currentDashboardFilterMode);
-                } else {
-                    filterFinance(currentFinanceMode); 
-                }
-                renderMilioFinanceChart();
-            }
+            var _mr2 = await sbG("members","owner_user_id=eq."+currentUser.userId+"&deleted_flag=neq.DELETED&deleted_flag=neq.SOFT_DELETED&order=timestamp.desc&select=*");
+            if (!Array.isArray(_mr2)) _mr2 = [];
+            membersData = _mr2.map(function(m){ return {
+                rowId:m.id, timestamp:m.timestamp, createdAt:m.created_at||m.timestamp,
+                namaMember:m.nama_member, noWhatsapp:m.no_whatsapp, email:m.email,
+                perusahaan:m.perusahaan_sumber, namaPaket:m.nama_paket, jenisPembeli:m.jenis_pembeli,
+                hargaBeli:parseFloat(m.harga_beli_saat_ini)||0, hargaJual:parseFloat(m.harga_jual_saat_ini)||0,
+                profit:parseFloat(m.profit_terkunci)||0, tglExpired:m.tgl_expired,
+                status:m.status||'Aktif', lastFuDate:m.last_fu_date, currencyCode:m.currency_code||"IDR"
+            };});
+            saveMilioMembersCache();
+            filterDashboard(currentDashboardFilterMode || 'all');
+            if (typeof renderMilioFinanceChart === 'function') renderMilioFinanceChart();
         }
 
         function filterCompanyData(compName) { 
@@ -3004,8 +3400,24 @@
             }
             
             filteredMembers = membersData.filter(m => {
-                const t = parseJsonDate(m.timestamp); 
-                return t >= start && t <= end;
+                const t = parseJsonDate(m.timestamp);
+                if (t < start || t > end) return false;
+                // Filter berdasarkan card yang diklik
+                if (_activeCardFilter === 'all') return true;
+                const _nowF = new Date();
+                const _dExp = Math.ceil((parseJsonDate(m.tglExpired) - _nowF) / 86400000);
+                if (_activeCardFilter === 'aktif') {
+                    // Aktif = status Aktif DAN tanggal belum lewat
+                    return m.status === 'Aktif' && _dExp >= 0;
+                }
+                if (_activeCardFilter === 'expired') {
+                    // Expired = status bukan Aktif ATAU tanggal sudah lewat
+                    return m.status !== 'Aktif' || _dExp < 0;
+                }
+                if (_activeCardFilter === 'followup') {
+                    return isFollowUpTargetMember(m, _nowF, new Date().toLocaleDateString('en-CA'));
+                }
+                return true;
             });
             
             // Sort: terbaru di atas (by createdAt), Selesai paling bawah
@@ -3353,13 +3765,41 @@ ${exportData.map(m => {
             }
         }
 
-                function renderMembersTable() {
+        function renderMembersTable() {
             const tbody = document.getElementById('memberTableBody'); if(!tbody) return;
             tbody.innerHTML = '';
             // Pastikan filteredMembers selalu array
             if (!Array.isArray(filteredMembers)) filteredMembers = [];
             const _rowsHtml = [];
-            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0, renderedRowCount = 0;
+            let renderedRowCount = 0;
+            // ============================================================
+            // STATS CARDS - hitung dari SEMUA membersData (bukan dari filter)
+            // agar jumlah di cards selalu tampil lengkap
+            // ============================================================
+            let totalMemberCount = 0, activeCount = 0, expiredCount = 0, followCount = 0, totalProfit = 0;
+            const _statsNow = new Date();
+            const _statsToday = `${_statsNow.getFullYear()}-${String(_statsNow.getMonth()+1).padStart(2,'0')}-${String(_statsNow.getDate()).padStart(2,'0')}`;
+            (membersData || []).forEach(function(m) {
+                // Total = SEMUA member di DB (aktif, expired, selesai, apapun)
+                totalMemberCount++;
+                const _dExp = Math.ceil((parseJsonDate(m.tglExpired) - _statsNow) / 86400000);
+                const _isAktif = (m.status === 'Aktif') && _dExp >= 0;
+                const _isExpired = (m.status !== 'Aktif') || _dExp < 0;
+                if (_isAktif) {
+                    activeCount++;
+                    totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
+                }
+                if (_isExpired) expiredCount++;
+                if (_isAktif && isFollowUpTargetMember(m, _statsNow, _statsToday)) followCount++;
+            });
+            // Update cards segera
+            if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
+            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
+            if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
+            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
+            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit, true, clientCurrency);
+            updateFollowUpCenterButton(followCount);
+            // ============================================================
             const now = new Date();
             const lang = dictionary[clientLanguage] || dictionary.ID;
             
@@ -3492,8 +3932,34 @@ ${exportData.map(m => {
                     : ``;
 
                 visibleMembers.push(m);
-                _rowsHtml.push(`<tr class="${rowStyle} border-b border-slate-800/40">
-                    <td class="${nameClass} cursor-pointer hover:opacity-80 active:scale-95 transition-all" onclick="openQuickView(${m.rowId})" title="Quick View 👁">${m.namaMember}<span class="ml-1 text-slate-600 text-[9px]">👁</span></td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
+                // Ambil tag data
+                const _mTag = memberTags[m.rowId] || {};
+                const _tagColor = _mTag.color || '';
+                const _tagLabel = _mTag.label || '';
+                // Gunakan bgStyle yang sudah ada opacity, atau hitung ulang
+                let _tagRowStyle = '';
+                if (_mTag.bgStyle) {
+                    _tagRowStyle = `background:${_mTag.bgStyle};`;
+                } else if (_tagColor) {
+                    const _r = parseInt(_tagColor.slice(1,3),16);
+                    const _g = parseInt(_tagColor.slice(3,5),16);
+                    const _b = parseInt(_tagColor.slice(5,7),16);
+                    const _op = _mTag.opacity || 1.0;
+                    _tagRowStyle = `background:rgba(${_r},${_g},${_b},${_op});`;
+                }
+                const _tagLabelHtml = _tagLabel ? `<span class="member-tag-label" style="color:var(--tag-text-color,#a7f3d0)">${_tagLabel}</span>` : '';
+                const _isDarkUI = !document.body.classList.contains('milio-light-mode');
+                const _tagTextColor = _isDarkUI ? '#a7f3d0' : '#064e3b';
+                const _tagLabelHtmlFinal = _tagLabel ? `<span class="member-tag-label" style="color:${_tagTextColor}">${_tagLabel}</span>` : '';
+
+                _rowsHtml.push(`<tr class="${rowStyle} border-b border-slate-800/40" id="member-row-${m.rowId}" style="${_tagRowStyle}">
+                    <td class="p-2 text-center w-10"><input type="checkbox" class="member-checkbox member-check" data-id="${m.rowId}" onclick="onMemberCheck(this)"></td>
+                    <td class="${nameClass} cursor-pointer hover:opacity-80 active:scale-95 transition-all" onclick="openQuickView(${m.rowId})" title="Quick View 👁">
+                        <div class="flex flex-col">
+                            <span>${m.namaMember}<span class="ml-1 text-slate-600 text-[9px]">👁</span></span>
+                            ${_tagLabelHtmlFinal}
+                        </div>
+                    </td><td class="p-3 text-xs text-slate-400">${m.noWhatsapp}<br>${m.email}</td>
                     <td class="p-3 text-xs">
                         <span class="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-bold">${m.perusahaan}</span><br>
                         <span class="text-slate-300">${m.namaPaket}</span><br>
@@ -3511,14 +3977,11 @@ ${exportData.map(m => {
                     </div></td></tr>`);
             });
             tbody.innerHTML = _rowsHtml.join('');
-            // Apply profit state setelah render - pakai boot init dulu lalu apply
+            // Apply profit state setelah render
             if(typeof _profitBootInit === 'function') _profitBootInit();
             if(typeof applyProfitVisibility === 'function') applyProfitVisibility();
-            if(document.getElementById('cardTotalMember')) document.getElementById('cardTotalMember').innerText = totalMemberCount;
-            if(document.getElementById('cardAktif')) document.getElementById('cardAktif').innerText = activeCount;
-            if(document.getElementById('cardExpiredMember')) document.getElementById('cardExpiredMember').innerText = expiredCount;
-            if(document.getElementById('cardFollow')) document.getElementById('cardFollow').innerText = followCount;
-            // Update progress bars
+            if(typeof applyTagVisuals === 'function') applyTagVisuals();
+            // Update progress bars (pakai stats dari membersData yang sudah dihitung di atas)
             if(totalMemberCount > 0) {
                 const pctAktif = Math.round((activeCount/totalMemberCount)*100);
                 const pctExp = Math.round((expiredCount/totalMemberCount)*100);
@@ -3527,8 +3990,6 @@ ${exportData.map(m => {
                 if(document.getElementById('barExpired')) document.getElementById('barExpired').style.width = pctExp+'%';
                 if(document.getElementById('barFollow')) document.getElementById('barFollow').style.width = pctFu+'%';
             }
-            if(document.getElementById('cardProfit')) document.getElementById('cardProfit').innerText = convertAndFormat(totalProfit, true, clientCurrency);
-            updateFollowUpCenterButton(followCount);
         }
 
         async function executeManualDone(rowId) {
@@ -4131,8 +4592,8 @@ td:last-child{font-weight:bold;}
                 ]);
 
                 // Build CSV members (data terbanyak)
-                const memberHeaders = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date"];
-                const memberRows = (members||[]).map(m => [m.id,m.timestamp||"",m.reseller_id||"",(m.nama_member||"").replace(/,/g,";"),(m.no_whatsapp||""),(m.email||""),(m.perusahaan_sumber||"").replace(/,/g,";"),(m.nama_paket||"").replace(/,/g,";"),m.jenis_pembeli||"User Langsung",m.harga_beli_saat_ini||0,m.harga_jual_saat_ini||0,m.profit_terkunci||0,m.tgl_expired||"",m.status||"Aktif",m.last_fu_date||"",m.owner_user_id||"",m.harga_normal||0,m.harga_diskon||0,m.is_diskon||"Tidak",m.currency_code||"IDR",m.deleted_flag||"",m.deleted_date||""].map(v=>`"${v}"`).join(","));
+                const memberHeaders = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date","Tag_Color","Tag_Label","Tag_Opacity"];
+                const memberRows = (members||[]).map(m => [m.id,m.timestamp||"",m.reseller_id||"",(m.nama_member||"").replace(/,/g,";"),(m.no_whatsapp||""),(m.email||""),(m.perusahaan_sumber||"").replace(/,/g,";"),(m.nama_paket||"").replace(/,/g,";"),m.jenis_pembeli||"User Langsung",m.harga_beli_saat_ini||0,m.harga_jual_saat_ini||0,m.profit_terkunci||0,m.tgl_expired||"",m.status||"Aktif",m.last_fu_date||"",m.owner_user_id||"",m.harga_normal||0,m.harga_diskon||0,m.is_diskon||"Tidak",m.currency_code||"IDR",m.deleted_flag||"",m.deleted_date||"",m.tag_color||"",m.tag_label||"",m.tag_opacity||1].map(v=>`"${v}"`).join(","));
 
                 // Gabungkan semua dalam 1 file CSV dengan section
                 let csvContent = "\uFEFF";
@@ -4292,6 +4753,10 @@ td:last-child{font-weight:bold;}
                         if(rowObj["Tgl_Expired"]) d.tgl_expired=rowObj["Tgl_Expired"];
                         if(rowObj["Last_FU_Date"]) d.last_fu_date=rowObj["Last_FU_Date"];
                         if(rowObj["Deleted_Date"]) d.deleted_date=rowObj["Deleted_Date"];
+                        // Tag fields
+                        if(rowObj["Tag_Color"] !== undefined) d.tag_color = rowObj["Tag_Color"]||"";
+                        if(rowObj["Tag_Label"] !== undefined) d.tag_label = rowObj["Tag_Label"]||"";
+                        if(rowObj["Tag_Opacity"] !== undefined) d.tag_opacity = parseFloat(rowObj["Tag_Opacity"])||1.0;
 
                         try {
                             if (isConflict && replaceConflicts) { await sbU("members","id=eq."+csvId,d); replaced++; }
@@ -4627,6 +5092,8 @@ td:last-child{font-weight:bold;}
             updateMilioThemeButton();
             renderThemeLauncher();
             if (typeof _milioTick === 'function') _milioTick();
+            // Re-apply tag visuals dengan warna adaptif tema baru
+            if (typeof applyTagVisuals === 'function') setTimeout(applyTagVisuals, 100);
         }
 
 
@@ -4749,6 +5216,246 @@ td:last-child{font-weight:bold;}
                     cardProfit.style.setProperty('user-select', 'none', 'important');
                 }
             }
+        }
+
+        // ============================================================
+        // MEMBER TAG SYSTEM
+        // ============================================================
+        let memberTags = {};
+        let selectedMembers = new Set();
+        let _pendingTagColor = null;
+        let _pendingTagOpacity = 1.0; // default 100%
+
+        function loadMemberTags() {
+            try {
+                const key = 'milio_tags_' + (currentUser ? currentUser.userId : 'x');
+                const saved = localStorage.getItem(key);
+                if (saved) memberTags = JSON.parse(saved);
+            } catch(e) { memberTags = {}; }
+        }
+
+        function saveMemberTagsLocal() {
+            try {
+                localStorage.setItem('milio_tags_' + currentUser.userId, JSON.stringify(memberTags));
+            } catch(e) {}
+        }
+
+        // Simpan tag ke Supabase
+        async function saveTagToSupabase(memberId, tagColor, tagLabel, tagOpacity) {
+            try {
+                await sbU('members', 'id=eq.' + memberId, {
+                    tag_color: tagColor || '',
+                    tag_label: tagLabel || '',
+                    tag_opacity: tagOpacity || 1.0
+                });
+            } catch(e) {
+                console.warn('Tag save to Supabase failed, saved to local only:', e);
+            }
+        }
+
+        function onMemberCheck(checkbox) {
+            const id = parseInt(checkbox.dataset.id);
+            if (checkbox.checked) selectedMembers.add(id);
+            else selectedMembers.delete(id);
+            updateBulkBar();
+        }
+
+        function toggleSelectAll(masterCb) {
+            document.querySelectorAll('.member-check').forEach(cb => {
+                cb.checked = masterCb.checked;
+                const id = parseInt(cb.dataset.id);
+                if (masterCb.checked) selectedMembers.add(id);
+                else selectedMembers.delete(id);
+            });
+            updateBulkBar();
+        }
+
+        function updateBulkBar() {
+            const bar = document.getElementById('bulkActionBar');
+            const countEl = document.getElementById('bulkCount');
+            if (!bar) return;
+            if (selectedMembers.size > 0) {
+                bar.classList.remove('hidden');
+                if (countEl) countEl.innerText = selectedMembers.size;
+            } else {
+                bar.classList.add('hidden');
+                const master = document.getElementById('checkAllMembers');
+                if (master) master.checked = false;
+            }
+        }
+
+        function clearAllSelections() {
+            selectedMembers.clear();
+            document.querySelectorAll('.member-check').forEach(cb => cb.checked = false);
+            const master = document.getElementById('checkAllMembers');
+            if (master) master.checked = false;
+            _pendingTagColor = null;
+            updateBulkBar();
+        }
+
+        // Pilih opacity - preview saja
+        function selectTagOpacity(val) {
+            _pendingTagOpacity = val;
+            // Update button active
+            [0.30, 0.50, 0.75, 1.00].forEach(function(v) {
+                const idMap = {0.30:'opBtn30', 0.50:'opBtn50', 0.75:'opBtn75', 1.00:'opBtn100'};
+                const btn = document.getElementById(idMap[v]);
+                if (btn) btn.classList.toggle('active', v === val);
+            });
+        }
+
+        // Pilih warna - HANYA preview, belum apply
+        function selectTagColor(color) {
+            _pendingTagColor = color;
+            // Update swatch highlight
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            const swId = 'sw_' + color.replace('#','');
+            const activeSw = document.getElementById(swId);
+            if (activeSw) activeSw.classList.add('active');
+            // Tampilkan preview warna
+            const preview = document.getElementById('selectedColorPreview');
+            const hexEl = document.getElementById('selectedColorHex');
+            if (preview && hexEl) {
+                preview.classList.remove('hidden');
+                preview.style.color = color;
+                hexEl.innerText = color;
+            }
+        }
+
+        // TERAPKAN - warna + label sekaligus, password di sini
+        function applyBulkTag() {
+            if (selectedMembers.size === 0) return;
+            const label = (document.getElementById('bulkLabelInput').value || '').trim();
+            const color = _pendingTagColor; // boleh null jika hanya label
+            if (!color && !label) {
+                alert('Pilih warna atau tulis label dulu!');
+                return;
+            }
+            if (!validatePasswordSecurity()) return;
+            const ids = Array.from(selectedMembers);
+            const isDark = !document.body.classList.contains('milio-light-mode');
+            const textColor = isDark ? '#a7f3d0' : '#064e3b';
+            ids.forEach(function(id) {
+                if (!memberTags[id]) memberTags[id] = {};
+                if (color !== null) {
+                    memberTags[id].color = color;
+                    memberTags[id].opacity = _pendingTagOpacity;
+                }
+                if (label !== '') memberTags[id].label = label;
+                // Update row live
+                const row = document.getElementById('member-row-' + id);
+                if (row) {
+                    if (color !== null) {
+                        if (color === '') {
+                            row.style.background = '';
+                        } else {
+                            // Convert hex ke rgba dengan opacity
+                            const r = parseInt(color.slice(1,3),16);
+                            const g = parseInt(color.slice(3,5),16);
+                            const b = parseInt(color.slice(5,7),16);
+                            row.style.background = 'rgba('+r+','+g+','+b+','+_pendingTagOpacity+')';
+                            memberTags[id].bgStyle = row.style.background;
+                        }
+                    }
+                    const nameTd = row.querySelector('td:nth-child(2)'); // td nama member (setelah checkbox)
+                    if (nameTd) {
+                        let existing = nameTd.querySelector('.member-tag-label');
+                        if (label !== '') {
+                            if (existing) { existing.innerText = label; existing.style.color = textColor; }
+                            else {
+                                const div = nameTd.querySelector('div.flex');
+                                const span = document.createElement('span');
+                                span.className = 'member-tag-label';
+                                span.style.color = textColor;
+                                span.innerText = label;
+                                if (div) div.appendChild(span);
+                                else nameTd.appendChild(span);
+                            }
+                        }
+                    }
+                }
+            });
+            saveMemberTagsLocal();
+            // Simpan ke Supabase async (background)
+            ids.forEach(function(id) {
+                const t = memberTags[id] || {};
+                saveTagToSupabase(id, t.color || '', t.label || '', t.opacity || 1.0);
+            });
+            // Reset input
+            if (document.getElementById('bulkLabelInput')) document.getElementById('bulkLabelInput').value = '';
+            _pendingTagColor = null;
+            _pendingTagOpacity = 1.0;
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.opacity-btn').forEach(b => b.classList.remove('active'));
+            const op100 = document.getElementById('opBtn100');
+            if (op100) op100.classList.add('active');
+            const preview = document.getElementById('selectedColorPreview');
+            if (preview) preview.classList.add('hidden');
+            clearAllSelections();
+        }
+
+        // HAPUS MEMBER BULK - 1x password untuk semua yang dipilih
+        async function deleteBulkMembers() {
+            if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const count = selectedMembers.size;
+            if (!confirm((lang.tagHapusMemberConfirm || 'Arsipkan ' + count + ' member yang dipilih?\nData tidak akan hilang permanen, hanya diarsipkan.\n\nLanjutkan?').replace('{N}', count))) return;
+            if (!validatePasswordSecurity()) return; // 1x password untuk semua
+            const ids = Array.from(selectedMembers);
+            let success = 0, errors = 0;
+            // Progress indicator
+            const bar = document.getElementById('bulkActionBar');
+            const origContent = bar ? bar.innerHTML : '';
+            if (bar) bar.innerHTML = '<div class="text-center text-xs text-slate-400 py-2"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengarsipkan ' + count + ' member...</div>';
+            for (const id of ids) {
+                try {
+                    await sbU('members', 'id=eq.' + id, { deleted_flag: 'DELETED', deleted_date: new Date().toISOString() });
+                    success++;
+                } catch(e) { errors++; }
+            }
+            clearAllSelections();
+            await refreshMembersList();
+            alert('✅ ' + success + ' member berhasil diarsipkan.' + (errors > 0 ? '\n❌ ' + errors + ' gagal.' : ''));
+        }
+        function resetBulkColor() {
+            if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
+            if (!validatePasswordSecurity()) return; // 1x password untuk semua
+            const ids = Array.from(selectedMembers);
+            ids.forEach(function(id) {
+                const curLabel = (memberTags[id] && memberTags[id].label) ? memberTags[id].label : '';
+                if (memberTags[id]) {
+                    delete memberTags[id].color;
+                    delete memberTags[id].opacity;
+                    delete memberTags[id].bgStyle;
+                }
+                const row = document.getElementById('member-row-' + id);
+                if (row) row.style.background = '';
+                // Update Supabase - hapus warna, pertahankan label
+                saveTagToSupabase(id, '', curLabel, 1.0);
+            });
+            saveMemberTagsLocal();
+            clearAllSelections();
+        }
+
+        // HAPUS LABEL saja - 1x password untuk semua yang dipilih
+        function resetBulkLabel() {
+            if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
+            if (!validatePasswordSecurity()) return; // 1x password untuk semua
+            const ids = Array.from(selectedMembers);
+            ids.forEach(function(id) {
+                const curColor = (memberTags[id] && memberTags[id].color) ? memberTags[id].color : '';
+                const curOp = (memberTags[id] && memberTags[id].opacity) ? memberTags[id].opacity : 1.0;
+                if (memberTags[id]) delete memberTags[id].label;
+                const row = document.getElementById('member-row-' + id);
+                if (row) {
+                    const nameTd = row.querySelector('td:nth-child(2)');
+                    if (nameTd) { const ex = nameTd.querySelector('.member-tag-label'); if (ex) ex.remove(); }
+                }
+                // Update Supabase - hapus label, pertahankan warna
+                saveTagToSupabase(id, curColor, '', curOp);
+            });
+            saveMemberTagsLocal();
+            clearAllSelections();
         }
 
         // ====================================================================
