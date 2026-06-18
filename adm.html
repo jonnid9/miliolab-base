@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <div id="controlCenterScreen" class="hidden max-w-6xl mx-auto space-y-8">
+    <div id="controlCenterScreen" class="hidden max-w-7xl mx-auto">
         <div class="bg-slate-900/60 p-6 rounded-3xl border border-purple-900/30 shadow-2xl">
             <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 items-center">
                 <div class="min-w-0">
@@ -86,17 +86,247 @@
             </div>
         </div>
 
-        <div class="bg-slate-900/30 border border-slate-800 rounded-3xl p-6 shadow-xl">
-            <div class="overflow-x-auto">
+        <!-- MAIN GRID: Kiri=Menu, Kanan=Member List -->
+        <div class="flex gap-4 mt-4" style="align-items:flex-start">
+
+            <!-- ==================== KIRI: MENU PANEL ==================== -->
+            <div class="w-80 shrink-0 space-y-3" style="position:sticky;top:80px;max-height:calc(100vh - 96px);overflow-y:auto;padding-right:4px">
+
+                <!-- BROADCAST PANELS -->
+    <div class="space-y-2" id="broadcastPanel">
+
+        <!-- ===== MAINTENANCE ===== -->
+        <div class="bg-slate-900 border border-red-500/20 rounded-xl overflow-hidden">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-3 py-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">🔧</span>
+                    <div>
+                        <p class="text-white font-bold text-xs">Maintenance</p>
+                        <p class="text-slate-600 text-[10px]">Kunci seluruh app member</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span id="maintenanceStatusBadge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500">OFF</span>
+                    <button onclick="toggleAnnouncement('maintenance')" id="btnToggleMaintenance"
+                        class="bg-red-600 hover:bg-red-500 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] transition">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Body collapsible -->
+            <div class="p-3 space-y-2">
+                <!-- Judul -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Judul</label>
+                        <button onclick="useMaintenanceTemplate()" class="text-[9px] text-red-400 hover:text-red-300">✦ Template</button>
+                    </div>
+                    <input type="text" id="maintenanceTitle" value="🔧 Sedang Maintenance"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-red-500">
+                </div>
+                <!-- Pesan -->
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Pesan</label>
+                    <textarea id="maintenanceMessage" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-red-500 resize-none">Sistem sedang dalam pemeliharaan. Mohon tunggu sebentar ya! 🙏</textarea>
+                </div>
+                <!-- Gambar -->
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">URL Gambar</label>
+                    <input type="text" id="maintenanceImage" placeholder="https://... (opsional)"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-red-500">
+                </div>
+                <!-- Jadwal -->
+                <div class="border border-slate-800 rounded-lg overflow-hidden">
+                    <div class="bg-slate-950/60 px-2.5 py-1.5 border-b border-slate-800">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">⏱ Jadwal (Opsional)</p>
+                    </div>
+                    <div class="grid grid-cols-2 divide-x divide-slate-800">
+                        <!-- Mulai -->
+                        <div class="p-2">
+                            <p class="text-[9px] text-green-500 font-bold uppercase mb-1.5">🟢 Mulai</p>
+                            <input type="date" id="maintStartDate" class="w-full bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-white text-[10px] outline-none focus:border-green-500 mb-1">
+                            <div class="flex gap-1">
+                                <select id="maintStartHour" class="flex-1 bg-slate-950 border border-slate-800 rounded-md py-1 text-white text-[10px] outline-none focus:border-green-500">
+                                    <option value="">HH</option>
+                                </select>
+                                <select id="maintStartMin" class="flex-1 bg-slate-950 border border-slate-800 rounded-md py-1 text-white text-[10px] outline-none focus:border-green-500">
+                                    <option value="">MM</option>
+                                </select>
+                            </div>
+                            <button onclick="setMaintNow('start')" class="mt-1 w-full text-[9px] text-green-500 bg-green-950/30 border border-green-900/40 rounded-md py-0.5 hover:bg-green-900/40 transition">⚡ Sekarang</button>
+                        </div>
+                        <!-- Selesai -->
+                        <div class="p-2">
+                            <p class="text-[9px] text-red-500 font-bold uppercase mb-1.5">🔴 Selesai</p>
+                            <input type="date" id="maintenanceCountdownDate" class="w-full bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-white text-[10px] outline-none focus:border-red-500 mb-1">
+                            <div class="flex gap-1">
+                                <select id="maintenanceCountdownHour" class="flex-1 bg-slate-950 border border-slate-800 rounded-md py-1 text-white text-[10px] outline-none focus:border-red-500">
+                                    <option value="">HH</option>
+                                </select>
+                                <select id="maintenanceCountdownMin" class="flex-1 bg-slate-950 border border-slate-800 rounded-md py-1 text-white text-[10px] outline-none focus:border-red-500">
+                                    <option value="">MM</option>
+                                </select>
+                            </div>
+                            <p class="text-[9px] text-slate-700 mt-1 text-center">kosong = tanpa timer</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Save -->
+                <button onclick="saveAnnouncement('maintenance')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-1.5 rounded-lg text-[10px] transition">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== PENGUMUMAN ===== -->
+        <div class="bg-slate-900 border border-blue-500/20 rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between px-3 py-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">📢</span>
+                    <div>
+                        <p class="text-white font-bold text-xs">Pengumuman</p>
+                        <p class="text-slate-600 text-[10px]">Popup closeable tiap login</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span id="announcementStatusBadge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500">OFF</span>
+                    <button onclick="toggleAnnouncement('announcement')" id="btnToggleAnnouncement"
+                        class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] transition">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-3 space-y-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Judul</label>
+                    <button onclick="useAnnouncementTemplate()" class="text-[9px] text-blue-400 hover:text-blue-300">✦ Template</button>
+                </div>
+                <input type="text" id="announcementTitle" placeholder="Judul pengumuman..."
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-blue-500">
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Pesan</label>
+                    <textarea id="announcementMessage" rows="3" placeholder="Isi pengumuman..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-blue-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">URL Banner</label>
+                    <input type="text" id="announcementImage" placeholder="https://... (opsional)"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Label Tombol</label>
+                        <input type="text" id="announcementBtnLabel" placeholder="Hubungi Admin..."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Link Tombol</label>
+                        <input type="text" id="announcementBtnLink" placeholder="https://wa.me/..."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <button onclick="saveAnnouncement('announcement')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-1.5 rounded-lg text-[10px] transition">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== PROMO / EVENT ===== -->
+        <div class="bg-slate-900 border border-amber-500/20 rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between px-3 py-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">🔥</span>
+                    <div>
+                        <p class="text-white font-bold text-xs">Promo / Event</p>
+                        <p class="text-slate-600 text-[10px]">Banner + video + tombol CTA</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span id="promoStatusBadge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-500">OFF</span>
+                    <button onclick="toggleAnnouncement('promo')" id="btnTogglePromo"
+                        class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] transition">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-3 space-y-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Judul</label>
+                    <button onclick="usePromoTemplate()" class="text-[9px] text-amber-400 hover:text-amber-300">✦ Template</button>
+                </div>
+                <input type="text" id="promoTitle" placeholder="🔥 Flash Sale / Event Spesial..."
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Pesan</label>
+                    <textarea id="promoMessage" rows="2" placeholder="Deskripsi promo singkat..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">URL Banner</label>
+                    <input type="text" id="promoImage" placeholder="https://... (opsional)"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                </div>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <div class="col-span-2">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">URL Video</label>
+                        <input type="text" id="promoVideoUrl" placeholder="YouTube / TikTok / MP4..."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Tipe</label>
+                        <select id="promoVideoType" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                            <option value="">-</option>
+                            <option value="youtube">YT</option>
+                            <option value="tiktok">TT</option>
+                            <option value="direct">MP4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Label Tombol</label>
+                        <input type="text" id="promoBtnLabel" placeholder="Ikuti Promo..."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Link Tombol</label>
+                        <input type="text" id="promoBtnLink" placeholder="https://..."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-[11px] outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <button onclick="saveAnnouncement('promo')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-1.5 rounded-lg text-[10px] transition">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan
+                </button>
+            </div>
+        </div>
+
+    </div>
+            </div>
+            <!-- ==================== END KIRI ==================== -->
+
+            <!-- ==================== KANAN: MEMBER LIST ==================== -->
+            <div class="flex-1 min-w-0">
+                <div class="bg-slate-900/30 border border-slate-800 rounded-3xl p-4 shadow-xl">
+                <!-- Search bar -->
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="relative flex-1">
+                        <input type="text" id="tenantSearchInput" oninput="filterTenantList(this.value)" placeholder="🔍 Cari nama bisnis / username pembeli..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-xs outline-none focus:border-purple-500 pr-8">
+                        <button onclick="document.getElementById('tenantSearchInput').value='';filterTenantList('')" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 hover:text-red-400 text-xs">✕</button>
+                    </div>
+                    <span id="tenantCountBadge" class="text-[10px] text-slate-500 font-bold whitespace-nowrap bg-slate-900 px-2 py-1.5 rounded-lg border border-slate-800">0 pembeli</span>
+                </div>
+                <!-- Scroll atas-bawah saja -->
+                <div class="overflow-y-auto rounded-xl border border-slate-800/50" style="max-height:calc(100vh - 200px)">
                 <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-800 text-slate-500 text-xs uppercase font-bold">
-                            <th class="p-4">Nama Aplikasi / Pembeli</th>
-                            <th class="p-4">Otentikasi Akun</th>
-                            <th class="p-4 text-center">Tanggal Join / Expired</th>
-                            <th class="p-4 text-center">Masa Aktif Sisa</th>
-                            <th class="p-4 text-center">Status Akses</th>
-                            <th class="p-4 text-center">Tindakan Owner (Kelola Lisensi)</th>
+                    <thead class="sticky top-0 z-10">
+                        <tr class="border-b border-slate-800 text-slate-500 text-xs uppercase font-bold bg-slate-950">
+                            <th class="p-3 whitespace-nowrap">Nama Aplikasi / Pembeli</th>
+                            <th class="p-3 whitespace-nowrap">Otentikasi Akun</th>
+                            <th class="p-3 text-center whitespace-nowrap">Tanggal Join / Expired</th>
+                            <th class="p-3 text-center whitespace-nowrap">Sisa</th>
+                            <th class="p-3 text-center whitespace-nowrap">Status</th>
+                            <th class="p-3 text-center whitespace-nowrap">Tindakan</th>
                         </tr>
                     </thead>
                     <tbody id="tenantTableBody" class="text-sm divide-y divide-slate-800/40"></tbody>
@@ -104,6 +334,20 @@
             </div>
         </div>
     </div>
+
+    <!-- ============================================================
+         BROADCAST & ANNOUNCEMENT PANEL
+         ============================================================ -->
+
+            </div>
+            <!-- ==================== END KANAN ==================== -->
+
+        </div>
+        <!-- END MAIN GRID -->
+
+    </div>
+    <!-- END controlCenterScreen -->
+
 
     <div id="tenantModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4">
@@ -197,6 +441,8 @@
                     ownerSessionPass = p;
                     document.getElementById('gatekeeperScreen').classList.add('hidden');
                     document.getElementById('controlCenterScreen').classList.remove('hidden');
+                    initCountdownPickers();
+                    loadAllAnnouncements();
                     await loadTenants();
                 } else { 
                     alert((res && res.message) ? res.message : "Akses Ditolak! Akun Anda wajib bertipe Owner di Sheets.");
@@ -218,6 +464,19 @@
             }
         }
 
+        function filterTenantList(q) {
+            q = (q||'').toLowerCase().trim();
+            const rows = document.querySelectorAll('#tenantTableBody tr');
+            let visible = 0;
+            rows.forEach(function(row) {
+                const show = !q || row.innerText.toLowerCase().includes(q);
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            const badge = document.getElementById('tenantCountBadge');
+            if (badge) badge.innerText = visible + ' pembeli';
+        }
+
         function renderTenantTable() {
             const tbody = document.getElementById('tenantTableBody'); tbody.innerHTML = '';
             tenantsList.forEach(t => {
@@ -227,22 +486,37 @@
                 const badgeStatus = (t.statusSaaS === "Aktif" && !isExpired) ? "Active ✅" : (isExpired ? "Expired ❌" : "Suspended 🚫");
                 const diffTime = new Date(t.tglExpired) - new Date(), diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)), textSisaHari = diffDays > 0 ? `${diffDays} Hari` : "Habis";
 
-                tbody.innerHTML += `<tr class="border-b border-slate-800/40 text-slate-300">
-                    <td class="p-4 flex items-center gap-3">
-                        <div class="w-9 h-9 bg-purple-500/10 border border-purple-500/30 rounded-xl flex items-center justify-center font-bold text-purple-400"><i class="fa-solid fa-shop"></i></div>
-                        <div><div class="font-bold text-white">${t.namaBisnis}</div><div class="text-[10px] text-slate-500">${t.userId}</div></div>
+                tbody.innerHTML += `<tr class="border-b border-slate-800/40 text-slate-300 hover:bg-slate-800/20 transition">
+                    <td class="p-3 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-purple-500/10 border border-purple-500/30 rounded-lg flex items-center justify-center text-purple-400 shrink-0"><i class="fa-solid fa-shop text-xs"></i></div>
+                            <div><div class="font-bold text-white text-sm">${t.namaBisnis}</div><div class="text-[10px] text-slate-500">${t.userId}</div></div>
+                        </div>
                     </td>
-                    <td class="p-4 font-mono text-xs">User: <b>${t.username}</b><br>Pass: <b>${t.password}</b><br><span class="text-[10px] text-emerald-400">Input: ${t.baseCurrency || t.currency || 'IDR'} / View: ${t.displayCurrency || t.currency || 'IDR'}</span></td>
-                    <td class="p-4 text-center text-xs font-semibold text-indigo-300">${t.tglMulai} <span class="text-slate-500">s/d</span><br><span class="text-red-400">${t.tglExpired}</span></td>
-                    <td class="p-4 text-center text-yellow-400 font-bold font-mono text-xs">${textSisaHari} aktif</td>
-                    <td class="p-4 text-center"><span class="px-2.5 py-0.5 border rounded-full text-[10px] font-bold ${statusStyle}">${badgeStatus}</span></td>
-                    <td class="p-4 text-center flex gap-2 justify-center mt-1">
-                        <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-purple-600 hover:text-white">⚙️ Kelola Akun</button>
-                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" title="Soft Reset: arsipkan data jadi backup merah" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-amber-600 hover:text-white">Soft Reset</button>`}
-                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="factoryResetTenantDataSafe('${t.userId}')" title="Factory Reset: hapus data workspace, akun tetap ada" class="bg-red-900/40 border border-red-500/40 text-red-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-red-600 hover:text-white">Factory Reset</button>`}
-                        ${(t.role === 'Owner' || t.role === 'OWNER') ? '' : `<button onclick="deleteTenant('${t.userId}')" title="Hapus akun permanen" class="text-red-500 hover:text-red-400 text-sm p-1"><i class="fa-solid fa-trash-can"></i></button>`}
-                        <button onclick="exportTenantCSV('${t.userId}', '${t.namaBisnis}')" title="Export semua data member ke CSV backup lengkap" class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-emerald-600 hover:text-white flex items-center gap-1"><i class="fa-solid fa-file-csv"></i> Export</button>
-                        <label title="Import CSV backup untuk recovery data member" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 font-bold px-2 py-1.5 rounded-lg text-xs hover:bg-blue-600 hover:text-white flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-upload"></i> Import<input type="file" accept=".csv" class="hidden" onchange="importTenantCSV(event, '${t.userId}', '${t.namaBisnis}')"></label>
+                    <td class="px-2 py-2 font-mono" style="overflow:hidden">
+                        <div class="text-[11px] truncate text-slate-200">👤 <b>${t.username}</b></div>
+                        <div class="text-[11px] truncate text-slate-400">🔑 <b>${t.password}</b></div>
+                        <div class="text-[9px] text-emerald-400">${t.language||'ID'} · ${t.baseCurrency||t.currency||'IDR'}</div>
+                    </td>
+                    <td class="px-2 py-2 text-center text-[11px]">
+                        <div class="text-indigo-300">${t.tglMulai}</div>
+                        <div class="text-red-400">${t.tglExpired}</div>
+                    </td>
+                    <td class="px-2 py-2 text-center">
+                        <span class="text-yellow-400 font-bold font-mono text-[11px]">${textSisaHari}</span>
+                    </td>
+                    <td class="px-2 py-2 text-center">
+                        <span class="px-1.5 py-0.5 border rounded-full text-[9px] font-bold ${statusStyle}">${badgeStatus}</span>
+                    </td>
+                    <td class="px-2 py-2">
+                        <div class="flex items-center gap-1 flex-wrap">
+                            <button onclick="openEditTenantModal('${t.userId}')" class="bg-purple-900/40 border border-purple-500/30 text-purple-300 font-bold px-2 py-1 rounded-lg text-[10px] hover:bg-purple-600 hover:text-white whitespace-nowrap">⚙️ Kelola</button>
+                            ${(t.role==='Owner'||t.role==='OWNER') ? '' : `<button onclick="resetTenantDataSafe('${t.userId}')" title="Soft Reset" class="bg-amber-900/30 border border-amber-500/30 text-amber-300 font-bold px-1.5 py-1 rounded-lg text-[10px] hover:bg-amber-600 hover:text-white">↺</button>`}
+                            ${(t.role==='Owner'||t.role==='OWNER') ? '' : `<button onclick="factoryResetTenantDataSafe('${t.userId}')" title="Factory Reset" class="bg-red-900/40 border border-red-500/40 text-red-300 font-bold px-1.5 py-1 rounded-lg text-[10px] hover:bg-red-600 hover:text-white">⚠</button>`}
+                            <button onclick="exportTenantCSV('${t.userId}','${t.namaBisnis}')" title="Export CSV" class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-300 font-bold px-1.5 py-1 rounded-lg text-[10px] hover:bg-emerald-600 hover:text-white"><i class="fa-solid fa-file-csv"></i></button>
+                            <label title="Import CSV" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 font-bold px-1.5 py-1 rounded-lg text-[10px] hover:bg-blue-600 hover:text-white cursor-pointer"><i class="fa-solid fa-upload"></i><input type="file" accept=".csv" class="hidden" onchange="importTenantCSV(event,'${t.userId}','${t.namaBisnis}')"></label>
+                            ${(t.role==='Owner'||t.role==='OWNER') ? '' : `<button onclick="deleteTenant('${t.userId}')" title="Hapus" class="text-red-500 hover:text-red-400 px-1.5 py-1 text-[10px]"><i class="fa-solid fa-trash-can"></i></button>`}
+                        </div>
                     </td></tr>`;
             });
         }
@@ -305,6 +579,202 @@
             const img = document.getElementById('logoPreviewAdm');
             const ph = document.getElementById('logoPlaceholderAdm');
             img.src = ''; img.classList.add('hidden'); ph.classList.remove('hidden');
+        }
+
+        // ============================================================
+        // BROADCAST & ANNOUNCEMENT SYSTEM
+
+        // Populate jam dan menit dropdown
+        function initCountdownPickers() {
+            // Isi semua select jam dan menit
+            var hourIds = ['maintenanceCountdownHour','maintStartHour'];
+            var minIds  = ['maintenanceCountdownMin','maintStartMin'];
+            hourIds.forEach(function(id) {
+                var sel = document.getElementById(id); if (!sel) return;
+                for (var h = 0; h < 24; h++) {
+                    var o = document.createElement('option');
+                    o.value = String(h).padStart(2,'0');
+                    o.text = String(h).padStart(2,'0') + ':00'; sel.appendChild(o);
+                }
+            });
+            minIds.forEach(function(id) {
+                var sel = document.getElementById(id); if (!sel) return;
+                for (var m = 0; m < 60; m += 5) {
+                    var o = document.createElement('option');
+                    o.value = String(m).padStart(2,'0');
+                    o.text = ':' + String(m).padStart(2,'0'); sel.appendChild(o);
+                }
+            });
+        }
+
+        function setMaintNow(type) {
+            var now = new Date();
+            var d = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+            var h = String(now.getHours()).padStart(2,'0');
+            var m = String(Math.floor(now.getMinutes()/5)*5).padStart(2,'0');
+            if (type === 'start') {
+                var dateEl=document.getElementById('maintStartDate'),hourEl=document.getElementById('maintStartHour'),minEl=document.getElementById('maintStartMin');
+                if(dateEl) dateEl.value=d; if(hourEl) hourEl.value=h; if(minEl) minEl.value=m;
+            }
+        }
+
+        function getStartValue() {
+            var d=(document.getElementById('maintStartDate')||{}).value||'';
+            var h=(document.getElementById('maintStartHour')||{}).value||'';
+            var m=(document.getElementById('maintStartMin')||{}).value||'';
+            if (!d||!h) return '';
+            return d+'T'+h+':'+(m||'00')+':00';
+        }
+
+        // Ambil nilai countdown dari picker UI
+        function getCountdownValue() {
+            var d = (document.getElementById('maintenanceCountdownDate')||{}).value||'';
+            var h = (document.getElementById('maintenanceCountdownHour')||{}).value||'';
+            var m = (document.getElementById('maintenanceCountdownMin')||{}).value||'';
+            if (!d || !h) return '';
+            return d + 'T' + h + ':' + (m||'00') + ':00';
+        }
+
+        // Set nilai countdown ke picker UI
+        function setCountdownPicker(isoStr) {
+            if (!isoStr) return;
+            var dt = new Date(isoStr);
+            if (isNaN(dt)) return;
+            var d = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+            var h = String(dt.getHours()).padStart(2,'0');
+            var m = String(Math.floor(dt.getMinutes()/5)*5).padStart(2,'0');
+            var dateEl = document.getElementById('maintenanceCountdownDate');
+            var hourEl = document.getElementById('maintenanceCountdownHour');
+            var minEl = document.getElementById('maintenanceCountdownMin');
+            if(dateEl) dateEl.value = d;
+            if(hourEl) hourEl.value = h;
+            if(minEl) minEl.value = m;
+        }
+
+        // Template default
+        function useMaintenanceTemplate() {
+            var g = function(id){return document.getElementById(id);};
+            if(g('maintenanceTitle')) g('maintenanceTitle').value = '🔧 Sedang Maintenance';
+            if(g('maintenanceMessage')) g('maintenanceMessage').value = 'Sistem kami sedang dalam pemeliharaan rutin untuk meningkatkan kualitas layanan.\n\nMohon tunggu sebentar ya, kami akan kembali segera! 🙏\n\nTerima kasih atas kesabaran Anda.';
+            if(g('maintenanceImage')) g('maintenanceImage').value = '';
+        }
+
+        function useAnnouncementTemplate() {
+            var g = function(id){return document.getElementById(id);};
+            if(g('announcementTitle')) g('announcementTitle').value = '📢 Pengumuman Penting';
+            if(g('announcementMessage')) g('announcementMessage').value = 'Halo pengguna setia kami!\n\nKami ingin menyampaikan informasi penting berikut:\n\n• [Isi poin 1]\n• [Isi poin 2]\n\nTerima kasih atas perhatiannya! 😊';
+        }
+
+        function usePromoTemplate() {
+            var g = function(id){return document.getElementById(id);};
+            if(g('promoTitle')) g('promoTitle').value = '🔥 Promo Spesial Terbatas!';
+            if(g('promoMessage')) g('promoMessage').value = '⚡ Jangan lewatkan kesempatan emas ini!\n\n✅ Benefit 1\n✅ Benefit 2\n✅ Benefit 3\n\nBerlaku terbatas! Segera ambil sekarang 🚀';
+            if(g('promoBtnLabel')) g('promoBtnLabel').value = '🎯 Ikuti Promo Sekarang';
+        }
+
+
+        // ============================================================
+        const ANN_TABLE = 'app_announcements';
+
+        async function loadAllAnnouncements() {
+            try {
+                const rows = await sbA(ANN_TABLE, 'select=*&order=type.asc');
+                if (!Array.isArray(rows)) return;
+                rows.forEach(function(row) { applyAnnouncementToForm(row); });
+            } catch(e) { console.error('Load announcements:', e); }
+        }
+
+        function applyAnnouncementToForm(row) {
+            const t = row.type;
+            const isActive = row.is_active;
+            const capT = t.charAt(0).toUpperCase() + t.slice(1);
+            const badge = document.getElementById(t + 'StatusBadge');
+            const btn = document.getElementById('btnToggle' + capT);
+            if (badge) {
+                badge.innerText = isActive ? 'AKTIF' : 'NONAKTIF';
+                badge.className = 'text-[10px] font-bold px-3 py-1 rounded-full ' + (isActive
+                    ? 'bg-green-900/40 text-green-400 border border-green-500/30'
+                    : 'bg-slate-800 text-slate-400');
+            }
+            if (btn) {
+                const colorMap = {maintenance:'bg-red-600 hover:bg-red-500', announcement:'bg-blue-600 hover:bg-blue-500', promo:'bg-amber-600 hover:bg-amber-500'};
+                btn.className = 'font-bold px-4 py-2 rounded-xl text-xs transition ' + (isActive ? 'bg-slate-700 hover:bg-slate-600 text-white' : (colorMap[t]||'bg-slate-600') + ' text-white');
+                btn.innerHTML = '<i class="fa-solid fa-power-off mr-1"></i> ' + (isActive ? 'Nonaktifkan' : 'Aktifkan');
+            }
+            const g = (id) => document.getElementById(id);
+            if (t === 'maintenance') {
+                if(g('maintenanceTitle')) g('maintenanceTitle').value = row.title||'';
+                if(g('maintenanceMessage')) g('maintenanceMessage').value = row.message||'';
+                if(g('maintenanceImage')) g('maintenanceImage').value = row.image_url||'';
+                if (row.countdown_end) setCountdownPicker(row.countdown_end);
+                // Restore start time dari note
+                if (row.note && row.note.startsWith('start:')) {
+                    var startIso = row.note.replace('start:','');
+                    var sdt = new Date(startIso);
+                    if (!isNaN(sdt)) {
+                        var sd=sdt.getFullYear()+'-'+String(sdt.getMonth()+1).padStart(2,'0')+'-'+String(sdt.getDate()).padStart(2,'0');
+                        var sh=String(sdt.getHours()).padStart(2,'0');
+                        var sm=String(Math.floor(sdt.getMinutes()/5)*5).padStart(2,'0');
+                        var sdEl=document.getElementById('maintStartDate'),shEl=document.getElementById('maintStartHour'),smEl=document.getElementById('maintStartMin');
+                        if(sdEl) sdEl.value=sd; if(shEl) shEl.value=sh; if(smEl) smEl.value=sm;
+                    }
+                }
+            } else if (t === 'announcement') {
+                if(g('announcementTitle')) g('announcementTitle').value = row.title||'';
+                if(g('announcementMessage')) g('announcementMessage').value = row.message||'';
+                if(g('announcementImage')) g('announcementImage').value = row.image_url||'';
+                if(g('announcementBtnLabel')) g('announcementBtnLabel').value = row.btn_label||'';
+                if(g('announcementBtnLink')) g('announcementBtnLink').value = row.btn_link||'';
+            } else if (t === 'promo') {
+                if(g('promoTitle')) g('promoTitle').value = row.title||'';
+                if(g('promoMessage')) g('promoMessage').value = row.message||'';
+                if(g('promoImage')) g('promoImage').value = row.image_url||'';
+                if(g('promoVideoUrl')) g('promoVideoUrl').value = row.video_url||'';
+                if(g('promoVideoType')) g('promoVideoType').value = row.video_type||'';
+                if(g('promoBtnLabel')) g('promoBtnLabel').value = row.btn_label||'';
+                if(g('promoBtnLink')) g('promoBtnLink').value = row.btn_link||'';
+            }
+        }
+
+        async function saveAnnouncement(type) {
+            if (!validateAdminPass('menyimpan pengaturan ' + type)) return;
+            const g = (id) => (document.getElementById(id)||{}).value||'';
+            let data = { updated_at: new Date().toISOString() };
+            if (type === 'maintenance') {
+                data.title = g('maintenanceTitle'); data.message = g('maintenanceMessage');
+                data.image_url = g('maintenanceImage');
+                const cd = g('maintenanceCountdown');
+                data.countdown_enabled = !!cd; data.countdown_end = cd ? new Date(cd).toISOString() : null;
+            } else if (type === 'announcement') {
+                data.title = g('announcementTitle'); data.message = g('announcementMessage');
+                data.image_url = g('announcementImage');
+                data.btn_label = g('announcementBtnLabel'); data.btn_link = g('announcementBtnLink');
+                data.btn_enabled = !!(data.btn_label && data.btn_link);
+            } else if (type === 'promo') {
+                data.title = g('promoTitle'); data.message = g('promoMessage');
+                data.image_url = g('promoImage'); data.video_url = g('promoVideoUrl');
+                data.video_type = g('promoVideoType'); data.btn_label = g('promoBtnLabel');
+                data.btn_link = g('promoBtnLink'); data.btn_enabled = !!(data.btn_label && data.btn_link);
+            }
+            try {
+                await sbAPch(ANN_TABLE, 'type=eq.' + type, data);
+                alert('✅ Pengaturan ' + type + ' berhasil disimpan!');
+                loadAllAnnouncements();
+            } catch(e) { alert('❌ Gagal: ' + e); }
+        }
+
+        async function toggleAnnouncement(type) {
+            if (!validateAdminPass('toggle ' + type)) return;
+            const badge = document.getElementById(type + 'StatusBadge');
+            const isActive = badge && badge.innerText === 'AKTIF';
+            const newStatus = !isActive;
+            if (newStatus) {
+                // Nonaktifkan semua dulu, lalu aktifkan yang dipilih
+                await sbAPch(ANN_TABLE, 'type=neq.' + type, { is_active: false });
+            }
+            await sbAPch(ANN_TABLE, 'type=eq.' + type, { is_active: newStatus, updated_at: new Date().toISOString() });
+            await loadAllAnnouncements();
+            alert((newStatus ? '✅ ' : '⏹ ') + type + (newStatus ? ' DIAKTIFKAN!' : ' DINONAKTIFKAN!'));
         }
 
         // ============================================================
