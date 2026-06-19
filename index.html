@@ -1760,6 +1760,8 @@
             if(document.getElementById('tagTerapkanLbl')) document.getElementById('tagTerapkanLbl').innerText = translation.tagTerapkan||'Terapkan';
             if(document.getElementById('tagHapusWarnaLbl')) document.getElementById('tagHapusWarnaLbl').innerText = translation.tagHapusWarna||'Hapus Warna';
             if(document.getElementById('tagHapusLabelLbl')) document.getElementById('tagHapusLabelLbl').innerText = translation.tagHapusLabel||'Hapus Label';
+            if(document.getElementById('tagHapusMemberLbl')) document.getElementById('tagHapusMemberLbl').innerText = translation.tagHapusMember||'Hapus Member';
+            if(document.getElementById('tagRefundLbl')) document.getElementById('tagRefundLbl').innerText = translation.tagRefundLbl||'Refund';
             if(document.getElementById('tagBatalLbl')) document.getElementById('tagBatalLbl').innerText = translation.tagBatal||'Batal';
             if(document.getElementById('tagWarnaLbl')) document.getElementById('tagWarnaLbl').innerText = translation.tagWarna||'Warna Block:';
             if(document.getElementById('tagOpacityLbl')) document.getElementById('tagOpacityLbl').innerText = translation.tagOpacity||'Opacity:';
@@ -2091,6 +2093,9 @@
                         <button onclick="clearAllSelections()" class="text-slate-500 hover:text-red-400 text-xs font-bold px-2 py-1.5"><i class="fa-solid fa-xmark"></i> <span id="tagBatalLbl">Batal</span></button>
                         <button onclick="deleteBulkMembers()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                             <i class="fa-solid fa-trash-can"></i> <span id="tagHapusMemberLbl">Hapus Member</span>
+                        </button>
+                        <button onclick="openRefundModal()" class="bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-money-bill-transfer"></i> <span id="tagRefundLbl">Refund</span>
                         </button>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
@@ -2518,6 +2523,42 @@
             </div>
             <input type="hidden" id="editFormRowId">
             <div class="flex gap-2 pt-2 text-sm"><button id="btnBatalEdit" onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button><button id="btnSimpanMutasi" onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold">Simpan Mutasi Pembukuan</button></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         REFUND MODAL
+         ============================================================ -->
+    <div id="refundModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-md p-5 md:p-6 shadow-2xl space-y-4 my-auto">
+            <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Refund Member</h3>
+            <p id="refundMemberCount" class="text-xs text-slate-500">0 member dipilih untuk di-refund</p>
+
+            <div>
+                <label class="text-xs text-slate-400 block mb-1">Sisa Hari Member</label>
+                <input type="number" id="refundSisaHari" min="0" placeholder="Contoh: 15"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm outline-none focus:border-amber-500">
+                <p class="text-[10px] text-slate-600 mt-1">Sisa hari layanan saat member di-refund (untuk catatan)</p>
+            </div>
+
+            <div>
+                <label class="text-xs text-slate-400 block mb-1">Nominal Dikembalikan ke Member</label>
+                <input type="number" id="refundNominal" min="0" placeholder="Contoh: 50000"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm outline-none focus:border-amber-500">
+                <p class="text-[10px] text-slate-600 mt-1">Akan otomatis memotong profit dulu, lalu modal jika melebihi profit</p>
+            </div>
+
+            <!-- Preview kalkulasi -->
+            <div id="refundPreviewBox" class="hidden bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs space-y-1">
+                <div class="flex justify-between"><span class="text-slate-400">Profit Terpotong:</span><span id="refundPreviewProfit" class="text-amber-400 font-bold">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Modal Terpotong:</span><span id="refundPreviewModal" class="text-red-400 font-bold">-</span></div>
+                <div class="flex justify-between border-t border-amber-500/20 pt-1 mt-1"><span class="text-slate-300 font-bold">Total Refund:</span><span id="refundPreviewTotal" class="text-white font-bold">-</span></div>
+            </div>
+
+            <div class="flex gap-2 pt-2 text-sm">
+                <button onclick="closeRefundModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button>
+                <button onclick="submitRefund()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold">Proses Refund</button>
+            </div>
         </div>
     </div>
 
@@ -3182,19 +3223,21 @@
         }
 
         async function refreshMembersList() {
-            var _mr2=await sbG("members","owner_user_id=eq."+currentUser.userId+"&or=(deleted_flag.eq.,deleted_flag.is.null)&order=timestamp.desc&select=*&limit=2000");
-            const res={status:"success",data:(_mr2||[]).map(function(m){return {rowId:m.id,timestamp:m.timestamp,createdAt:m.created_at||m.timestamp,namaMember:m.nama_member,noWhatsapp:m.no_whatsapp,email:m.email,perusahaan:m.perusahaan_sumber,namaPaket:m.nama_paket,jenisPembeli:m.jenis_pembeli,hargaBeli:parseFloat(m.harga_beli_saat_ini)||0,hargaJual:parseFloat(m.harga_jual_saat_ini)||0,profit:parseFloat(m.profit_terkunci)||0,tglExpired:m.tgl_expired,status:m.status,lastFuDate:m.last_fu_date,currencyCode:m.currency_code||"IDR"};})};
-            const response={ok:true}; 
-            if(res.status === "success") { 
-                membersData = res.data; 
-                saveMilioMembersCache();
-                if (document.getElementById('tab-dashboard').classList.contains('active')) {
-                    filterDashboard(currentDashboardFilterMode);
-                } else {
-                    filterFinance(currentFinanceMode); 
-                }
-                renderMilioFinanceChart();
-            }
+            var _mr2 = await sbG("members","owner_user_id=eq."+currentUser.userId+"&deleted_flag=neq.DELETED&deleted_flag=neq.SOFT_DELETED&order=timestamp.desc&select=*");
+            if (!Array.isArray(_mr2)) _mr2 = [];
+            membersData = _mr2.map(function(m){ return {
+                rowId:m.id, timestamp:m.timestamp, createdAt:m.created_at||m.timestamp,
+                namaMember:m.nama_member, noWhatsapp:m.no_whatsapp, email:m.email,
+                perusahaan:m.perusahaan_sumber, namaPaket:m.nama_paket, jenisPembeli:m.jenis_pembeli,
+                hargaBeli:parseFloat(m.harga_beli_saat_ini)||0, hargaJual:parseFloat(m.harga_jual_saat_ini)||0,
+                profit:parseFloat(m.profit_terkunci)||0, tglExpired:m.tgl_expired,
+                status:m.status||'Aktif', lastFuDate:m.last_fu_date, currencyCode:m.currency_code||"IDR",
+                isRefunded: m.is_refunded||false, refundAmount: parseFloat(m.refund_amount)||0,
+                refundSisaHari: m.refund_sisa_hari||0, refundNote: m.refund_note||''
+            };});
+            saveMilioMembersCache();
+            filterDashboard(currentDashboardFilterMode || 'all');
+            if (typeof renderMilioFinanceChart === 'function') renderMilioFinanceChart();
         }
 
         function filterCompanyData(compName) { 
@@ -3705,6 +3748,7 @@ ${exportData.map(m => {
                 if (_isReallyAktif) activeCount++;
                 
                 let textSisa = "", rowStyle = "text-slate-300", btnAction = "";
+                const _isRefunded = m.isRefunded === true;
                 
                 let cleanLastFu = "";
                 if (m.lastFuDate) { 
@@ -3798,7 +3842,10 @@ ${exportData.map(m => {
                 const _tagLabel = _mTag.label || '';
                 // Gunakan bgStyle yang sudah ada opacity, atau hitung ulang
                 let _tagRowStyle = '';
-                if (_mTag.bgStyle) {
+                if (_isRefunded) {
+                    // Refund punya prioritas warna tertinggi - orange block
+                    _tagRowStyle = 'background:rgba(217,119,6,0.18);font-style:italic;';
+                } else if (_mTag.bgStyle) {
                     _tagRowStyle = `background:${_mTag.bgStyle};`;
                 } else if (_tagColor) {
                     const _r = parseInt(_tagColor.slice(1,3),16);
@@ -3807,10 +3854,11 @@ ${exportData.map(m => {
                     const _op = _mTag.opacity || 1.0;
                     _tagRowStyle = `background:rgba(${_r},${_g},${_b},${_op});`;
                 }
+                const _refundLabelHtml = _isRefunded ? `<span class="member-tag-label" style="color:#fbbf24;font-style:italic">💰 Refund ${convertAndFormat(m.refundAmount||0, true, m.currencyCode||clientBaseCurrency)} (sisa ${m.refundSisaHari||0} hari)</span>` : '';
                 const _tagLabelHtml = _tagLabel ? `<span class="member-tag-label" style="color:var(--tag-text-color,#a7f3d0)">${_tagLabel}</span>` : '';
                 const _isDarkUI = !document.body.classList.contains('milio-light-mode');
                 const _tagTextColor = _isDarkUI ? '#a7f3d0' : '#064e3b';
-                const _tagLabelHtmlFinal = _tagLabel ? `<span class="member-tag-label" style="color:${_tagTextColor}">${_tagLabel}</span>` : '';
+                const _tagLabelHtmlFinal = _isRefunded ? _refundLabelHtml : (_tagLabel ? `<span class="member-tag-label" style="color:${_tagTextColor}">${_tagLabel}</span>` : '');
 
                 _rowsHtml.push(`<tr class="${rowStyle} border-b border-slate-800/40" id="member-row-${m.rowId}" style="${_tagRowStyle}">
                     <td class="p-2 text-center w-10"><input type="checkbox" class="member-checkbox member-check" data-id="${m.rowId}" onclick="onMemberCheck(this)"></td>
@@ -4458,8 +4506,8 @@ td:last-child{font-weight:bold;}
                 ]);
 
                 // Build CSV members (data terbanyak)
-                const memberHeaders = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date","Tag_Color","Tag_Label","Tag_Opacity"];
-                const memberRows = (members||[]).map(m => [m.id,m.timestamp||"",m.reseller_id||"",(m.nama_member||"").replace(/,/g,";"),(m.no_whatsapp||""),(m.email||""),(m.perusahaan_sumber||"").replace(/,/g,";"),(m.nama_paket||"").replace(/,/g,";"),m.jenis_pembeli||"User Langsung",m.harga_beli_saat_ini||0,m.harga_jual_saat_ini||0,m.profit_terkunci||0,m.tgl_expired||"",m.status||"Aktif",m.last_fu_date||"",m.owner_user_id||"",m.harga_normal||0,m.harga_diskon||0,m.is_diskon||"Tidak",m.currency_code||"IDR",m.deleted_flag||"",m.deleted_date||"",m.tag_color||"",m.tag_label||"",m.tag_opacity||1].map(v=>`"${v}"`).join(","));
+                const memberHeaders = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date","Tag_Color","Tag_Label","Tag_Opacity","Is_Refunded","Refund_Amount","Refund_Sisa_Hari","Refund_Date","Refund_Note"];
+                const memberRows = (members||[]).map(m => [m.id,m.timestamp||"",m.reseller_id||"",(m.nama_member||"").replace(/,/g,";"),(m.no_whatsapp||""),(m.email||""),(m.perusahaan_sumber||"").replace(/,/g,";"),(m.nama_paket||"").replace(/,/g,";"),m.jenis_pembeli||"User Langsung",m.harga_beli_saat_ini||0,m.harga_jual_saat_ini||0,m.profit_terkunci||0,m.tgl_expired||"",m.status||"Aktif",m.last_fu_date||"",m.owner_user_id||"",m.harga_normal||0,m.harga_diskon||0,m.is_diskon||"Tidak",m.currency_code||"IDR",m.deleted_flag||"",m.deleted_date||"",m.tag_color||"",m.tag_label||"",m.tag_opacity||1,m.is_refunded||false,m.refund_amount||0,m.refund_sisa_hari||0,m.refund_date||"",(m.refund_note||"").replace(/,/g,";")].map(v=>`"${v}"`).join(","));
 
                 // Gabungkan semua dalam 1 file CSV dengan section
                 let csvContent = "\uFEFF";
@@ -5327,6 +5375,103 @@ td:last-child{font-weight:bold;}
         }
 
         // HAPUS MEMBER BULK
+        // ============================================================
+        // REFUND SYSTEM
+        // ============================================================
+        function openRefundModal() {
+            if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
+            document.getElementById('refundMemberCount').innerText = selectedMembers.size + ' member dipilih untuk di-refund';
+            document.getElementById('refundSisaHari').value = '';
+            document.getElementById('refundNominal').value = '';
+            document.getElementById('refundPreviewBox').classList.add('hidden');
+            document.getElementById('refundModal').classList.remove('hidden');
+        }
+
+        function closeRefundModal() {
+            document.getElementById('refundModal').classList.add('hidden');
+        }
+
+        // Live preview kalkulasi saat input nominal berubah
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.id === 'refundNominal') {
+                updateRefundPreview();
+            }
+        });
+
+        function updateRefundPreview() {
+            const nominal = parseFloat(document.getElementById('refundNominal').value) || 0;
+            const box = document.getElementById('refundPreviewBox');
+            if (nominal <= 0) { box.classList.add('hidden'); return; }
+
+            // Hitung rata-rata dari member yang dipilih sebagai preview
+            const ids = Array.from(selectedMembers);
+            let totalProfit = 0, totalModal = 0;
+            ids.forEach(function(id) {
+                const m = membersData.find(x => x.rowId == id);
+                if (m) { totalProfit += (m.profit||0); totalModal += (m.hargaBeli||0); }
+            });
+
+            let sisaNominal = nominal;
+            let potongProfit = Math.min(sisaNominal, Math.max(totalProfit,0));
+            sisaNominal -= potongProfit;
+            let potongModal = Math.min(sisaNominal, totalModal);
+
+            box.classList.remove('hidden');
+            document.getElementById('refundPreviewProfit').innerText = convertAndFormat(potongProfit, true, clientCurrency);
+            document.getElementById('refundPreviewModal').innerText = convertAndFormat(potongModal, true, clientCurrency);
+            document.getElementById('refundPreviewTotal').innerText = convertAndFormat(nominal, true, clientCurrency);
+        }
+
+        async function submitRefund() {
+            const sisaHari = parseInt(document.getElementById('refundSisaHari').value) || 0;
+            const nominal = parseFloat(document.getElementById('refundNominal').value) || 0;
+            if (nominal <= 0) { alert('Masukkan nominal refund yang valid!'); return; }
+            if (!validatePasswordSecurity()) return;
+
+            const ids = Array.from(selectedMembers);
+            const lang = dictionary[clientLanguage] || dictionary.ID;
+            const isDark = !document.body.classList.contains('milio-light-mode');
+            let ok = 0, err = 0;
+
+            // Bagi rata nominal ke tiap member yang dipilih (atau bisa per-member jika hanya 1)
+            const nominalPerMember = nominal / ids.length;
+
+            for (const id of ids) {
+                try {
+                    const m = membersData.find(x => x.rowId == id);
+                    if (!m) { err++; continue; }
+
+                    const profitAwal = m.profit || 0;
+                    const modalAwal = m.hargaBeli || 0;
+
+                    // Logic: potong dari profit dulu, sisa baru potong modal
+                    let sisaRefund = nominalPerMember;
+                    const potongProfit = Math.min(sisaRefund, Math.max(profitAwal, 0));
+                    sisaRefund -= potongProfit;
+                    const potongModal = Math.min(sisaRefund, modalAwal);
+
+                    const profitBaru = profitAwal - potongProfit;
+                    const modalBaru = modalAwal - potongModal;
+
+                    await sbU('members', 'id=eq.' + id, {
+                        is_refunded: true,
+                        refund_amount: nominalPerMember,
+                        refund_sisa_hari: sisaHari,
+                        refund_date: new Date().toISOString(),
+                        refund_note: 'Refund ' + convertAndFormat(nominalPerMember, true, clientCurrency) + ' (sisa ' + sisaHari + ' hari)',
+                        profit_terkunci: profitBaru,
+                        harga_beli_saat_ini: modalBaru
+                    });
+                    ok++;
+                } catch(e) { err++; }
+            }
+
+            closeRefundModal();
+            clearAllSelections();
+            await refreshMembersList();
+            alert('✅ ' + ok + ' member berhasil di-refund.' + (err > 0 ? '\\n❌ ' + err + ' gagal.' : ''));
+        }
+
         async function deleteBulkMembers() {
             if (selectedMembers.size === 0) { alert('Pilih member dulu!'); return; }
             const count = selectedMembers.size;
@@ -5594,13 +5739,22 @@ td:last-child{font-weight:bold;}
             try {
                 var rows = await sbG('app_announcements','is_active=eq.true&select=*&limit=1');
                 if (!Array.isArray(rows)||rows.length===0) {
-                    // Pastikan overlay maintenance dilepas jika tidak ada yang aktif
                     releaseMaintenance();
                     return;
                 }
                 var ann=rows[0];
+
+                // AUTO-DEACTIVATE: jika countdown sudah lewat, matikan otomatis di Supabase
+                if (ann.countdown_enabled && ann.countdown_end) {
+                    var diff = new Date(ann.countdown_end) - new Date();
+                    if (diff <= 0) {
+                        try { await sbU('app_announcements', 'id=eq.'+ann.id, {is_active:false}); } catch(e) {}
+                        releaseMaintenance();
+                        return;
+                    }
+                }
+
                 if (ann.type==='maintenance') {
-                    // KUNCI seluruh app - sembunyikan mainApp, tampilkan maintenance overlay
                     lockForMaintenance(ann);
                 } else {
                     releaseMaintenance();
@@ -5641,7 +5795,13 @@ td:last-child{font-weight:bold;}
                     var df = new Date(cd) - new Date();
                     var el = document.getElementById('maintCountdown');
                     if (!el) { clearInterval(window._maintTimer); return; }
-                    if (df <= 0) { el.innerText = 'Segera Selesai ✅'; clearInterval(window._maintTimer); return; }
+                    if (df <= 0) {
+                        el.innerText = 'Segera Selesai ✅';
+                        clearInterval(window._maintTimer);
+                        // AUTO UNLOCK: countdown habis, cek ulang status maintenance ke Supabase
+                        setTimeout(checkAndShowAnnouncement, 1500);
+                        return;
+                    }
                     var hh=Math.floor(df/3600000), mm=Math.floor((df%3600000)/60000), ss=Math.floor((df%60000)/1000);
                     el.innerText = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
                 }, 1000);
