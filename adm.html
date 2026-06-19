@@ -443,6 +443,7 @@
                     document.getElementById('controlCenterScreen').classList.remove('hidden');
                     initCountdownPickers();
                     loadAllAnnouncements();
+                    setInterval(loadAllAnnouncements, 30000); // auto-refresh status & countdown
                     await loadTenants();
                 } else { 
                     alert((res && res.message) ? res.message : "Akses Ditolak! Akun Anda wajib bertipe Owner di Sheets.");
@@ -676,12 +677,46 @@
         // ============================================================
         const ANN_TABLE = 'app_announcements';
 
+        var _admCountdownTimer = null;
+
         async function loadAllAnnouncements() {
             try {
                 const rows = await sbA(ANN_TABLE, 'select=*&order=type.asc');
                 if (!Array.isArray(rows)) return;
-                rows.forEach(function(row) { applyAnnouncementToForm(row); });
+                for (const row of rows) {
+                    // AUTO-DEACTIVATE: jika countdown sudah lewat, matikan otomatis
+                    if (row.is_active && row.countdown_enabled && row.countdown_end) {
+                        var diff = new Date(row.countdown_end) - new Date();
+                        if (diff <= 0) {
+                            try { await sbAPch(ANN_TABLE, 'type=eq.'+row.type, {is_active:false}); } catch(e) {}
+                            row.is_active = false;
+                        }
+                    }
+                    applyAnnouncementToForm(row);
+                }
+                startAdmCountdownBadge(rows);
             } catch(e) { console.error('Load announcements:', e); }
+        }
+
+        // Tampilkan countdown live di badge maintenance jika aktif
+        function startAdmCountdownBadge(rows) {
+            if (_admCountdownTimer) clearInterval(_admCountdownTimer);
+            const maint = rows.find(r => r.type === 'maintenance');
+            if (!maint || !maint.is_active || !maint.countdown_enabled || !maint.countdown_end) return;
+            const badge = document.getElementById('maintenanceStatusBadge');
+            if (!badge) return;
+            const cd = maint.countdown_end;
+            _admCountdownTimer = setInterval(function() {
+                const diff = new Date(cd) - new Date();
+                if (diff <= 0) {
+                    badge.innerText = 'SELESAI ✓';
+                    clearInterval(_admCountdownTimer);
+                    setTimeout(loadAllAnnouncements, 1500); // refresh status
+                    return;
+                }
+                const hh = Math.floor(diff/3600000), mm = Math.floor((diff%3600000)/60000), ss = Math.floor((diff%60000)/1000);
+                badge.innerText = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+            }, 1000);
         }
 
         function applyAnnouncementToForm(row) {
