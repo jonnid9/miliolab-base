@@ -4492,55 +4492,45 @@ td:last-child{font-weight:bold;}
         // ============================================================
         async function exportMyDataCSV() {
             if (!validatePasswordSecurity()) return;
-            if (!confirm("Export semua data kamu ke CSV?\nTermasuk: Members (aktif+arsip), Companies, Packages, Resellers.\n\nLanjutkan?")) return;
+            if (!confirm("Export semua data member kamu ke CSV?\nTermasuk: aktif, expired, arsip, refund — semua terangkut.\n\nLanjutkan?")) return;
             try {
                 const userId = currentUser.userId;
                 const dateStr = new Date().toISOString().split("T")[0];
 
-                // Ambil semua data tanpa filter
-                const [members, companies, packages, resellers] = await Promise.all([
-                    sbG("members", "owner_user_id=eq."+userId+"&order=timestamp.asc&limit=10000"),
-                    sbG("companies", "owner_user_id=eq."+userId+"&limit=500"),
-                    sbG("packages", "owner_user_id=eq."+userId+"&limit=500"),
-                    sbG("resellers", "owner_user_id=eq."+userId+"&limit=500"),
-                ]);
+                // Ambil SEMUA member tanpa filter apapun
+                const members = await sbG("members", "owner_user_id=eq."+userId+"&order=timestamp.asc&limit=10000");
+                if (!members || members.length === 0) { alert("Tidak ada data member."); return; }
 
-                // Build CSV members (data terbanyak)
-                const memberHeaders = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date","Tag_Color","Tag_Label","Tag_Opacity","Is_Refunded","Refund_Amount","Refund_Sisa_Hari","Refund_Date","Refund_Note"];
-                const memberRows = (members||[]).map(m => [m.id,m.timestamp||"",m.reseller_id||"",(m.nama_member||"").replace(/,/g,";"),(m.no_whatsapp||""),(m.email||""),(m.perusahaan_sumber||"").replace(/,/g,";"),(m.nama_paket||"").replace(/,/g,";"),m.jenis_pembeli||"User Langsung",m.harga_beli_saat_ini||0,m.harga_jual_saat_ini||0,m.profit_terkunci||0,m.tgl_expired||"",m.status||"Aktif",m.last_fu_date||"",m.owner_user_id||"",m.harga_normal||0,m.harga_diskon||0,m.is_diskon||"Tidak",m.currency_code||"IDR",m.deleted_flag||"",m.deleted_date||"",m.tag_color||"",m.tag_label||"",m.tag_opacity||1,m.is_refunded||false,m.refund_amount||0,m.refund_sisa_hari||0,m.refund_date||"",(m.refund_note||"").replace(/,/g,";")].map(v=>`"${v}"`).join(","));
+                // Escape helper - RFC 4180 compliant
+                function esc(v) {
+                    if (v === null || v === undefined) v = "";
+                    v = String(v).replace(/"/g, '""');
+                    return `"${v}"`;
+                }
 
-                // Gabungkan semua dalam 1 file CSV dengan section
-                let csvContent = "\uFEFF";
-                csvContent += "### MILIOLAB BACKUP - "+currentUser.namaBisnis+" - "+dateStr+" ###\n";
-                csvContent += "### MEMBERS ("+memberRows.length+" rows) ###\n";
-                csvContent += memberHeaders.join(",") + "\n" + memberRows.join("\n") + "\n\n";
+                const headers = ["ID","Timestamp","Reseller_ID","Nama_Member","No_WhatsApp","Email","Perusahaan_Sumber","Nama_Paket","Jenis_Pembeli","Harga_Beli_Saat_Ini","Harga_Jual_Saat_Ini","Profit_Terkunci","Tgl_Expired","Status","Last_FU_Date","Owner_User_ID","Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code","Deleted_Flag","Deleted_Date","Tag_Color","Tag_Label","Tag_Opacity","Is_Refunded","Refund_Amount","Refund_Sisa_Hari","Refund_Date","Refund_Note"];
+                const rows = (members||[]).map(m => [
+                    esc(m.id), esc(m.timestamp||""), esc(m.reseller_id||""), esc(m.nama_member||""),
+                    esc(m.no_whatsapp||""), esc(m.email||""), esc(m.perusahaan_sumber||""), esc(m.nama_paket||""),
+                    esc(m.jenis_pembeli||"User Langsung"), esc(m.harga_beli_saat_ini||0), esc(m.harga_jual_saat_ini||0),
+                    esc(m.profit_terkunci||0), esc(m.tgl_expired||""), esc(m.status||"Aktif"), esc(m.last_fu_date||""),
+                    esc(m.owner_user_id||""), esc(m.harga_normal||0), esc(m.harga_diskon||0), esc(m.is_diskon||"Tidak"),
+                    esc(m.currency_code||"IDR"), esc(m.deleted_flag||""), esc(m.deleted_date||""),
+                    esc(m.tag_color||""), esc(m.tag_label||""), esc(m.tag_opacity||1),
+                    esc(m.is_refunded||false), esc(m.refund_amount||0), esc(m.refund_sisa_hari||0),
+                    esc(m.refund_date||""), esc(m.refund_note||"")
+                ].join(","));
 
-                // Companies
-                csvContent += "### COMPANIES ("+((companies||[]).length)+" rows) ###\n";
-                csvContent += "ID,Company_ID,Nama_Perusahaan,Keterangan,Owner_User_ID,Deleted_Flag\n";
-                (companies||[]).forEach(c => { csvContent += `"${c.id}","${c.company_id}","${(c.nama_perusahaan||"").replace(/,/g,";")}","${c.keterangan||""}","${c.owner_user_id}","${c.deleted_flag||""}"\n`; });
-                csvContent += "\n";
-
-                // Packages
-                csvContent += "### PACKAGES ("+((packages||[]).length)+" rows) ###\n";
-                csvContent += "ID,Package_ID,Perusahaan_Sumber,Nama_Paket,Varian,Durasi_Hari,Harga_Beli,Harga_Jual_User,Harga_Jual_Reseller,Owner_User_ID,Currency_Code,Deleted_Flag\n";
-                (packages||[]).forEach(p => { csvContent += `"${p.id}","${p.package_id}","${p.perusahaan_sumber||""}","${(p.nama_paket||"").replace(/,/g,";")}","${p.varian||""}","${p.durasi_hari||30}","${p.harga_beli_ke_perusahaan||0}","${p.harga_jual_user_langsung||0}","${p.harga_jual_reseller||0}","${p.owner_user_id}","${p.currency_code||"IDR"}","${p.deleted_flag||""}"\n`; });
-                csvContent += "\n";
-
-                // Resellers
-                csvContent += "### RESELLERS ("+((resellers||[]).length)+" rows) ###\n";
-                csvContent += "ID,Nama_Reseller,No_WhatsApp,Negara,Status,Owner_User_ID,Deleted_Flag\n";
-                (resellers||[]).forEach(r => { csvContent += `"${r.id}","${(r.nama_reseller||"").replace(/,/g,";")}","${r.no_whatsapp||""}","${r.negara||"ID"}","${r.status||"Aktif"}","${r.owner_user_id}","${r.deleted_flag||""}"\n`; });
-
+                const csvContent = "\uFEFFsep=,\r\n" + [headers.join(","), ...rows].join("\r\n");
                 const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
                 a.download = `BACKUP_${currentUser.namaBisnis}_${userId}_${dateStr}.csv`;
-                a.click();
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 URL.revokeObjectURL(url);
 
-                alert(`✅ Export berhasil!\n📊 ${memberRows.length} members\n🏢 ${(companies||[]).length} companies\n📦 ${(packages||[]).length} packages\n👥 ${(resellers||[]).length} resellers\n\nFile: BACKUP_${currentUser.namaBisnis}_${dateStr}.csv`);
+                alert(`✅ Export berhasil!\n📊 ${rows.length} member data ter-export\n\nFile: BACKUP_${currentUser.namaBisnis}_${dateStr}.csv\n\nUntuk recovery, gunakan tombol Import di bawahnya.`);
             } catch(e) {
                 alert("❌ Gagal export: " + e.message);
             }
@@ -4558,37 +4548,38 @@ td:last-child{font-weight:bold;}
             reader.onload = async function(e) {
                 try {
                     const text = e.target.result.replace(/^\uFEFF/,"");
-                    const allLines = text.split("\n");
-
-                    // Cari section MEMBERS
-                    let memberStart = -1;
-                    let headerLine = null;
-                    for (let i = 0; i < allLines.length; i++) {
-                        if (allLines[i].includes("### MEMBERS")) { memberStart = i+1; continue; }
-                        if (memberStart > 0 && !headerLine && allLines[i].trim() && !allLines[i].startsWith("#")) {
-                            headerLine = allLines[i].split(",").map(h=>h.replace(/"/g,"").trim());
-                            memberStart = i+1;
-                            break;
-                        }
+                    let allLines = text.split(/\r?\n/).filter(l => l.trim());
+                    // Skip baris "sep=," jika ada (declaration delimiter Excel)
+                    if (allLines[0] && allLines[0].trim().toLowerCase().startsWith("sep=")) {
+                        allLines = allLines.slice(1);
                     }
 
-                    if (!headerLine || !headerLine.includes("Nama_Member")) {
-                        alert("❌ Format CSV tidak valid!\nPastikan menggunakan file backup dari Export menu ini.");
-                        return;
-                    }
+                    if (allLines.length < 2) { alert("File CSV kosong atau tidak valid."); return; }
 
                     const parseCSVLine = (line) => {
                         const result=[]; let cur="", inQ=false;
-                        for(let i=0;i<line.length;i++){if(line[i]==='"'){inQ=!inQ;}else if(line[i]===','&&!inQ){result.push(cur);cur="";}else{cur+=line[i];}}
+                        for(let i=0;i<line.length;i++){
+                            const ch = line[i];
+                            if(ch==='"'){
+                                if(inQ && line[i+1]==='"'){ cur+='"'; i++; }
+                                else inQ=!inQ;
+                            } else if(ch===','&&!inQ){ result.push(cur); cur=""; }
+                            else { cur+=ch; }
+                        }
                         result.push(cur);
                         return result.map(v=>v.trim());
                     };
 
+                    const headerLine = parseCSVLine(allLines[0]);
+
+                    if (!headerLine.includes("Nama_Member")) {
+                        alert("❌ Format CSV tidak valid!\nFile harus hasil export MEMBERS dari menu ini (header harus mengandung kolom 'Nama_Member').");
+                        return;
+                    }
+
                     const csvRows = [];
-                    for (let i = memberStart; i < allLines.length; i++) {
-                        const line = allLines[i].trim();
-                        if (!line || line.startsWith("#")) break;
-                        const vals = parseCSVLine(line);
+                    for (let i = 1; i < allLines.length; i++) {
+                        const vals = parseCSVLine(allLines[i]);
                         if (vals.length < 5) continue;
                         const obj = {};
                         headerLine.forEach((h,idx)=>{ obj[h]=vals[idx]||""; });
@@ -4671,6 +4662,12 @@ td:last-child{font-weight:bold;}
                         if(rowObj["Tag_Color"] !== undefined) d.tag_color = rowObj["Tag_Color"]||"";
                         if(rowObj["Tag_Label"] !== undefined) d.tag_label = rowObj["Tag_Label"]||"";
                         if(rowObj["Tag_Opacity"] !== undefined) d.tag_opacity = parseFloat(rowObj["Tag_Opacity"])||1.0;
+                        // Refund fields
+                        if(rowObj["Is_Refunded"] !== undefined) d.is_refunded = (rowObj["Is_Refunded"]==="true"||rowObj["Is_Refunded"]===true);
+                        if(rowObj["Refund_Amount"] !== undefined) d.refund_amount = parseFloat(rowObj["Refund_Amount"])||0;
+                        if(rowObj["Refund_Sisa_Hari"] !== undefined) d.refund_sisa_hari = parseInt(rowObj["Refund_Sisa_Hari"])||0;
+                        if(rowObj["Refund_Date"]) d.refund_date = rowObj["Refund_Date"];
+                        if(rowObj["Refund_Note"] !== undefined) d.refund_note = rowObj["Refund_Note"]||"";
 
                         try {
                             if (isConflict && replaceConflicts) { await sbU("members","id=eq."+csvId,d); replaced++; }
