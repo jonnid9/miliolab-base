@@ -600,7 +600,7 @@
         }
 
         const SB_URL="https://qiaeodxtdmxajtmjhdbd.supabase.co";
-        const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVvZHh0ZG14YWp0bWpoZGJkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTYyNzA1NCwiZXhwIjoyMDk3MjAzMDU0fQ.clJ_qudv3tL8ySX_0hqf29HxVGqcPNdfgiIQtQhjI4Q";
+        const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVvZHh0ZG14YWp0bWpoZGJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MjcwNTQsImV4cCI6MjA5NzIwMzA1NH0.qa4uhF-LFYRd3NqbXGUXNSfdWLtWUGhJN08cSBlcQfM";
         const SB_H={"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"};
         const SB_H_GET={"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY};
         const sbG=async(t,p)=>(await fetch(SB_URL+"/rest/v1/"+t+"?"+p,{headers:SB_H_GET})).json();
@@ -5763,55 +5763,85 @@ td:last-child{font-weight:bold;}
         }
 
         function lockForMaintenance(ann) {
-            // Sembunyikan mainApp dan loginPage
+            // Sembunyikan semua konten app
             var mainApp = document.getElementById('mainApp');
             var loginPage = document.getElementById('loginPage');
+            var guard = document.getElementById('pageLoadGuard');
             if (mainApp) mainApp.style.display = 'none';
             if (loginPage) loginPage.style.display = 'none';
-            // Tampilkan maintenance overlay fullscreen
+            if (guard) guard.style.display = 'none';
+
+            // Update konten overlay dari data ann
+            var titleEl = document.getElementById('maintTitle');
+            var msgEl = document.getElementById('maintMsg');
+            var imgWrap = document.getElementById('maintImgWrap');
+            var cdWrap = document.getElementById('maintCountdownWrap');
+            var btnWrap = document.getElementById('maintBtnWrap');
+
+            if (titleEl) titleEl.innerText = ann.title || 'Sedang Maintenance';
+            if (msgEl) msgEl.innerHTML = (ann.message || 'Sistem sedang dalam pemeliharaan.').split(String.fromCharCode(10)).join('<br>');
+            if (imgWrap) imgWrap.innerHTML = ann.image_url ? '<img src="'+ann.image_url+'" style="max-width:280px;border-radius:16px;margin:16px auto;display:block" onerror="this.hidden=true">' : '';
+
+            // COUNTDOWN - tampilkan timer mundur jika ada
+            if (cdWrap) {
+                if (ann.countdown_enabled && ann.countdown_end) {
+                    cdWrap.innerHTML = '<div style="background:rgba(127,29,29,0.4);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:20px;margin:20px 0;text-align:center"><p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">⏱ Estimasi Selesai</p><div id="maintCountdown" style="color:#fff;font-size:36px;font-family:monospace;font-weight:900;letter-spacing:6px">--:--:--</div></div>';
+                    // Start timer
+                    if (window._maintTimer) clearInterval(window._maintTimer);
+                    var cdEnd = ann.countdown_end;
+                    window._maintTimer = setInterval(function() {
+                        var df = new Date(cdEnd) - new Date();
+                        var el = document.getElementById('maintCountdown');
+                        if (!el) { clearInterval(window._maintTimer); return; }
+                        if (df <= 0) {
+                            el.innerText = 'Membuka App... ✅';
+                            clearInterval(window._maintTimer);
+                            window._maintTimer = null;
+                            // AUTO UNLOCK: set is_active=false di Supabase lalu buka app
+                            setTimeout(function() {
+                                checkAndShowAnnouncement();
+                            }, 2000);
+                            return;
+                        }
+                        var hh = Math.floor(df/3600000);
+                        var mm = Math.floor((df%3600000)/60000);
+                        var ss = Math.floor((df%60000)/1000);
+                        el.innerText = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+                    }, 1000);
+                } else {
+                    cdWrap.innerHTML = '';
+                }
+            }
+
+            // Tombol CTA jika ada
+            if (btnWrap) {
+                if (ann.btn_enabled && ann.btn_label && ann.btn_link) {
+                    btnWrap.innerHTML = '<a href="'+ann.btn_link+'" target="_blank" style="display:inline-block;background:#dc2626;color:#fff;font-weight:700;padding:12px 28px;border-radius:12px;font-size:14px;text-decoration:none;margin-top:16px">'+ann.btn_label+'</a>';
+                } else {
+                    btnWrap.innerHTML = '';
+                }
+            }
+
+            // Tampilkan overlay
             var overlay = document.getElementById('maintenanceOverlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'maintenanceOverlay';
-                overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0a0a0a;display:flex;align-items:center;justify-content:center;padding:24px';
-                document.body.appendChild(overlay);
-            }
-            // Build maintenance UI
-            var cdHtml = '';
-            if (ann.countdown_enabled && ann.countdown_end) {
-                cdHtml = '<div style="background:rgba(127,29,29,0.4);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:20px;margin:20px 0;text-align:center"><p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px">⏱ Estimasi Selesai</p><div id="maintCountdown" style="color:#fff;font-size:36px;font-family:monospace;font-weight:900;letter-spacing:6px">--:--:--</div></div>';
-            }
-            var imgHtml = ann.image_url ? '<img src="'+ann.image_url+'" style="max-width:280px;border-radius:16px;margin:16px auto;display:block" onerror="this.hidden=true">' : '';
-            overlay.innerHTML = '<div style="max-width:480px;width:100%;text-align:center"><div style="font-size:64px;margin-bottom:16px">🔧</div><div style="display:inline-block;background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:4px 16px;border-radius:999px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">MAINTENANCE</div>'+imgHtml+'<h1 style="color:#fff;font-size:24px;font-weight:900;margin-bottom:12px">'+(ann.title||'Sedang Maintenance')+'</h1><p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:4px">'+(ann.message||'Sistem sedang dalam pemeliharaan. Mohon tunggu sebentar.').split(String.fromCharCode(10)).join('<br>')+'</p>'+cdHtml+'<p style="color:#475569;font-size:11px;margin-top:20px">Silakan hubungi admin jika butuh bantuan segera.</p></div>';
-            overlay.style.display = 'flex';
-            // Start countdown
-            if (ann.countdown_enabled && ann.countdown_end) {
-                if (window._maintTimer) clearInterval(window._maintTimer);
-                var cd = ann.countdown_end;
-                window._maintTimer = setInterval(function() {
-                    var df = new Date(cd) - new Date();
-                    var el = document.getElementById('maintCountdown');
-                    if (!el) { clearInterval(window._maintTimer); return; }
-                    if (df <= 0) {
-                        el.innerText = 'Segera Selesai ✅';
-                        clearInterval(window._maintTimer);
-                        // AUTO UNLOCK: countdown habis, cek ulang status maintenance ke Supabase
-                        setTimeout(checkAndShowAnnouncement, 1500);
-                        return;
-                    }
-                    var hh=Math.floor(df/3600000), mm=Math.floor((df%3600000)/60000), ss=Math.floor((df%60000)/1000);
-                    el.innerText = String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-                }, 1000);
-            }
+            if (overlay) overlay.style.display = 'flex';
         }
 
         function releaseMaintenance() {
-            // Sembunyikan overlay maintenance (jangan di-remove, biarkan di DOM)
+            // Sembunyikan overlay maintenance
             var overlay = document.getElementById('maintenanceOverlay');
             if (overlay) overlay.style.display = 'none';
             // Lepas page load guard
             var guard = document.getElementById('pageLoadGuard');
             if (guard) guard.style.display = 'none';
+            // Tampilkan kembali app — mainApp jika sudah login, loginPage jika belum
+            var mainApp = document.getElementById('mainApp');
+            var loginPage = document.getElementById('loginPage');
+            if (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) {
+                if (mainApp) mainApp.style.display = '';
+            } else {
+                if (loginPage) loginPage.style.display = '';
+            }
             if (window._maintTimer) { clearInterval(window._maintTimer); window._maintTimer = null; }
         }
         function showAnnouncementPopup(ann,sk) {
