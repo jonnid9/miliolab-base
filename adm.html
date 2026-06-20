@@ -158,7 +158,7 @@
                         </div>
                         <!-- Selesai -->
                         <div class="p-2">
-                            <p class="text-[9px] text-red-500 font-bold uppercase mb-1.5">🔴 Selesai</p>
+                            <p class="text-[9px] text-red-500 font-bold uppercase mb-1.5">🔴 Selesai (Countdown)</p>
                             <input type="date" id="maintenanceCountdownDate" class="w-full bg-slate-950 border border-slate-800 rounded-md px-1.5 py-1 text-white text-[10px] outline-none focus:border-red-500 mb-1">
                             <div class="flex gap-1">
                                 <select id="maintenanceCountdownHour" class="flex-1 bg-slate-950 border border-slate-800 rounded-md py-1 text-white text-[10px] outline-none focus:border-red-500">
@@ -168,7 +168,15 @@
                                     <option value="">MM</option>
                                 </select>
                             </div>
-                            <p class="text-[9px] text-slate-700 mt-1 text-center">kosong = tanpa timer</p>
+                            <!-- Shortcut durasi dari waktu mulai -->
+                            <div class="flex flex-wrap gap-1 mt-1.5">
+                                <button onclick="setMaintDuration(0.5)" class="text-[8px] bg-red-950/40 border border-red-900/40 text-red-400 px-1.5 py-0.5 rounded hover:bg-red-900/40">30m</button>
+                                <button onclick="setMaintDuration(1)" class="text-[8px] bg-red-950/40 border border-red-900/40 text-red-400 px-1.5 py-0.5 rounded hover:bg-red-900/40">1j</button>
+                                <button onclick="setMaintDuration(2)" class="text-[8px] bg-red-950/40 border border-red-900/40 text-red-400 px-1.5 py-0.5 rounded hover:bg-red-900/40">2j</button>
+                                <button onclick="setMaintDuration(3)" class="text-[8px] bg-red-950/40 border border-red-900/40 text-red-400 px-1.5 py-0.5 rounded hover:bg-red-900/40">3j</button>
+                                <button onclick="setMaintDurationCustom()" class="text-[8px] bg-red-950/40 border border-red-900/40 text-red-400 px-1.5 py-0.5 rounded hover:bg-red-900/40">✏️</button>
+                            </div>
+                            <p class="text-[8px] text-slate-700 mt-1 text-center">Klik durasi atau isi manual</p>
                         </div>
                     </div>
                 </div>
@@ -587,9 +595,8 @@
 
         // Populate jam dan menit dropdown
         function initCountdownPickers() {
-            // Isi semua select jam dan menit
+            // Isi dropdown jam (0-23)
             var hourIds = ['maintenanceCountdownHour','maintStartHour'];
-            var minIds  = ['maintenanceCountdownMin','maintStartMin'];
             hourIds.forEach(function(id) {
                 var sel = document.getElementById(id); if (!sel) return;
                 for (var h = 0; h < 24; h++) {
@@ -598,9 +605,11 @@
                     o.text = String(h).padStart(2,'0') + ':00'; sel.appendChild(o);
                 }
             });
+            // Isi dropdown menit per 1 menit (0-59)
+            var minIds = ['maintenanceCountdownMin','maintStartMin'];
             minIds.forEach(function(id) {
                 var sel = document.getElementById(id); if (!sel) return;
-                for (var m = 0; m < 60; m += 5) {
+                for (var m = 0; m < 60; m++) {
                     var o = document.createElement('option');
                     o.value = String(m).padStart(2,'0');
                     o.text = ':' + String(m).padStart(2,'0'); sel.appendChild(o);
@@ -612,11 +621,44 @@
             var now = new Date();
             var d = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
             var h = String(now.getHours()).padStart(2,'0');
-            var m = String(Math.floor(now.getMinutes()/5)*5).padStart(2,'0');
+            var m = String(now.getMinutes()).padStart(2,'0');
             if (type === 'start') {
                 var dateEl=document.getElementById('maintStartDate'),hourEl=document.getElementById('maintStartHour'),minEl=document.getElementById('maintStartMin');
                 if(dateEl) dateEl.value=d; if(hourEl) hourEl.value=h; if(minEl) minEl.value=m;
             }
+        }
+
+        // Set durasi dari waktu mulai (jam kedepan)
+        function setMaintDuration(hours) {
+            // Ambil waktu mulai, jika kosong pakai sekarang
+            var startStr = getStartValue();
+            var startDate;
+            if (startStr) {
+                startDate = new Date(startStr);
+            } else {
+                startDate = new Date();
+                setMaintNow('start');
+            }
+            // Hitung waktu selesai
+            var endDate = new Date(startDate.getTime() + (hours * 3600000));
+            var d = endDate.getFullYear()+'-'+String(endDate.getMonth()+1).padStart(2,'0')+'-'+String(endDate.getDate()).padStart(2,'0');
+            var h = String(endDate.getHours()).padStart(2,'0');
+            var m = String(endDate.getMinutes()).padStart(2,'0');
+            var dateEl=document.getElementById('maintenanceCountdownDate');
+            var hourEl=document.getElementById('maintenanceCountdownHour');
+            var minEl=document.getElementById('maintenanceCountdownMin');
+            if(dateEl) dateEl.value=d;
+            if(hourEl) hourEl.value=h;
+            if(minEl) minEl.value=m;
+        }
+
+        // Set durasi custom (ketik manual jam)
+        function setMaintDurationCustom() {
+            var input = prompt('Berapa JAM dari waktu mulai?\n(Contoh: 0.5 = 30 menit, 1.5 = 1.5 jam, 3 = 3 jam)');
+            if (!input) return;
+            var hours = parseFloat(input);
+            if (isNaN(hours) || hours <= 0) { alert('Masukkan angka yang valid!'); return; }
+            setMaintDuration(hours);
         }
 
         function getStartValue() {
@@ -778,8 +820,11 @@
             if (type === 'maintenance') {
                 data.title = g('maintenanceTitle'); data.message = g('maintenanceMessage');
                 data.image_url = g('maintenanceImage');
-                const cd = g('maintenanceCountdown');
-                data.countdown_enabled = !!cd; data.countdown_end = cd ? new Date(cd).toISOString() : null;
+                var cd = getCountdownValue();
+                var cs = getStartValue();
+                data.countdown_enabled = !!cd;
+                data.countdown_end = cd ? new Date(cd).toISOString() : null;
+                data.note = cs ? ('start:' + new Date(cs).toISOString()) : '';
             } else if (type === 'announcement') {
                 data.title = g('announcementTitle'); data.message = g('announcementMessage');
                 data.image_url = g('announcementImage');
