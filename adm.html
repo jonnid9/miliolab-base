@@ -839,6 +839,13 @@
                 const resellers = await sbA("resellers", "owner_user_id=eq."+userId+"&limit=500");
                 
                 if (!members || members.length === 0) { alert("Tidak ada data member untuk di-export."); return; }
+
+                // Escape helper - quote semua value, escape internal quote dengan benar
+                function esc(v) {
+                    if (v === null || v === undefined) v = "";
+                    v = String(v).replace(/"/g, '""');
+                    return `"${v}"`;
+                }
                 
                 // Build CSV
                 const headers = [
@@ -848,35 +855,36 @@
                     "Tgl_Expired","Status","Last_FU_Date","Owner_User_ID",
                     "Harga_Normal","Harga_Diskon","Is_Diskon","Currency_Code",
                     "Deleted_Flag","Deleted_Date",
-                    "Tag_Color","Tag_Label","Tag_Opacity"
+                    "Tag_Color","Tag_Label","Tag_Opacity",
+                    "Is_Refunded","Refund_Amount","Refund_Sisa_Hari","Refund_Date","Refund_Note"
                 ];
                 
                 const rows = members.map(m => [
-                    m.id, m.timestamp||"", m.reseller_id||"", 
-                    (m.nama_member||"").replace(/,/g,";"),
-                    m.no_whatsapp||"", m.email||"",
-                    (m.perusahaan_sumber||"").replace(/,/g,";"),
-                    (m.nama_paket||"").replace(/,/g,";"),
-                    m.jenis_pembeli||"User Langsung",
-                    m.harga_beli_saat_ini||0, m.harga_jual_saat_ini||0, m.profit_terkunci||0,
-                    m.tgl_expired||"", m.status||"Aktif", m.last_fu_date||"",
-                    m.owner_user_id||"",
-                    m.harga_normal||0, m.harga_diskon||0, m.is_diskon||"Tidak",
-                    m.currency_code||"IDR", m.deleted_flag||"", m.deleted_date||"",
-                    m.tag_color||"", m.tag_label||"", m.tag_opacity||1
-                ].map(v => `"${v}"`).join(","));
+                    esc(m.id), esc(m.timestamp||""), esc(m.reseller_id||""),
+                    esc(m.nama_member||""), esc(m.no_whatsapp||""), esc(m.email||""),
+                    esc(m.perusahaan_sumber||""), esc(m.nama_paket||""),
+                    esc(m.jenis_pembeli||"User Langsung"),
+                    esc(m.harga_beli_saat_ini||0), esc(m.harga_jual_saat_ini||0), esc(m.profit_terkunci||0),
+                    esc(m.tgl_expired||""), esc(m.status||"Aktif"), esc(m.last_fu_date||""),
+                    esc(m.owner_user_id||""),
+                    esc(m.harga_normal||0), esc(m.harga_diskon||0), esc(m.is_diskon||"Tidak"),
+                    esc(m.currency_code||"IDR"), esc(m.deleted_flag||""), esc(m.deleted_date||""),
+                    esc(m.tag_color||""), esc(m.tag_label||""), esc(m.tag_opacity||1),
+                    esc(m.is_refunded||false), esc(m.refund_amount||0), esc(m.refund_sisa_hari||0),
+                    esc(m.refund_date||""), esc(m.refund_note||"")
+                ].join(","));
                 
-                const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+                const csvContent = "\uFEFFsep=,\r\n" + [headers.join(","), ...rows].join("\r\n");
                 const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 const dateStr = new Date().toISOString().split("T")[0];
                 a.href = url;
-                a.download = `BACKUP_${namaBisnis}_${userId}_${dateStr}_${members.length}rows.csv`;
-                a.click();
+                a.download = `MEMBERS_${namaBisnis}_${userId}_${dateStr}.csv`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                alert(`✅ Export berhasil!\n📊 ${members.length} member ter-export\n🏢 ${(companies||[]).length} companies\n📦 ${(packages||[]).length} packages\n👥 ${(resellers||[]).length} resellers\n\nFile: BACKUP_${namaBisnis}_${dateStr}.csv`);
+                alert(`✅ Export berhasil!\n📊 ${members.length} member ter-export\n🏢 ${(companies||[]).length} companies\n📦 ${(packages||[]).length} packages\n👥 ${(resellers||[]).length} resellers\n\nFile: MEMBERS_${namaBisnis}_${dateStr}.csv`);
             } catch(e) {
                 alert("❌ Gagal export: " + e.message);
             }
@@ -898,10 +906,29 @@
             reader.onload = async function(e) {
                 try {
                     const text = e.target.result.replace(/^\uFEFF/, "");
-                    const lines = text.split("\n").filter(l => l.trim());
+                    let lines = text.split(/\r?\n/).filter(l => l.trim());
+                    // Skip baris "sep=," jika ada (declaration delimiter Excel)
+                    if (lines[0] && lines[0].trim().toLowerCase().startsWith("sep=")) {
+                        lines = lines.slice(1);
+                    }
                     if (lines.length < 2) { alert("File CSV kosong atau tidak valid."); return; }
                     
-                    const headerLine = lines[0].split(",").map(h => h.replace(/"/g,"").trim());
+                    const headerLineRaw = lines[0];
+                    const parseHeaderLine = (line) => {
+                        const result = []; let current = "", inQuotes = false;
+                        for (let i = 0; i < line.length; i++) {
+                            const ch = line[i];
+                            if (ch === '"') {
+                                if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+                                else inQuotes = !inQuotes;
+                            }
+                            else if (ch === ',' && !inQuotes) { result.push(current); current = ""; }
+                            else { current += ch; }
+                        }
+                        result.push(current);
+                        return result.map(v => v.trim());
+                    };
+                    const headerLine = parseHeaderLine(headerLineRaw);
                     const requiredHeaders = ["Nama_Member", "Owner_User_ID"];
                     const missingHeaders = requiredHeaders.filter(h => !headerLine.includes(h));
                     if (missingHeaders.length > 0) {
@@ -912,9 +939,13 @@
                     const parseCSVLine = (line) => {
                         const result = []; let current = "", inQuotes = false;
                         for (let i = 0; i < line.length; i++) {
-                            if (line[i] === '"') { inQuotes = !inQuotes; }
-                            else if (line[i] === ',' && !inQuotes) { result.push(current); current = ""; }
-                            else { current += line[i]; }
+                            const ch = line[i];
+                            if (ch === '"') {
+                                if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+                                else inQuotes = !inQuotes;
+                            }
+                            else if (ch === ',' && !inQuotes) { result.push(current); current = ""; }
+                            else { current += ch; }
                         }
                         result.push(current);
                         return result.map(v => v.trim());
@@ -1028,6 +1059,12 @@
                         if (rowObj["Tag_Color"] !== undefined) insertData.tag_color = rowObj["Tag_Color"]||"";
                         if (rowObj["Tag_Label"] !== undefined) insertData.tag_label = rowObj["Tag_Label"]||"";
                         if (rowObj["Tag_Opacity"] !== undefined) insertData.tag_opacity = parseFloat(rowObj["Tag_Opacity"])||1.0;
+                        // Refund fields - terangkut saat recovery
+                        if (rowObj["Is_Refunded"] !== undefined) insertData.is_refunded = (rowObj["Is_Refunded"]==="true"||rowObj["Is_Refunded"]===true);
+                        if (rowObj["Refund_Amount"] !== undefined) insertData.refund_amount = parseFloat(rowObj["Refund_Amount"])||0;
+                        if (rowObj["Refund_Sisa_Hari"] !== undefined) insertData.refund_sisa_hari = parseInt(rowObj["Refund_Sisa_Hari"])||0;
+                        if (rowObj["Refund_Date"]) insertData.refund_date = rowObj["Refund_Date"];
+                        if (rowObj["Refund_Note"] !== undefined) insertData.refund_note = rowObj["Refund_Note"]||"";
                         
                         try {
                             if (isConflict && replaceConflicts) {
