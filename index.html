@@ -7,7 +7,7 @@
     <title>MILIOLAB BASE v7.6 Official Premium Gold</title>
 
     <!-- PWA: bisa di-install jadi app -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="MILIOLAB">
@@ -6171,7 +6171,7 @@ td:last-child{font-weight:bold;}
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js')
+                navigator.serviceWorker.register('/service-worker.js')
                     .then(function(reg) { console.log('PWA ready:', reg.scope); })
                     .catch(function(err) { console.log('PWA register skip:', err); });
             });
