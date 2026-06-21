@@ -573,6 +573,14 @@
         </div>
     </div>
 
+    <!-- ANNOUNCEMENT POPUP -->
+    <div id="announcementPopup" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(4px)">
+        <div id="announcementPopupBox" class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden" style="max-height:90vh;overflow-y:auto">
+            <button id="annPopupCloseBtn" onclick="closeAnnouncementPopup()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white flex items-center justify-center transition text-xs font-bold"><i class="fa-solid fa-xmark"></i></button>
+            <div id="annPopupContent" class="p-6"></div>
+        </div>
+    </div>
+
     <div id="globalLoader" class="hidden fixed inset-0 bg-slate-950/80 z-[9999] flex flex-col items-center justify-center backdrop-blur-sm transition-all">
         <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-500 mb-3"></div>
         <div class="text-green-400 font-bold tracking-widest text-sm animate-pulse">MEMUAT DATA...</div>
@@ -3716,14 +3724,7 @@ thead tr{background:#22c55e;color:#fff;}th,td{border:1px solid #ddd;padding:6px;
 <body ${isRTL2}><h2>${lang.monitor.toUpperCase()} - ${currentUser.namaBisnis.toUpperCase()}</h2>
 <div class="sub">${noteText}</div><hr>
 <table><thead><tr><th>${lang.xlHeaderTimestamp||'Tgl Input'}</th><th>${lang.xlHeaderName||'Nama'}</th><th>${lang.xlHeaderPlatform||'Platform'}</th><th>${lang.xlHeaderPackage||'Paket'}</th><th>${lang.xlHeaderExpired||'Tgl Berakhir'}</th><th>${lang.xlHeaderStatus||'Status'}</th><th>${lang.xlHeaderProfit||'Profit'}</th></tr></thead>
-<tbody>${rowsHTML}</tbody></table>    <!-- ANNOUNCEMENT POPUP -->
-    <div id="announcementPopup" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(4px)">
-        <div id="announcementPopupBox" class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden" style="max-height:90vh;overflow-y:auto">
-            <button id="annPopupCloseBtn" onclick="closeAnnouncementPopup()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white flex items-center justify-center transition text-xs font-bold"><i class="fa-solid fa-xmark"></i></button>
-            <div id="annPopupContent" class="p-6"></div>
-        </div>
-    </div>
-</body></html>`;
+<tbody>${rowsHTML}</tbody></table></body></html>`;
                     const w2 = window.open('', '_blank', 'width=900,height=700');
                     w2.document.write(html2); w2.document.close();
                     setTimeout(() => { w2.focus(); w2.print(); }, 800);
