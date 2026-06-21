@@ -5,6 +5,12 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MILIOLAB BASE v7.6 Official Premium Gold</title>
+
+    <!-- PWA: bisa di-install jadi app -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MILIOLAB">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600;700&family=Outfit:wght@300;400;600;700&family=DM+Sans:wght@300;400;600;700&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;600;700;900&family=Sora:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Noto+Sans+SC:wght@400;600;700&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -6155,6 +6161,21 @@ td:last-child{font-weight:bold;}
         }
 
         });
+    </script>
+
+    <!-- ============================================================
+         PWA SERVICE WORKER REGISTRATION
+         Terpisah dari script utama agar tidak ganggu logic app.
+         Gagal register pun tidak mempengaruhi fungsi app sama sekali.
+         ============================================================ -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(reg) { console.log('PWA ready:', reg.scope); })
+                    .catch(function(err) { console.log('PWA register skip:', err); });
+            });
+        }
     </script>
 </body>
 </html>
