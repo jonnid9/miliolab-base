@@ -2238,7 +2238,14 @@
                 </div>
                 <form id="memberForm" onsubmit="event.preventDefault(); submitMemberForm();" class="space-y-4 text-sm">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" id="formNama" placeholder="Nama Member" required class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
+                        <div class="relative">
+                            <input type="text" id="formNama" placeholder="Nama Member" required autocomplete="off"
+                                oninput="showNameSuggestions(this.value)"
+                                onfocus="showNameSuggestions(this.value)"
+                                class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
+                            <!-- Autocomplete dropdown -->
+                            <div id="nameSuggestBox" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto"></div>
+                        </div>
                         <div class="flex gap-2 w-full">
                             <select id="formCountryCode" class="bg-slate-950 border border-slate-800 p-2 md:p-3 text-xs font-bold text-slate-400 rounded-xl outline-none cursor-pointer"></select>
                             <input type="text" id="formWA" placeholder="Contoh: 08123xxx" required class="flex-1 bg-slate-950 p-3 rounded-xl border border-slate-800 text-white outline-none">
@@ -2277,10 +2284,14 @@
                         <input type="hidden" id="formHargaBeli">
                         <input type="number" id="formHargaJual" class="hidden" oninput="recalculateManualProfit()">
                         <!-- Display label converted (tampil ke user) -->
-                        <div><span id="lblInpHargaBeli">Modal Beli:</span> <span id="formHargaBeliDisplay" class="text-slate-400 font-bold block text-sm mt-1">-</span></div>
+                        <div><span id="lblInpHargaBeli">Modal Beli:</span>
+                            <span id="formHargaBeliDisplay" class="text-slate-400 font-bold block text-sm mt-1">-</span>
+                            <!-- Input manual harga beli saat diskon aktif -->
+                            <input type="number" id="formHargaBeliManual" class="hidden w-full bg-transparent text-amber-300 font-bold text-sm outline-none border-b border-amber-500/50 mt-1" oninput="recalculateManualProfitFromDisplay()">
+                        </div>
                         <div><span id="lblInpHargaJual">Harga Jual:</span>
                             <span id="formHargaJualDisplay" class="text-white font-bold block text-sm mt-1">-</span>
-                            <!-- Input manual saat diskon aktif -->
+                            <!-- Input manual harga jual saat diskon aktif -->
                             <input type="number" id="formHargaJualManual" class="hidden w-full bg-transparent text-amber-300 font-bold text-sm outline-none border-b border-amber-500/50 mt-1" oninput="recalculateManualProfitFromDisplay()">
                         </div>
                         <div><span id="lblProfitStatic">Profit:</span> <span id="formProfitLabel" class="text-green-400 font-bold block text-sm mt-2">-</span></div>
@@ -2517,10 +2528,14 @@
                 <div id="boxEditDurasi"><label id="lblEditDurasi" class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
-                <div><span id="lblFormModal">Harga Modal:</span><input type="hidden" id="editFormHargaBeli"><span id="editFormHargaBeliDisplay" class="font-bold text-slate-400 block mt-0.5">-</span></div>
+                <div><span id="lblFormModal">Harga Modal:</span><input type="hidden" id="editFormHargaBeli"><span id="editFormHargaBeliDisplay" class="font-bold text-slate-400 block mt-0.5">-</span><input type="number" id="editFormHargaBeliManual" class="hidden w-full bg-transparent font-bold text-amber-300 outline-none mt-0.5 border-b border-amber-500/50" oninput="recalcEditProfit()"></div>
                 <div><span id="lblFormJual">Harga Jual:</span><input type="hidden" id="editFormHargaJual"><span id="editFormHargaJualDisplay" class="font-bold text-white block mt-0.5">-</span><input type="number" id="editFormHargaJualManual" class="hidden w-full bg-transparent font-bold text-amber-300 outline-none mt-0.5 border-b border-amber-500/50" oninput="recalcEditProfit()"></div>
                 <div>Profit:<span id="editFormProfitLabel" class="text-green-400 font-bold block mt-1">-</span></div>
             </div>
+            <label class="flex items-center gap-2 cursor-pointer text-[11px] text-amber-400 font-bold">
+                <input type="checkbox" id="editCheckManual" onchange="toggleEditManual()" class="rounded bg-slate-900 border-slate-700 text-amber-500 w-3.5 h-3.5">
+                <span>✏️ Edit Harga Manual (Modal + Jual)</span>
+            </label>
             <input type="hidden" id="editFormRowId">
             <div class="flex gap-2 pt-2 text-sm"><button id="btnBatalEdit" onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button><button id="btnSimpanMutasi" onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold">Simpan Mutasi Pembukuan</button></div>
         </div>
@@ -2982,55 +2997,123 @@
         function toggleDiskonManual() {
             const chk = document.getElementById('checkDiskonManual');
             const displayJual = document.getElementById('formHargaJualDisplay');
-            const manualInput = document.getElementById('formHargaJualManual');
+            const displayBeli = document.getElementById('formHargaBeliDisplay');
+            const manualJual = document.getElementById('formHargaJualManual');
+            const manualBeli = document.getElementById('formHargaBeliManual');
             if(!chk) return;
             const isOn = chk.checked;
+            // Toggle display ↔ manual input
             if(displayJual) displayJual.classList.toggle('hidden', isOn);
-            if(manualInput) {
-                manualInput.classList.toggle('hidden', !isOn);
+            if(displayBeli) displayBeli.classList.toggle('hidden', isOn);
+            if(manualJual) {
+                manualJual.classList.toggle('hidden', !isOn);
                 if(isOn) {
-                    // Isi manual input dengan nilai CONVERTED (dalam clientCurrency)
                     const base = getSelectedPackageBasePrices();
                     const pkgCur = (base.pkg && base.pkg.currencyCode) ? base.pkg.currencyCode : (clientBaseCurrency || "IDR");
                     const rawHargaJual = parseFloat(document.getElementById('formHargaJual') ? document.getElementById('formHargaJual').value : 0) || 0;
-                    const convertedVal = convertCurrencyValue(rawHargaJual, pkgCur, clientCurrency);
+                    const convertedJual = convertCurrencyValue(rawHargaJual, pkgCur, clientCurrency);
                     const decimals = moneyDecimals(clientCurrency);
-                    manualInput.value = convertedVal.toFixed(decimals);
-                    manualInput.placeholder = clientCurrency + " ...";
-                    manualInput.focus();
+                    manualJual.value = convertedJual.toFixed(decimals);
+                    manualJual.placeholder = clientCurrency + " harga jual...";
                 }
             }
+            if(manualBeli) {
+                manualBeli.classList.toggle('hidden', !isOn);
+                if(isOn) {
+                    const base = getSelectedPackageBasePrices();
+                    const pkgCur = (base.pkg && base.pkg.currencyCode) ? base.pkg.currencyCode : (clientBaseCurrency || "IDR");
+                    const convertedBeli = convertCurrencyValue(base.hargaBeli, pkgCur, clientCurrency);
+                    const decimals = moneyDecimals(clientCurrency);
+                    manualBeli.value = convertedBeli.toFixed(decimals);
+                    manualBeli.placeholder = clientCurrency + " modal beli...";
+                }
+            }
+            if(isOn && manualBeli) manualBeli.focus();
             if(!isOn) autoFillPrices(); else recalculateManualProfitFromDisplay();
         }
 
         function recalculateManualProfitFromDisplay() {
-            // Dipanggil saat user mengetik di input manual harga jual (nilai dalam clientCurrency)
-            const manualInput = document.getElementById('formHargaJualManual');
-            if(!manualInput) return;
-            const jualDisplay = parseFloat(manualInput.value) || 0; // nilai dalam clientCurrency
+            const manualJual = document.getElementById('formHargaJualManual');
+            const manualBeli = document.getElementById('formHargaBeliManual');
+            if(!manualJual) return;
+            const jualDisplay = parseFloat(manualJual.value) || 0;
             const base = getSelectedPackageBasePrices();
             const pkgCur = (base.pkg && base.pkg.currencyCode) ? base.pkg.currencyCode : (clientBaseCurrency || "IDR");
-            // Konversi kembali ke base currency untuk disimpan ke hidden input
+
+            // Harga beli: dari manual input jika ada, fallback ke package default
+            var beliDisplay;
+            if (manualBeli && !manualBeli.classList.contains('hidden') && manualBeli.value !== '') {
+                beliDisplay = parseFloat(manualBeli.value) || 0;
+                // Konversi manual beli ke base currency untuk simpan ke hidden input
+                const beliRawBase = convertCurrencyValue(beliDisplay, clientCurrency, pkgCur);
+                if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = beliRawBase.toFixed(moneyDecimals(pkgCur));
+            } else {
+                beliDisplay = convertCurrencyValue(base.hargaBeli, pkgCur, clientCurrency);
+            }
+
+            // Konversi harga jual ke base currency untuk simpan ke hidden input
             const jualRawBase = convertCurrencyValue(jualDisplay, clientCurrency, pkgCur);
             if(document.getElementById('formHargaJual')) document.getElementById('formHargaJual').value = jualRawBase.toFixed(moneyDecimals(pkgCur));
-            // Update display dengan nilai converted
-            const profitDisplay = jualDisplay - convertCurrencyValue(base.hargaBeli, pkgCur, clientCurrency);
+
+            // Hitung profit dari display values
+            const profitDisplay = jualDisplay - beliDisplay;
             if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(profitDisplay, true, clientCurrency);
         }
 
+        function toggleEditManual() {
+            var chk = document.getElementById('editCheckManual');
+            var isOn = chk && chk.checked;
+            var dispBeli = document.getElementById('editFormHargaBeliDisplay');
+            var dispJual = document.getElementById('editFormHargaJualDisplay');
+            var manBeli = document.getElementById('editFormHargaBeliManual');
+            var manJual = document.getElementById('editFormHargaJualManual');
+            if(dispBeli) dispBeli.classList.toggle('hidden', isOn);
+            if(dispJual) dispJual.classList.toggle('hidden', isOn);
+            if(manBeli) {
+                manBeli.classList.toggle('hidden', !isOn);
+                if(isOn) {
+                    var rawBeli = parseFloat((document.getElementById('editFormHargaBeli')||{}).value)||0;
+                    var pkgIdEdit = (document.getElementById('editFormPaket')||{}).value||'';
+                    var pkgEdit = masterPackages.find(function(p){return p.id===pkgIdEdit;});
+                    var editCur = (pkgEdit&&pkgEdit.currencyCode)?pkgEdit.currencyCode:(clientBaseCurrency||"IDR");
+                    manBeli.value = convertCurrencyValue(rawBeli, editCur, clientCurrency).toFixed(moneyDecimals(clientCurrency));
+                }
+            }
+            if(manJual) {
+                manJual.classList.toggle('hidden', !isOn);
+                if(isOn) {
+                    var rawJual = parseFloat((document.getElementById('editFormHargaJual')||{}).value)||0;
+                    var pkgIdEdit2 = (document.getElementById('editFormPaket')||{}).value||'';
+                    var pkgEdit2 = masterPackages.find(function(p){return p.id===pkgIdEdit2;});
+                    var editCur2 = (pkgEdit2&&pkgEdit2.currencyCode)?pkgEdit2.currencyCode:(clientBaseCurrency||"IDR");
+                    manJual.value = convertCurrencyValue(rawJual, editCur2, clientCurrency).toFixed(moneyDecimals(clientCurrency));
+                }
+            }
+            if(!isOn) autoFillEditPrices(); else recalcEditProfit();
+        }
+
         function recalcEditProfit() {
-            // Dipanggil saat user input manual di modal edit (mode upgrade/mutasi)
-            const manualInput = document.getElementById('editFormHargaJualManual');
-            if(!manualInput) return;
-            const jualDisplay = parseFloat(manualInput.value) || 0;
-            // Cari pkgCurrency dari paket yang dipilih di modal edit
-            const pkgIdEdit = document.getElementById('editFormPaket') ? document.getElementById('editFormPaket').value : '';
-            const pkgEdit = masterPackages.find(p => p.id === pkgIdEdit);
-            const editCur = (pkgEdit && pkgEdit.currencyCode) ? pkgEdit.currencyCode : (clientBaseCurrency||"IDR");
-            const rawBase = convertCurrencyValue(jualDisplay, clientCurrency, editCur);
-            if(document.getElementById('editFormHargaJual')) document.getElementById('editFormHargaJual').value = rawBase.toFixed(moneyDecimals(editCur));
-            const modalVal = parseFloat(document.getElementById('editFormHargaBeli') ? document.getElementById('editFormHargaBeli').value : 0) || 0;
-            const profitDisplay = jualDisplay - convertCurrencyValue(modalVal, editCur, clientCurrency);
+            var manJual = document.getElementById('editFormHargaJualManual');
+            var manBeli = document.getElementById('editFormHargaBeliManual');
+            if(!manJual) return;
+            var jualDisplay = parseFloat(manJual.value) || 0;
+            var pkgIdEdit = (document.getElementById('editFormPaket')||{}).value||'';
+            var pkgEdit = masterPackages.find(function(p){return p.id===pkgIdEdit;});
+            var editCur = (pkgEdit&&pkgEdit.currencyCode)?pkgEdit.currencyCode:(clientBaseCurrency||"IDR");
+            // Simpan harga jual ke hidden input (base currency)
+            var rawJualBase = convertCurrencyValue(jualDisplay, clientCurrency, editCur);
+            if(document.getElementById('editFormHargaJual')) document.getElementById('editFormHargaJual').value = rawJualBase.toFixed(moneyDecimals(editCur));
+            // Harga beli: dari manual jika ada, fallback hidden input
+            var beliDisplay;
+            if(manBeli && !manBeli.classList.contains('hidden') && manBeli.value !== '') {
+                beliDisplay = parseFloat(manBeli.value) || 0;
+                var rawBeliBase = convertCurrencyValue(beliDisplay, clientCurrency, editCur);
+                if(document.getElementById('editFormHargaBeli')) document.getElementById('editFormHargaBeli').value = rawBeliBase.toFixed(moneyDecimals(editCur));
+            } else {
+                var modalVal = parseFloat((document.getElementById('editFormHargaBeli')||{}).value)||0;
+                beliDisplay = convertCurrencyValue(modalVal, editCur, clientCurrency);
+            }
+            var profitDisplay = jualDisplay - beliDisplay;
             if(document.getElementById('editFormProfitLabel')) document.getElementById('editFormProfitLabel').innerText = convertAndFormat(profitDisplay, true, clientCurrency);
         }
 
@@ -3130,6 +3213,93 @@
             }
         }
 
+        // ============================================================
+        // AUTOCOMPLETE NAMA MEMBER
+        // ============================================================
+        function showNameSuggestions(query) {
+            var box = document.getElementById('nameSuggestBox');
+            if (!box) return;
+            query = (query || '').trim().toLowerCase();
+            if (query.length < 2) { box.classList.add('hidden'); return; }
+
+            // Cari member yang namanya mirip (dari semua data, termasuk expired)
+            var matches = [];
+            var seen = {};
+            (membersData || []).forEach(function(m) {
+                var name = (m.namaMember || '').trim();
+                var wa = (m.noWhatsapp || '').trim();
+                var key = name.toLowerCase() + '|' + wa;
+                if (name.toLowerCase().indexOf(query) >= 0 && !seen[key]) {
+                    seen[key] = true;
+                    matches.push({ name: name, wa: wa });
+                }
+            });
+
+            if (matches.length === 0) { box.classList.add('hidden'); return; }
+
+            // Tampilkan max 6 saran
+            var html = '';
+            matches.slice(0, 6).forEach(function(m) {
+                html += '<div onclick="pickNameSuggestion(\'' + m.name.replace(/'/g, "\\'") + '\',\'' + m.wa.replace(/'/g, "\\'") + '\')" '
+                    + 'class="px-3 py-2 hover:bg-slate-800 cursor-pointer border-b border-slate-800/50 last:border-0 transition">'
+                    + '<div class="text-white text-xs font-bold">' + m.name + '</div>'
+                    + '<div class="text-slate-500 text-[10px]">📱 ' + m.wa + '</div>'
+                    + '</div>';
+            });
+
+            box.innerHTML = html;
+            box.classList.remove('hidden');
+        }
+
+        function pickNameSuggestion(name, wa) {
+            var nameEl = document.getElementById('formNama');
+            var waEl = document.getElementById('formWA');
+            var codeEl = document.getElementById('formCountryCode');
+            if (nameEl) nameEl.value = name;
+            if (waEl && wa) {
+                var cleanWa = wa.replace(/[^0-9]/g, ''); // hapus karakter non-angka
+                var detectedCode = '';
+
+                // Deteksi kode negara dari nomor — cek paling panjang dulu (3 digit → 2 digit → 1 digit)
+                var sortedCodes = MILIO_COUNTRY_OPTIONS
+                    .filter(function(o) { return o.code !== 'CUSTOM'; })
+                    .sort(function(a, b) { return b.code.length - a.code.length; });
+
+                for (var i = 0; i < sortedCodes.length; i++) {
+                    if (cleanWa.startsWith(sortedCodes[i].code)) {
+                        detectedCode = sortedCodes[i].code;
+                        break;
+                    }
+                }
+
+                if (detectedCode) {
+                    // Ganti dropdown ke kode negara yang terdeteksi
+                    if (codeEl) codeEl.value = detectedCode;
+                    // Strip kode negara dari nomor
+                    cleanWa = cleanWa.slice(detectedCode.length);
+                }
+
+                // Hapus leading 0 jika ada
+                if (cleanWa.startsWith('0')) cleanWa = cleanWa.slice(1);
+                waEl.value = cleanWa;
+            }
+            // Tutup dropdown
+            var box = document.getElementById('nameSuggestBox');
+            if (box) box.classList.add('hidden');
+            // Focus ke field email
+            var emailEl = document.getElementById('formEmail');
+            if (emailEl) emailEl.focus();
+        }
+
+        // Tutup saran jika klik di luar
+        document.addEventListener('click', function(e) {
+            var box = document.getElementById('nameSuggestBox');
+            var input = document.getElementById('formNama');
+            if (box && input && !input.contains(e.target) && !box.contains(e.target)) {
+                box.classList.add('hidden');
+            }
+        });
+
         async function submitMemberForm() {
             const btn = document.getElementById('btnSubmitMember');
             const originalText = btn.innerText;
@@ -3180,7 +3350,7 @@
                 customTglDaftar: document.getElementById('customTglDaftar').value,
                 customTglExpired: document.getElementById('customTglExpired').value,
                 durasiHari: document.getElementById('formDurasiKustom').value,
-                hargaBeli: pkg.hargaBeli,
+                hargaBeli: isDiskon ? (parseFloat(document.getElementById('formHargaBeli').value)||pkg.hargaBeli) : pkg.hargaBeli,
                 hargaJual: hargaJual,
                 hargaNormal: hargaNormal,
                 isDiskon: isDiskon,
@@ -3338,12 +3508,12 @@
                 return t >= start && t <= end;
             });
             
-            // Sort: terbaru di atas (by createdAt), Selesai paling bawah
+            // Sort: terbaru di atas berdasarkan TANGGAL DAFTAR (timestamp), Selesai paling bawah
             filteredMembers.sort((a, b) => {
                 const aSelesai = a.status !== 'Aktif' ? 1 : 0;
                 const bSelesai = b.status !== 'Aktif' ? 1 : 0;
                 if (aSelesai !== bSelesai) return aSelesai - bSelesai;
-                return parseJsonDate(b.createdAt||b.timestamp) - parseJsonDate(a.createdAt||a.timestamp);
+                return parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp);
             });
             renderMembersTable();
         }
@@ -3722,8 +3892,8 @@ ${exportData.map(m => {
                     const bDiff = Math.ceil((parseJsonDate(b.tglExpired) - _now2) / 86400000);
                     return bDiff - aDiff; // H-3 (besar) di atas, H-0/expired (kecil/negatif) di bawah
                 }
-                // Default: terbaru input di atas
-                return parseJsonDate(b.createdAt||b.timestamp) - parseJsonDate(a.createdAt||a.timestamp);
+                // Default: urut berdasarkan tanggal daftar terbaru di atas
+                return parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp);
             });
             _sortedMembers.forEach(m => {
                 if (activeFilterCompany !== "ALL" && m.perusahaan !== activeFilterCompany) return;
