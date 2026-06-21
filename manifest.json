@@ -2,7 +2,7 @@
   "name": "MILIOLAB-BASE",
   "short_name": "MILIOLAB",
   "description": "Sistem Manajemen Member & Lisensi - MILIOLAB.AI",
-  "start_url": "/index_supabase_v3_1.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
