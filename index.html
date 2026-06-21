@@ -6003,6 +6003,13 @@ td:last-child{font-weight:bold;}
             // Lanjut cek setiap 60 detik (auto-lock jika admin aktifkan saat user sedang pakai app)
             setInterval(checkAndShowAnnouncement, 60000);
 
+
+        });
+
+        // ============================================================
+        // ANNOUNCEMENT/MAINTENANCE SYSTEM - GLOBAL SCOPE
+        // (supaya bisa dipanggil dari onclick="" di HTML)
+        // ============================================================
         // ANNOUNCEMENT SYSTEM
         var _annCountdownTimer = null;
         async function checkAndShowAnnouncement() {
@@ -6029,7 +6036,7 @@ td:last-child{font-weight:bold;}
                 } else {
                     releaseMaintenance();
                     var sk='ann_'+ann.id+'_'+(ann.updated_at||'');
-                    if (sessionStorage.getItem(sk)) return;
+                    if (window._annDismissedThisLoad === sk) return;
                     showAnnouncementPopup(ann,sk);
                 }
             } catch(e) { console.log('Ann:',e); }
@@ -6156,12 +6163,10 @@ td:last-child{font-weight:bold;}
         }
         function closeAnnouncementPopup() {
             var popup=document.getElementById('announcementPopup');
-            if(popup&&popup._sessionKey) sessionStorage.setItem(popup._sessionKey,'1');
+            if(popup&&popup._sessionKey) window._annDismissedThisLoad = popup._sessionKey;
             if(popup) popup.classList.add('hidden');
             if(_annCountdownTimer){clearInterval(_annCountdownTimer);_annCountdownTimer=null;}
         }
-
-        });
     </script>
 
     <!-- ============================================================
