@@ -4,12 +4,12 @@
 // di-cache — selalu langsung network, supaya data member real-time.
 // ============================================================
 
-const CACHE_NAME = 'miliolab-base-v1';
+const CACHE_NAME = 'miliolab-base-v2';
 const APP_SHELL = [
-  'index_supabase_v3_1.html',
-  'manifest.json',
-  'icon-192.png',
-  'icon-512.png'
+  '/index_supabase_v3_1.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
