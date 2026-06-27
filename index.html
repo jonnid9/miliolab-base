@@ -1016,7 +1016,7 @@
         dictionary.ID.lblEditEmail="Email Akses"; dictionary.ID.lblEditJenis="Jenis Pembeli";
         dictionary.ID.lblEditMitra="Mitra"; dictionary.ID.lblEditPaket="Paket Akun";
         dictionary.ID.lblEditDurasi="Durasi Hari"; dictionary.ID.btnBatalEdit="Batal";
-        dictionary.ID.btnSimpanMutasi="Simpan Mutasi Pembukuan";
+        dictionary.ID.btnSimpanMutasi="Simpan Mutasi Pembukuan"; dictionary.ID.lblEditCheckManual="✏️ Edit Harga Manual (Modal + Jual)"; dictionary.ID.lblEditTglDaftar="Tgl Daftar"; dictionary.ID.lblEditTglBerakhir="Tgl Berakhir";
         dictionary.ID.lblRenewDurasi="Durasi Hari Baru"; dictionary.ID.lblRenewMitra="Pilih Mitra Vendor";
         dictionary.ID.lblRenewHargaJual="Harga Jual Baru:"; dictionary.ID.btnBatalRenew="Batal";
         dictionary.ID.btnSimpanRenew="Proses Perpanjang/Upgrade 🚀";
@@ -1043,7 +1043,7 @@
         dictionary.EN.lblEditEmail="Access Email"; dictionary.EN.lblEditJenis="Buyer Type";
         dictionary.EN.lblEditMitra="Vendor"; dictionary.EN.lblEditPaket="Package";
         dictionary.EN.lblEditDurasi="Duration (Days)"; dictionary.EN.btnBatalEdit="Cancel";
-        dictionary.EN.btnSimpanMutasi="Save Booking Mutation";
+        dictionary.EN.btnSimpanMutasi="Save Booking Mutation"; dictionary.EN.lblEditCheckManual="✏️ Edit Price Manual (Cost + Sell)"; dictionary.EN.lblEditTglDaftar="Reg Date"; dictionary.EN.lblEditTglBerakhir="Expiry Date";
         dictionary.EN.lblRenewDurasi="New Duration (Days)"; dictionary.EN.lblRenewMitra="Select Vendor";
         dictionary.EN.lblRenewHargaJual="New Selling Price:"; dictionary.EN.btnBatalRenew="Cancel";
         dictionary.EN.btnSimpanRenew="Process Renewal/Upgrade 🚀";
@@ -1778,6 +1778,7 @@
             if(document.getElementById('tagHapusWarnaLbl')) document.getElementById('tagHapusWarnaLbl').innerText = translation.tagHapusWarna||'Hapus Warna';
             if(document.getElementById('tagHapusLabelLbl')) document.getElementById('tagHapusLabelLbl').innerText = translation.tagHapusLabel||'Hapus Label';
             if(document.getElementById('tagHapusMemberLbl')) document.getElementById('tagHapusMemberLbl').innerText = translation.tagHapusMember||'Hapus Member';
+            if(document.getElementById('lblEditCheckManual')) document.getElementById('lblEditCheckManual').innerText = translation.lblEditCheckManual||'✏️ Edit Harga Manual (Modal + Jual)';
             if(document.getElementById('tagRefundLbl')) document.getElementById('tagRefundLbl').innerText = translation.tagRefundLbl||'Refund';
             if(document.getElementById('tagBatalLbl')) document.getElementById('tagBatalLbl').innerText = translation.tagBatal||'Batal';
             if(document.getElementById('tagWarnaLbl')) document.getElementById('tagWarnaLbl').innerText = translation.tagWarna||'Warna Block:';
@@ -2556,7 +2557,18 @@
             <div class="grid grid-cols-3 gap-3 text-sm">
                 <div><label id="lblEditMitra" class="text-xs text-slate-500 block mb-1">Mitra</label><select id="editFormPerusahaan" onchange="filterEditPackageDropdown()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
                 <div><label id="lblEditPaket" class="text-xs text-slate-400 block mb-1">Paket Akun</label><select id="editFormPaket" onchange="autoFillEditPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
-                <div id="boxEditDurasi"><label id="lblEditDurasi" class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" oninput="autoFillEditPrices()" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
+                <div id="boxEditDurasi"><label id="lblEditDurasi" class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" oninput="syncEditDurasiToDate()" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
+            </div>
+            <!-- Tanggal Daftar + Tanggal Berakhir sinkron -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs text-slate-500 block mb-1">📅 Tgl Daftar</label>
+                    <div id="editFormTglDaftarDisplay" class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-indigo-300 text-sm font-mono">-</div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-500 block mb-1">🔴 Tgl Berakhir</label>
+                    <input type="date" id="editFormTglBerakhir" oninput="syncEditDateToDurasi()" class="w-full bg-slate-950 border border-red-500/40 p-2.5 rounded-xl text-red-400 text-sm font-mono outline-none focus:border-red-400">
+                </div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
                 <div><span id="lblFormModal">Harga Modal:</span><input type="hidden" id="editFormHargaBeli"><span id="editFormHargaBeliDisplay" class="font-bold text-slate-400 block mt-0.5">-</span><input type="number" id="editFormHargaBeliManual" class="hidden w-full bg-transparent font-bold text-amber-300 outline-none mt-0.5 border-b border-amber-500/50" oninput="recalcEditProfit()"></div>
@@ -2565,7 +2577,7 @@
             </div>
             <label class="flex items-center gap-2 cursor-pointer text-[11px] text-amber-400 font-bold">
                 <input type="checkbox" id="editCheckManual" onchange="toggleEditManual()" class="rounded bg-slate-900 border-slate-700 text-amber-500 w-3.5 h-3.5">
-                <span>✏️ Edit Harga Manual (Modal + Jual)</span>
+                <span id="lblEditCheckManual">✏️ Edit Harga Manual (Modal + Jual)</span>
             </label>
             <input type="hidden" id="editFormRowId">
             <div class="flex gap-2 pt-2 text-sm"><button id="btnBatalEdit" onclick="closeEditModal()" class="flex-1 bg-slate-800 p-2.5 rounded-xl font-bold">Batal</button><button id="btnSimpanMutasi" onclick="submitEditForm()" class="flex-1 bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold">Simpan Mutasi Pembukuan</button></div>
@@ -3175,6 +3187,38 @@
             // Hitung profit dari display values
             const profitDisplay = jualDisplay - beliDisplay;
             if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(profitDisplay, true, clientCurrency);
+        }
+
+        // ============================================================
+        // SINKRONISASI DURASI HARI ↔ TANGGAL BERAKHIR (EDIT FORM)
+        // ============================================================
+        function syncEditDurasiToDate() {
+            // Durasi hari diubah → update tanggal berakhir
+            const durasi = parseInt(document.getElementById('editFormDurasi').value);
+            const tglBerakhirEl = document.getElementById('editFormTglBerakhir');
+            if (!tglBerakhirEl) return;
+            if (!durasi || durasi <= 0) {
+                tglBerakhirEl.value = '';
+                return;
+            }
+            const today = new Date();
+            today.setDate(today.getDate() + durasi);
+            tglBerakhirEl.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        }
+
+        function syncEditDateToDurasi() {
+            // Tanggal berakhir diubah → update sisa hari
+            const tglBerakhirVal = document.getElementById('editFormTglBerakhir').value;
+            const durasiEl = document.getElementById('editFormDurasi');
+            if (!durasiEl) return;
+            if (!tglBerakhirVal) {
+                durasiEl.value = '';
+                return;
+            }
+            const tglBerakhir = new Date(tglBerakhirVal);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const diff = Math.ceil((tglBerakhir - today) / (1000*60*60*24));
+            durasiEl.value = diff >= 0 ? diff : 0;
         }
 
         function toggleEditManual() {
@@ -4239,20 +4283,49 @@ ${exportData.map(m => {
             document.getElementById('checkUpgradeMutation').checked = false;
             document.getElementById('boxEditDurasi').classList.remove('hidden');
 
+            // Reset checkbox harga manual ke unchecked setiap buka
+            const chkManual = document.getElementById('editCheckManual');
+            if (chkManual) {
+                chkManual.checked = false;
+                // Pastikan display show, manual input hidden
+                const dispBeli = document.getElementById('editFormHargaBeliDisplay');
+                const dispJual = document.getElementById('editFormHargaJualDisplay');
+                const manBeli = document.getElementById('editFormHargaBeliManual');
+                const manJual = document.getElementById('editFormHargaJualManual');
+                if(dispBeli) dispBeli.classList.remove('hidden');
+                if(dispJual) dispJual.classList.remove('hidden');
+                if(manBeli) { manBeli.classList.add('hidden'); manBeli.value = ''; }
+                if(manJual) { manJual.classList.add('hidden'); manJual.value = ''; }
+            }
+
             const formComp = document.getElementById('editFormPerusahaan'); formComp.innerHTML = '';
             masterCompanies.forEach(c => { const sel = (c === m.perusahaan) ? "selected" : ""; formComp.innerHTML += `<option value="${c}" ${sel}>${c}</option>`; });
 
-            // Hitung sisa hari — kalau tgl_expired kosong/null (paused), tampilkan 0/kosong
+            // Tampilkan tanggal daftar (read only)
+            const tglDaftarEl = document.getElementById('editFormTglDaftarDisplay');
+            if (tglDaftarEl && m.timestamp) {
+                const tDaftar = parseJsonDate(m.timestamp);
+                if (tDaftar && tDaftar.getFullYear() > 1970) {
+                    tglDaftarEl.innerText = tDaftar.getFullYear() + '-' + String(tDaftar.getMonth()+1).padStart(2,'0') + '-' + String(tDaftar.getDate()).padStart(2,'0');
+                }
+            }
+
+            // Hitung sisa hari dan set tanggal berakhir
             const targetDate = m.tglExpired ? parseJsonDate(m.tglExpired) : null;
-            if (targetDate) {
+            const tglBerakhirEl = document.getElementById('editFormTglBerakhir');
+            if (targetDate && targetDate.getFullYear() > 1970) {
                 targetDate.setHours(0,0,0,0);
                 const currentDate = new Date(); currentDate.setHours(0,0,0,0);
                 const diffDays = Math.ceil((targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
                 document.getElementById('editFormDurasi').value = diffDays > 0 ? diffDays : 0;
+                // Set tanggal berakhir ke date input
+                if (tglBerakhirEl) {
+                    tglBerakhirEl.value = targetDate.getFullYear() + '-' + String(targetDate.getMonth()+1).padStart(2,'0') + '-' + String(targetDate.getDate()).padStart(2,'0');
+                }
             } else {
-                // Paused: kosongkan durasi agar user tahu ini paused
                 document.getElementById('editFormDurasi').value = "";
                 document.getElementById('editFormDurasi').placeholder = "Kosong = Paused";
+                if (tglBerakhirEl) tglBerakhirEl.value = "";
             }
 
             filterEditPackageDropdown(m.namaPaket, true); // true = jangan autoFill harga, pakai harga dari DB
@@ -4348,17 +4421,19 @@ ${exportData.map(m => {
                 currencyCode: pkg.currencyCode || clientBaseCurrency || "IDR"
             };
 
-            // Hitung tgl_expired baru dari durasi:
-            // - Kalau durasi diisi → hitung dari hari ini + durasi
-            // - Kalau durasi KOSONG/0 → null (paused, tidak ada tanggal berakhir)
+            // Hitung tgl_expired: prioritas dari date picker, fallback dari durasi hari
+            const tglBerakhirVal = document.getElementById('editFormTglBerakhir') ? document.getElementById('editFormTglBerakhir').value : '';
             const _durasiHari = parseInt(payload.durasiHari);
             let _newExpired = null;
-            if (_durasiHari > 0) {
+            if (tglBerakhirVal) {
+                // Pakai tanggal yang dipilih langsung
+                _newExpired = new Date(tglBerakhirVal + 'T23:59:59').toISOString();
+            } else if (_durasiHari > 0) {
+                // Fallback: hitung dari hari ini + durasi
                 const _expDate = new Date();
                 _expDate.setDate(_expDate.getDate() + _durasiHari);
                 _newExpired = _expDate.toISOString();
             }
-            // Status: paused jika expired dikosongkan, Aktif jika ada tanggal
             const _newStatus = _newExpired ? "Aktif" : "Paused";
 
             try { 
