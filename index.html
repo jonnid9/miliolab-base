@@ -2290,16 +2290,28 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <select id="formPerusahaan" onchange="filterPackageDropdown()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"></select>
                         <select id="formPaket" onchange="autoFillPrices()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"></select>
-                        <input type="number" id="formDurasiKustom" required value="30" oninput="autoFillPrices()" class="w-full bg-slate-950 p-3 rounded-xl border border-amber-500/40 text-amber-300 font-bold outline-none">
+                        <input type="number" id="formDurasiKustom" required value="30" oninput="onDurasiChange(); autoFillPrices();" class="w-full bg-slate-950 p-3 rounded-xl border border-amber-500/40 text-amber-300 font-bold outline-none">
                     </div>
-                    
+
+                    <!-- Tampilan Tgl Mulai + Tgl Berakhir (sinkron dengan durasi) -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">📅 Tgl Mulai</label>
+                            <div id="formTglMulaiDisplay" class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-indigo-300 text-sm font-mono">-</div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">🔴 Tgl Berakhir</label>
+                            <input type="date" id="formTglBerakhirDisplay" oninput="onTglBerakhirChange()" class="w-full bg-slate-950 border border-red-500/40 p-2.5 rounded-xl text-red-400 text-sm font-mono outline-none focus:border-red-400">
+                        </div>
+                    </div>
+
                     <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                         <label id="lblCheckBackdate" class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase cursor-pointer">
                             <input type="checkbox" id="checkBackdate" onchange="toggleBackdateFields()" class="rounded bg-slate-900 border-slate-700 text-green-500 w-4 h-4"> Gunakan Tanggal Kustom (Member Lama)
                         </label>
                         <div id="backdateFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                            <div>Tanggal Mulai Beli:<input type="date" id="customTglDaftar" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
-                            <div>Tanggal Masa Berakhir:<input type="date" id="customTglExpired" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
+                            <div>Tanggal Mulai Beli:<input type="date" id="customTglDaftar" oninput="onCustomTglMulaiChange()" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
+                            <div>Tanggal Masa Berakhir:<input type="date" id="customTglExpired" oninput="onCustomTglBerakhirChange()" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-lg text-white mt-1 outline-none"></div>
                         </div>
                     </div>
 
@@ -2650,9 +2662,20 @@
             const chk = document.getElementById('checkBackdate').checked;
             document.getElementById('backdateFields').classList.toggle('hidden', !chk);
             if(chk) {
-                document.getElementById('customTglDaftar').value = new Date().toISOString().split('T')[0];
-                let exp = new Date(); exp.setDate(exp.getDate() + 30);
-                document.getElementById('customTglExpired').value = exp.toISOString().split('T')[0];
+                // Set default custom tgl mulai = hari ini
+                const today = new Date(); today.setHours(0,0,0,0);
+                document.getElementById('customTglDaftar').value = _dateToStr(today);
+                // Set tgl berakhir = mulai + durasi
+                const durasi = parseInt(document.getElementById('formDurasiKustom').value) || 30;
+                const exp = new Date(today); exp.setDate(exp.getDate() + durasi);
+                document.getElementById('customTglExpired').value = _dateToStr(exp);
+            }
+            // Update display tgl mulai dan berakhir
+            _updateFormTglDisplay();
+            if (chk) {
+                var mulaiEl = document.getElementById('formTglMulaiDisplay');
+                var customStart = document.getElementById('customTglDaftar');
+                if (mulaiEl && customStart) mulaiEl.innerText = customStart.value;
             }
         }
 
@@ -2748,7 +2771,9 @@
             if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(0, true, clientCurrency); 
             document.getElementById('checkBackdate').checked = false; 
             document.getElementById('backdateFields').classList.add('hidden'); 
-            populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input'); 
+            populateFormDropdowns(); toggleResellerChooser(); loadResellerDB(); switchTab('input');
+            // Init tampilan tanggal mulai & berakhir (default: hari ini + 30 hari)
+            setTimeout(initFormTglDisplay, 100);
         }
         
         function validatePasswordSecurity() { 
@@ -3190,8 +3215,88 @@
         }
 
         // ============================================================
-        // SINKRONISASI DURASI HARI ↔ TANGGAL BERAKHIR (EDIT FORM)
+        // 3-WAY SYNC: DURASI HARI ↔ TGL MULAI ↔ TGL BERAKHIR (Form Input Baru)
         // ============================================================
+        function _getTglMulai() {
+            // Pakai custom tgl daftar jika backdate aktif, atau hari ini
+            var chkBd = document.getElementById('checkBackdate');
+            var customStart = document.getElementById('customTglDaftar');
+            if (chkBd && chkBd.checked && customStart && customStart.value) {
+                return new Date(customStart.value + 'T00:00:00');
+            }
+            var t = new Date(); t.setHours(0,0,0,0);
+            return t;
+        }
+
+        function _dateToStr(d) {
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+
+        function _updateFormTglDisplay() {
+            // Update display Tgl Mulai
+            var mulaiEl = document.getElementById('formTglMulaiDisplay');
+            var tglMulai = _getTglMulai();
+            if (mulaiEl) mulaiEl.innerText = _dateToStr(tglMulai);
+
+            // Update Tgl Berakhir dari durasi
+            var durasi = parseInt(document.getElementById('formDurasiKustom') ? document.getElementById('formDurasiKustom').value : 30) || 30;
+            var tglBerakhir = new Date(tglMulai);
+            tglBerakhir.setDate(tglBerakhir.getDate() + durasi);
+
+            var berakhirInput = document.getElementById('formTglBerakhirDisplay');
+            if (berakhirInput) berakhirInput.value = _dateToStr(tglBerakhir);
+
+            // Sync ke customTglExpired jika backdate aktif
+            var customEnd = document.getElementById('customTglExpired');
+            var chkBd = document.getElementById('checkBackdate');
+            if (chkBd && chkBd.checked && customEnd) {
+                customEnd.value = _dateToStr(tglBerakhir);
+            }
+        }
+
+        function onDurasiChange() {
+            // Durasi diubah → update tgl berakhir
+            _updateFormTglDisplay();
+        }
+
+        function onTglBerakhirChange() {
+            // Tgl berakhir diubah → hitung durasi dari tgl mulai ke tgl berakhir
+            var berakhirVal = document.getElementById('formTglBerakhirDisplay') ? document.getElementById('formTglBerakhirDisplay').value : '';
+            var durasiEl = document.getElementById('formDurasiKustom');
+            if (!berakhirVal || !durasiEl) return;
+            var tglMulai = _getTglMulai();
+            var tglBerakhir = new Date(berakhirVal + 'T00:00:00');
+            var diff = Math.round((tglBerakhir - tglMulai) / (1000*60*60*24));
+            durasiEl.value = diff > 0 ? diff : 1;
+            autoFillPrices(); // update harga sesuai durasi baru
+            // Sync ke customTglExpired jika backdate aktif
+            var customEnd = document.getElementById('customTglExpired');
+            var chkBd = document.getElementById('checkBackdate');
+            if (chkBd && chkBd.checked && customEnd) customEnd.value = berakhirVal;
+        }
+
+        function onCustomTglMulaiChange() {
+            // Tgl mulai custom diubah → update tgl berakhir (durasi tetap)
+            _updateFormTglDisplay();
+            // Update display tgl mulai
+            var mulaiEl = document.getElementById('formTglMulaiDisplay');
+            var customStart = document.getElementById('customTglDaftar');
+            if (mulaiEl && customStart && customStart.value) mulaiEl.innerText = customStart.value;
+        }
+
+        function onCustomTglBerakhirChange() {
+            // Tgl berakhir custom diubah → hitung ulang durasi
+            var customEnd = document.getElementById('customTglExpired');
+            if (!customEnd || !customEnd.value) return;
+            var berakhirEl = document.getElementById('formTglBerakhirDisplay');
+            if (berakhirEl) berakhirEl.value = customEnd.value;
+            onTglBerakhirChange();
+        }
+
+        function initFormTglDisplay() {
+            // Inisialisasi saat form dibuka - set default tgl mulai (hari ini) dan berakhir (+30 hari)
+            _updateFormTglDisplay();
+        }
         function syncEditDurasiToDate() {
             // Durasi hari diubah → update tanggal berakhir
             const durasi = parseInt(document.getElementById('editFormDurasi').value);
@@ -3519,8 +3624,16 @@
             };
 
             try {
-                var _tn=payload.isCustomDate?new Date(payload.customTglDaftar):new Date();
-                var _te=payload.isCustomDate?new Date(payload.customTglExpired):new Date(_tn.getTime()+(parseInt(payload.durasiHari)||30)*86400000);
+                var _tn=payload.isCustomDate?new Date(payload.customTglDaftar+'T00:00:00'):new Date();
+                // Pakai tanggal berakhir dari display (sudah sinkron dengan durasi) jika tersedia
+                var _tglBerakhirVal = payload.isCustomDate ? payload.customTglExpired : (document.getElementById('formTglBerakhirDisplay') ? document.getElementById('formTglBerakhirDisplay').value : '');
+                var _te;
+                if (_tglBerakhirVal) {
+                    _te = new Date(_tglBerakhirVal + 'T00:00:00');
+                } else {
+                    _te = new Date(_tn.getTime()+(parseInt(payload.durasiHari)||30)*86400000);
+                    _te.setHours(0,0,0,0);
+                }
                 var _hb=parseFloat(payload.hargaBeli)||0, _hj=parseFloat(payload.hargaJual)||0;
                 var _now=new Date(); // Waktu NYATA input - selalu now()
                 var _ins=await sbP("members",{timestamp:_tn.toISOString(),created_at:_now.toISOString(),reseller_id:payload.userId,nama_member:payload.namaMember,no_whatsapp:payload.noWhatsapp,email:payload.email,perusahaan_sumber:payload.perusahaanSumber,nama_paket:payload.namaPaket,jenis_pembeli:payload.jenisPembeli,harga_beli_saat_ini:_hb,harga_jual_saat_ini:_hj,profit_terkunci:_hj-_hb,tgl_expired:_te.toISOString(),status:"Aktif",owner_user_id:payload.userId,harga_normal:parseFloat(payload.hargaNormal||_hj)||_hj,harga_diskon:payload.isDiskon?_hj:0,is_diskon:payload.isDiskon?"Ya":"Tidak",currency_code:payload.currencyCode||clientBaseCurrency||"IDR",deleted_flag:""});
@@ -4310,13 +4423,12 @@ ${exportData.map(m => {
                 }
             }
 
-            // Hitung sisa hari dan set tanggal berakhir
+            // Hitung sisa hari dari current time (SAMA dengan cara hitung di monitor display)
             const targetDate = m.tglExpired ? parseJsonDate(m.tglExpired) : null;
             const tglBerakhirEl = document.getElementById('editFormTglBerakhir');
             if (targetDate && targetDate.getFullYear() > 1970) {
-                targetDate.setHours(0,0,0,0);
-                const currentDate = new Date(); currentDate.setHours(0,0,0,0);
-                const diffDays = Math.ceil((targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+                const nowTime = new Date();
+                const diffDays = Math.ceil((targetDate.getTime() - nowTime.getTime()) / (1000 * 60 * 60 * 24));
                 document.getElementById('editFormDurasi').value = diffDays > 0 ? diffDays : 0;
                 // Set tanggal berakhir ke date input
                 if (tglBerakhirEl) {
@@ -4426,12 +4538,15 @@ ${exportData.map(m => {
             const _durasiHari = parseInt(payload.durasiHari);
             let _newExpired = null;
             if (tglBerakhirVal) {
-                // Pakai tanggal yang dipilih langsung
-                _newExpired = new Date(tglBerakhirVal + 'T23:59:59').toISOString();
+                // Pakai tanggal yang dipilih - simpan sebagai T00:00:00 (midnight awal hari)
+                // supaya Math.ceil dari sekarang ke T00:00:00 tidak over-count
+                _newExpired = new Date(tglBerakhirVal + 'T00:00:00').toISOString();
             } else if (_durasiHari > 0) {
-                // Fallback: hitung dari hari ini + durasi
+                // Fallback dari durasi: target = sekarang + (durasi * 86400 detik)
+                // Normalisasi ke midnight hari target supaya konsisten dengan date picker
                 const _expDate = new Date();
                 _expDate.setDate(_expDate.getDate() + _durasiHari);
+                _expDate.setHours(0, 0, 0, 0);
                 _newExpired = _expDate.toISOString();
             }
             const _newStatus = _newExpired ? "Aktif" : "Paused";
