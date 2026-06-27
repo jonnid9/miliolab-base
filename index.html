@@ -3569,13 +3569,20 @@
         }
 
         function isFollowUpTargetMember(m, now, todayStr) {
-            if (!m || (m.status && m.status !== "Aktif")) return false;
+            if (!m) return false;
+            // Status 'Selesai/Done' = tidak perlu follow up lagi
+            if (m.status === 'Selesai' || m.status === 'Done' || m.status === 'DONE') return false;
+            // Tidak punya tgl_expired = paused, masih bisa di-FU jika belum pernah
+            if (!m.tglExpired || parseJsonDate(m.tglExpired).getFullYear() <= 1970) {
+                return !m.lastFuDate; // belum pernah di-FU = masuk antrian
+            }
             const tExpired = parseJsonDate(m.tglExpired);
-            if (!tExpired || tExpired.getFullYear() <= 1970) return false;
             const diffDays = Math.ceil((tExpired - now) / (1000 * 60 * 60 * 24));
             const alreadyFuToday = normalizeFuDate_(m.lastFuDate) === todayStr;
+            // H-3 sampai H+0: FU jika belum di-FU hari ini
             if (diffDays >= 0 && diffDays <= 3) return !alreadyFuToday;
-            if (diffDays < 0 && Math.abs(diffDays) <= 15) return true;
+            // Sudah expired (diffDays < 0): tetap muncul di FU sampai 30 hari setelah expired
+            if (diffDays < 0 && Math.abs(diffDays) <= 30) return true;
             return false;
         }
 
@@ -3629,12 +3636,8 @@
             });
             
             // Sort: terbaru di atas berdasarkan TANGGAL DAFTAR (timestamp), Selesai paling bawah
-            filteredMembers.sort((a, b) => {
-                const aSelesai = a.status !== 'Aktif' ? 1 : 0;
-                const bSelesai = b.status !== 'Aktif' ? 1 : 0;
-                if (aSelesai !== bSelesai) return aSelesai - bSelesai;
-                return parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp);
-            });
+            // Sort murni berdasar tanggal daftar — status tidak menggeser posisi
+            filteredMembers.sort((a, b) => parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp));
             renderMembersTable();
         }
 
@@ -3996,16 +3999,7 @@ ${exportData.map(m => {
             if (typeof _activeCardFilter === 'undefined') window._activeCardFilter = 'all';
             const _now2 = new Date();
             const _sortedMembers = [...(filteredMembers || [])].sort((a, b) => {
-                const aSelesai = a.status !== 'Aktif' ? 1 : 0;
-                const bSelesai = b.status !== 'Aktif' ? 1 : 0;
-                if (aSelesai !== bSelesai) return aSelesai - bSelesai;
-                if (followUpOnlyMode) {
-                    // FU mode: sort by diffDays ASC (H-3 dulu, makin expired makin bawah)
-                    const aDiff = Math.ceil((parseJsonDate(a.tglExpired) - _now2) / 86400000);
-                    const bDiff = Math.ceil((parseJsonDate(b.tglExpired) - _now2) / 86400000);
-                    return bDiff - aDiff; // H-3 (besar) di atas, H-0/expired (kecil/negatif) di bawah
-                }
-                // Default: urut berdasarkan tanggal daftar terbaru di atas
+                // Sort murni berdasar tanggal daftar (timestamp) — status/expired tidak menggeser
                 return parseJsonDate(b.timestamp) - parseJsonDate(a.timestamp);
             });
             _sortedMembers.forEach(m => {
@@ -4026,8 +4020,11 @@ ${exportData.map(m => {
                 totalProfit += convertCurrencyValue(m.profit, m.currencyCode || clientBaseCurrency, clientCurrency);
 
                 // Hitung expired: status bukan Aktif ATAU tanggal sudah lewat
-                const _isReallyExpired = (m.status !== 'Aktif') || (diffDays < 0);
+                // Status visual (untuk cards dan badge) - TIDAK mengubah status di database
+                // Member hanya jadi "Selesai" kalau admin manual klik Done
+                const _isReallyExpired = (m.status === 'Selesai' || m.status === 'Done') || (m.status === 'Aktif' && diffDays < 0);
                 const _isReallyAktif = (m.status === 'Aktif') && (diffDays >= 0);
+                const _isPaused = !m.tglExpired || parseJsonDate(m.tglExpired).getFullYear() <= 1970;
                 if (_isReallyExpired) expiredCount++;
                 if (_isReallyAktif) activeCount++;
                 
@@ -4258,18 +4255,39 @@ ${exportData.map(m => {
                 document.getElementById('editFormDurasi').placeholder = "Kosong = Paused";
             }
 
-            filterEditPackageDropdown(m.namaPaket);
+            filterEditPackageDropdown(m.namaPaket, true); // true = jangan autoFill harga, pakai harga dari DB
+            
+            // Tampilkan harga AKTUAL yang tersimpan di DB (bukan harga master paket)
+            const pkgEdit = masterPackages.find(p => {
+                const fullName = p.namaPaket + (p.varian !== '-' ? ' ['+p.varian+']' : '');
+                return fullName === m.namaPaket || p.namaPaket === m.namaPaket;
+            });
+            const editCur = (pkgEdit && pkgEdit.currencyCode) ? pkgEdit.currencyCode : (clientBaseCurrency || "IDR");
+            
+            const actualBeli = m.hargaBeli || 0;
+            const actualJual = m.hargaJual || 0;
+            const actualProfit = actualJual - actualBeli;
+            
+            // Set hidden inputs (base currency dari DB)
+            if(document.getElementById('editFormHargaBeli')) document.getElementById('editFormHargaBeli').value = actualBeli;
+            if(document.getElementById('editFormHargaJual')) document.getElementById('editFormHargaJual').value = actualJual;
+            // Tampilkan display
+            if(document.getElementById('editFormHargaBeliDisplay')) document.getElementById('editFormHargaBeliDisplay').innerText = convertAndFormat(actualBeli, true, editCur);
+            if(document.getElementById('editFormHargaJualDisplay')) document.getElementById('editFormHargaJualDisplay').innerText = convertAndFormat(actualJual, true, editCur);
+            if(document.getElementById('editFormProfitLabel')) document.getElementById('editFormProfitLabel').innerText = convertAndFormat(actualProfit, true, editCur);
+            
             document.getElementById('editFormModalModal').classList.remove('hidden');
         }
 
-        function filterEditPackageDropdown(selectedPackageName = "") {
+        function filterEditPackageDropdown(selectedPackageName = "", skipAutoFill = false) {
             const selectedComp = document.getElementById('editFormPerusahaan').value, formPkg = document.getElementById('editFormPaket'); formPkg.innerHTML = '';
             masterPackages.filter(p => p.perusahaan === selectedComp).forEach(p => {
                 const fullPkgName = p.namaPaket + (p.varian !== '-' ? ' ['+p.varian+']' : '');
                 const sel = (fullPkgName === selectedPackageName || p.namaPaket === selectedPackageName) ? "selected" : "";
                 formPkg.innerHTML += `<option value="${p.id}" ${sel}>${p.namaPaket} ${p.varian !== '-' ? '['+p.varian+']' : ''}</option>`;
             });
-            autoFillEditPrices();
+            // Hanya recalculate harga jika bukan initial open (skipAutoFill=false = user sedang ganti paket)
+            if (!skipAutoFill) autoFillEditPrices();
         }
 
         function autoFillEditPrices() {
