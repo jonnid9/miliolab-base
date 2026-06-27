@@ -1548,11 +1548,11 @@
             // Header tabel member
             var _mth = document.getElementById('memberTableHead');
             if(_mth && _mth.cells.length>=9){_mth.cells[1].innerText=translation.thNama;_mth.cells[2].innerText=translation.thKontak;_mth.cells[3].innerText=translation.thProduk;
-            // cells[3] = Profit — update label saja, jangan timpa tombol toggle
+            // cells[4] = Profit — update span thProfitLabel saja, JANGAN timpa cells[4] langsung
             var _profLbl=document.getElementById('thProfitLabel');
             if(_profLbl) _profLbl.innerText=translation.thProfit;
-            // jangan timpa cells[3] karena ada tombol 👁 di dalamnya
-            _mth.cells[4].innerText=translation.thDaftar;_mth.cells[5].innerText=translation.thBerakhir;_mth.cells[6].innerText=translation.thSisa;_mth.cells[7].innerText=translation.thInv;_mth.cells[8].innerText=translation.thAksi;}
+            // cells[5]=Tgl Daftar, cells[6]=Tgl Berakhir, cells[7]=Sisa, cells[8]=Inv, cells[9]=Aksi
+            _mth.cells[5].innerText=translation.thDaftar;_mth.cells[6].innerText=translation.thBerakhir;_mth.cells[7].innerText=translation.thSisa;_mth.cells[8].innerText=translation.thInv;_mth.cells[9].innerText=translation.thAksi;}
             // Header tabel broadcast
             var _bth = document.getElementById('broadcastTableHead');
             if(_bth && _bth.cells.length>=4){_bth.cells[0].innerText=translation.thBcNama||"Nama Member";_bth.cells[1].innerText=translation.thBcKontak||"WhatsApp / Email";_bth.cells[2].innerText=translation.thBcVarian||"Varian Paket Mitra";_bth.cells[3].innerText=translation.thBcAksi||"Aksi Broadcast";}
@@ -2289,7 +2289,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <select id="formPerusahaan" onchange="filterPackageDropdown()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"></select>
                         <select id="formPaket" onchange="autoFillPrices()" class="w-full bg-slate-950 p-3 rounded-xl border border-slate-800 text-white cursor-pointer"></select>
-                        <input type="number" id="formDurasiKustom" required value="30" class="w-full bg-slate-950 p-3 rounded-xl border border-amber-500/40 text-amber-300 font-bold outline-none">
+                        <input type="number" id="formDurasiKustom" required value="30" oninput="autoFillPrices()" class="w-full bg-slate-950 p-3 rounded-xl border border-amber-500/40 text-amber-300 font-bold outline-none">
                     </div>
                     
                     <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
@@ -2556,7 +2556,7 @@
             <div class="grid grid-cols-3 gap-3 text-sm">
                 <div><label id="lblEditMitra" class="text-xs text-slate-500 block mb-1">Mitra</label><select id="editFormPerusahaan" onchange="filterEditPackageDropdown()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
                 <div><label id="lblEditPaket" class="text-xs text-slate-400 block mb-1">Paket Akun</label><select id="editFormPaket" onchange="autoFillEditPrices()" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white cursor-pointer"></select></div>
-                <div id="boxEditDurasi"><label id="lblEditDurasi" class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
+                <div id="boxEditDurasi"><label id="lblEditDurasi" class="text-xs text-slate-500 block mb-1">Durasi Hari</label><input type="number" id="editFormDurasi" oninput="autoFillEditPrices()" class="w-full bg-slate-950 border border-amber-500/40 p-3 rounded-xl text-amber-300 font-bold outline-none"></div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
                 <div><span id="lblFormModal">Harga Modal:</span><input type="hidden" id="editFormHargaBeli"><span id="editFormHargaBeliDisplay" class="font-bold text-slate-400 block mt-0.5">-</span><input type="number" id="editFormHargaBeliManual" class="hidden w-full bg-transparent font-bold text-amber-300 outline-none mt-0.5 border-b border-amber-500/50" oninput="recalcEditProfit()"></div>
@@ -3077,15 +3077,26 @@
                 const pkg = masterPackages.find(p => p.id === selectedPkgId);
                 if(pkg) {
                     const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
-                    // Set raw value ke hidden input (untuk backend)
-                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = formatBaseInputNumber(pkg.hargaBeli, pkgCurrency);
-                    const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
                     const manualOn = document.getElementById('checkDiskonManual') && document.getElementById('checkDiskonManual').checked;
-                    if(document.getElementById('formHargaJual') && !manualOn) document.getElementById('formHargaJual').value = formatBaseInputNumber(hargaJual, pkgCurrency);
-                    // Update display labels dengan konversi ke clientCurrency
-                    if(document.getElementById('formHargaBeliDisplay')) document.getElementById('formHargaBeliDisplay').innerText = convertAndFormat(pkg.hargaBeli, true, pkgCurrency);
-                    if(!manualOn && document.getElementById('formHargaJualDisplay')) document.getElementById('formHargaJualDisplay').innerText = convertAndFormat(hargaJual, true, pkgCurrency);
-                    if(manualOn) recalculateManualProfit(); else if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat((parseFloat(hargaJual)||0) - (parseFloat(pkg.hargaBeli)||0), true, pkgCurrency);
+
+                    // Hitung proporsi hari: harga master asumsi 30 hari
+                    const durasiInput = parseInt(document.getElementById('formDurasiKustom') ? document.getElementById('formDurasiKustom').value : 30) || 30;
+                    const rasio = durasiInput / 30;
+
+                    // Harga proporsional
+                    const hargaBeliProporsional = (parseFloat(pkg.hargaBeli) || 0) * rasio;
+                    const hargaJualMaster = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+                    const hargaJualProporsional = (parseFloat(hargaJualMaster) || 0) * rasio;
+
+                    // Set raw value ke hidden input (base currency)
+                    if(document.getElementById('formHargaBeli')) document.getElementById('formHargaBeli').value = formatBaseInputNumber(hargaBeliProporsional, pkgCurrency);
+                    if(document.getElementById('formHargaJual') && !manualOn) document.getElementById('formHargaJual').value = formatBaseInputNumber(hargaJualProporsional, pkgCurrency);
+
+                    // Update display labels (converted ke clientCurrency)
+                    if(document.getElementById('formHargaBeliDisplay')) document.getElementById('formHargaBeliDisplay').innerText = convertAndFormat(hargaBeliProporsional, true, pkgCurrency);
+                    if(!manualOn && document.getElementById('formHargaJualDisplay')) document.getElementById('formHargaJualDisplay').innerText = convertAndFormat(hargaJualProporsional, true, pkgCurrency);
+                    if(manualOn) recalculateManualProfitFromDisplay();
+                    else if(document.getElementById('formProfitLabel')) document.getElementById('formProfitLabel').innerText = convertAndFormat(hargaJualProporsional - hargaBeliProporsional, true, pkgCurrency);
                 }
             }
         }
@@ -4234,11 +4245,18 @@ ${exportData.map(m => {
             const formComp = document.getElementById('editFormPerusahaan'); formComp.innerHTML = '';
             masterCompanies.forEach(c => { const sel = (c === m.perusahaan) ? "selected" : ""; formComp.innerHTML += `<option value="${c}" ${sel}>${c}</option>`; });
 
-            const targetDate = parseJsonDate(m.tglExpired); targetDate.setHours(0,0,0,0);
-            const currentDate = new Date(); currentDate.setHours(0,0,0,0);
-            const diffTime = targetDate.getTime() - currentDate.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            document.getElementById('editFormDurasi').value = diffDays > 0 ? diffDays : 30;
+            // Hitung sisa hari — kalau tgl_expired kosong/null (paused), tampilkan 0/kosong
+            const targetDate = m.tglExpired ? parseJsonDate(m.tglExpired) : null;
+            if (targetDate) {
+                targetDate.setHours(0,0,0,0);
+                const currentDate = new Date(); currentDate.setHours(0,0,0,0);
+                const diffDays = Math.ceil((targetDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+                document.getElementById('editFormDurasi').value = diffDays > 0 ? diffDays : 0;
+            } else {
+                // Paused: kosongkan durasi agar user tahu ini paused
+                document.getElementById('editFormDurasi').value = "";
+                document.getElementById('editFormDurasi').placeholder = "Kosong = Paused";
+            }
 
             filterEditPackageDropdown(m.namaPaket);
             document.getElementById('editFormModalModal').classList.remove('hidden');
@@ -4255,13 +4273,30 @@ ${exportData.map(m => {
         }
 
         function autoFillEditPrices() {
-            const selectedPkgId = document.getElementById('editFormPaket').value, jenis = document.getElementById('editFormJenis').value, pkg = masterPackages.find(p => p.id === selectedPkgId);
+            const selectedPkgId = document.getElementById('editFormPaket').value;
+            const jenis = document.getElementById('editFormJenis').value;
+            const pkg = masterPackages.find(p => p.id === selectedPkgId);
             if(pkg) {
                 const pkgCurrency = pkg.currencyCode || clientBaseCurrency || "IDR";
-                document.getElementById('editFormHargaBeli').value = formatBaseInputNumber(pkg.hargaBeli, pkgCurrency);
-                const hargaJual = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
-                document.getElementById('editFormHargaJual').value = formatBaseInputNumber(hargaJual, pkgCurrency);
-                document.getElementById('editFormProfitLabel').innerText = convertAndFormat((parseFloat(hargaJual)||0) - (parseFloat(pkg.hargaBeli)||0), true, pkgCurrency);
+                const manualOn = document.getElementById('editCheckManual') && document.getElementById('editCheckManual').checked;
+
+                // Hitung proporsi hari
+                const durasiInput = parseInt(document.getElementById('editFormDurasi') ? document.getElementById('editFormDurasi').value : 30) || 30;
+                const rasio = durasiInput / 30;
+
+                const hargaBeliProporsional = (parseFloat(pkg.hargaBeli) || 0) * rasio;
+                const hargaJualMaster = (jenis === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+                const hargaJualProporsional = (parseFloat(hargaJualMaster) || 0) * rasio;
+
+                // Set hidden inputs (base currency)
+                document.getElementById('editFormHargaBeli').value = formatBaseInputNumber(hargaBeliProporsional, pkgCurrency);
+                if(!manualOn) document.getElementById('editFormHargaJual').value = formatBaseInputNumber(hargaJualProporsional, pkgCurrency);
+
+                // Update display
+                if(document.getElementById('editFormHargaBeliDisplay')) document.getElementById('editFormHargaBeliDisplay').innerText = convertAndFormat(hargaBeliProporsional, true, pkgCurrency);
+                if(!manualOn && document.getElementById('editFormHargaJualDisplay')) document.getElementById('editFormHargaJualDisplay').innerText = convertAndFormat(hargaJualProporsional, true, pkgCurrency);
+                if(document.getElementById('editFormProfitLabel')) document.getElementById('editFormProfitLabel').innerText = convertAndFormat(hargaJualProporsional - hargaBeliProporsional, true, pkgCurrency);
+                if(manualOn) recalcEditProfit();
             }
         }
         function closeEditModal() { document.getElementById('editFormModalModal').classList.add('hidden'); }
@@ -4272,8 +4307,14 @@ ${exportData.map(m => {
             const pkg = masterPackages.find(p => p.id === targetPkgId);
             if(!pkg) return;
             
-            const hargaJual = (document.getElementById('editFormJenis').value === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
+            const hargaJualDefault = (document.getElementById('editFormJenis').value === "User Langsung") ? pkg.hargaJualUser : pkg.hargaJualReseller;
             const isMutation = document.getElementById('checkUpgradeMutation').checked;
+            
+            // Ambil harga aktual: kalau ada manual override dari editFormHargaBeli/JualManual, pakai itu
+            // (sudah dikonversi ke base currency via recalcEditProfit)
+            const _editHargaBeli = parseFloat((document.getElementById('editFormHargaBeli')||{}).value) || parseFloat(pkg.hargaBeli) || 0;
+            const _editHargaJual = parseFloat((document.getElementById('editFormHargaJual')||{}).value) || parseFloat(hargaJualDefault) || 0;
+            const _editProfit = _editHargaJual - _editHargaBeli;
             
             let inputWa = document.getElementById('editFormWA').value.trim();
             if(inputWa.startsWith("08")) { inputWa = "628" + inputWa.slice(2); }
@@ -4284,11 +4325,39 @@ ${exportData.map(m => {
                 namaMember: document.getElementById('editFormNama').value, noWhatsapp: inputWa, email: document.getElementById('editFormEmail').value,
                 perusahaanSumber: document.getElementById('editFormPerusahaan').value, 
                 namaPaket: pkg.namaPaket + (pkg.varian !== '-' ? ' ['+pkg.varian+']' : ''), 
-                durasiHari: document.getElementById('editFormDurasi').value, jenisPembeli: document.getElementById('editFormJenis').value, hargaBeli: pkg.hargaBeli, hargaJual: hargaJual,
+                durasiHari: document.getElementById('editFormDurasi').value, jenisPembeli: document.getElementById('editFormJenis').value,
+                hargaBeli: _editHargaBeli, hargaJual: _editHargaJual, profitTerkunci: _editProfit,
                 currencyCode: pkg.currencyCode || clientBaseCurrency || "IDR"
             };
+
+            // Hitung tgl_expired baru dari durasi:
+            // - Kalau durasi diisi → hitung dari hari ini + durasi
+            // - Kalau durasi KOSONG/0 → null (paused, tidak ada tanggal berakhir)
+            const _durasiHari = parseInt(payload.durasiHari);
+            let _newExpired = null;
+            if (_durasiHari > 0) {
+                const _expDate = new Date();
+                _expDate.setDate(_expDate.getDate() + _durasiHari);
+                _newExpired = _expDate.toISOString();
+            }
+            // Status: paused jika expired dikosongkan, Aktif jika ada tanggal
+            const _newStatus = _newExpired ? "Aktif" : "Paused";
+
             try { 
-                await sbU("members","id=eq."+payload.rowId,{nama_member:payload.namaMember,no_whatsapp:payload.noWhatsapp,email:payload.email,perusahaan_sumber:payload.perusahaanSumber,nama_paket:payload.namaPaket,jenis_pembeli:payload.jenisPembeli,harga_beli_saat_ini:parseFloat(payload.hargaBeli)||0,harga_jual_saat_ini:parseFloat(payload.hargaJual)||0,profit_terkunci:(parseFloat(payload.hargaJual)||0)-(parseFloat(payload.hargaBeli)||0),currency_code:payload.currencyCode||clientBaseCurrency||"IDR"}); 
+                await sbU("members","id=eq."+payload.rowId,{
+                    nama_member:payload.namaMember,
+                    no_whatsapp:payload.noWhatsapp,
+                    email:payload.email,
+                    perusahaan_sumber:payload.perusahaanSumber,
+                    nama_paket:payload.namaPaket,
+                    jenis_pembeli:payload.jenisPembeli,
+                    harga_beli_saat_ini:payload.hargaBeli,
+                    harga_jual_saat_ini:payload.hargaJual,
+                    profit_terkunci:payload.profitTerkunci,
+                    tgl_expired:_newExpired,
+                    status:_newStatus,
+                    currency_code:payload.currencyCode||clientBaseCurrency||"IDR"
+                }); 
                 closeEditModal(); 
                 await refreshMembersList(); 
             } catch (e) { alert("Gagal memperbarui pembukuan!"); }
